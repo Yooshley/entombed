@@ -1,0 +1,56 @@
+// Copyright Yooshley
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Character.h"
+#include "EntombedBaseCharacter.generated.h"
+
+UCLASS(Abstract)
+class ENTOMBED_API AEntombedBaseCharacter : public ACharacter
+{
+	GENERATED_BODY()
+
+public:
+	AEntombedBaseCharacter();
+
+protected:
+	virtual void BeginPlay() override;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<USkeletalMeshComponent>> EquipmentSlots;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	TObjectPtr<USkeletalMeshComponent> HeadEquipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	TObjectPtr<USkeletalMeshComponent> TorsoEquipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	TObjectPtr<USkeletalMeshComponent> ArmLeftEquipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	TObjectPtr<USkeletalMeshComponent> ArmRightEquipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	TObjectPtr<USkeletalMeshComponent> LegLeftEquipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	TObjectPtr<USkeletalMeshComponent> LegRightEquipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Attachment")
+	TObjectPtr<USkeletalMeshComponent> HeadAttachment;
+
+	UPROPERTY(EditAnywhere, Category="Equipment|Item")
+	TObjectPtr<USkeletalMeshComponent> MainHandItem;
+
+	UPROPERTY(EditAnywhere, Category="Equipment|Item")
+	TObjectPtr<USkeletalMeshComponent> OffHandItem;
+
+private:
+	UFUNCTION()
+	USkeletalMeshComponent* CreateEquipmentSlot(const FName& Name);
+	
+	UFUNCTION()
+	void SetupDefaultEquipment();
+};
