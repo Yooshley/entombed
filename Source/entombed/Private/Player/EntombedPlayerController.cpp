@@ -1,7 +1,7 @@
 // Copyright Yooshley
 
 
-#include "Controller/EntombedPlayerController.h"
+#include "Player/EntombedPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Interaction/TargetInterface.h"

@@ -17,7 +17,12 @@ class ENTOMBED_API AEntombedEnemyCharacter : public AEntombedBaseCharacter, publ
 
 public:
 	AEntombedEnemyCharacter();
-	
+
+	// TargetInterface start
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	// TargetInterface end
+
+protected:
+	virtual void BeginPlay() override;
 };

@@ -16,4 +16,9 @@ class ENTOMBED_API AEntombedPlayerCharacter : public AEntombedBaseCharacter
 
 public:
 	AEntombedPlayerCharacter();
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
+
+private:
+	void InitAbilityActorInfo();
 };

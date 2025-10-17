@@ -34,6 +34,11 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 	HeadAttachment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+UAbilitySystemComponent* AEntombedBaseCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 void AEntombedBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
