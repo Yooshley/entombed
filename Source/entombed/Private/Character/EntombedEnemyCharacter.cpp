@@ -50,5 +50,13 @@ void AEntombedEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	InitAbilityActorInfo();
+}
+
+void AEntombedEnemyCharacter::InitAbilityActorInfo()
+{
+	Super::InitAbilityActorInfo();
+	
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 }

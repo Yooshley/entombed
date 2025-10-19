@@ -4,8 +4,11 @@
 #include "Character/EntombedPlayerCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Player/EntombedPlayerController.h"
 #include "Player/EntombedPlayerState.h"
+#include "UI/HUD/EntombedHUD.h"
 
 AEntombedPlayerCharacter::AEntombedPlayerCharacter()
 {
@@ -41,6 +44,15 @@ void AEntombedPlayerCharacter::InitAbilityActorInfo()
 	check(EntombedPlayerState);
 	
 	EntombedPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(EntombedPlayerState, this);
+	Cast<UEntombedAbilitySystemComponent>(EntombedPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = EntombedPlayerState->GetAbilitySystemComponent();
 	AttributeSet = EntombedPlayerState->GetAttributeSet();
+
+	if (AEntombedPlayerController* EntombedPlayerController = Cast<AEntombedPlayerController>(GetController()))
+	{
+		if (AEntombedHUD* EntombedHUD = Cast<AEntombedHUD>(EntombedPlayerController->GetHUD()))
+		{
+			EntombedHUD->InitializeOverlay(EntombedPlayerController, EntombedPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
 }

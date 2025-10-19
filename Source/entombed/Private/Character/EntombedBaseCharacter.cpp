@@ -44,6 +44,10 @@ void AEntombedBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AEntombedBaseCharacter::InitAbilityActorInfo()
+{
+}
+
 USkeletalMeshComponent* AEntombedBaseCharacter::CreateEquipmentSlot(const FName& Name)
 {
 	USkeletalMeshComponent* Part = CreateDefaultSubobject<USkeletalMeshComponent>(Name);
