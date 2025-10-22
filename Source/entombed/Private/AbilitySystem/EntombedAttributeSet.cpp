@@ -11,10 +11,6 @@
 
 UEntombedAttributeSet::UEntombedAttributeSet()
 {
-	InitLife(50.f);
-	InitMaxLife(100.f);
-	InitMana(50.f);
-	InitMaxMana(100.f);
 }
 
 void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -23,15 +19,23 @@ void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Life, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxLife, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Mana, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Form, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxForm, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Mind, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxMind, COND_None, REPNOTIFY_Always);
 	
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Strength, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Dexterity, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Endurance, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Intelligence, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Cunning, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Wisdom, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Instinct, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Technique, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Acumen, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Logic, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Spirit, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, LifeRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FormRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MindRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, CriticalChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, EvasionChance, COND_None, REPNOTIFY_Always);
 }
 
 void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
@@ -45,9 +49,9 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 	{
 		SetLife(FMath::Clamp(GetLife(), 0.f, GetMaxLife()));
 	}
-	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	if (Data.EvaluatedData.Attribute == GetMindAttribute())
 	{
-		SetMana(FMath::Clamp(GetMana(), 0.f, GetMaxMana()));
+		SetMind(FMath::Clamp(GetMind(), 0.f, GetMaxMind()));
 	}
 }
 
@@ -61,44 +65,79 @@ void UEntombedAttributeSet::OnRep_MaxLife(const FGameplayAttributeData& OldMaxLi
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxLife, OldMaxLife);
 }
 
-void UEntombedAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
+void UEntombedAttributeSet::OnRep_Form(const FGameplayAttributeData& OldGrit) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Mana, OldMana);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Form, OldGrit);
 }
 
-void UEntombedAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
+void UEntombedAttributeSet::OnRep_MaxForm(const FGameplayAttributeData& OldMaxGrit) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxMana, OldMaxMana);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxForm, OldMaxGrit);
 }
 
-void UEntombedAttributeSet::OnRep_Strength(const FGameplayAttributeData& OldStrength) const
+void UEntombedAttributeSet::OnRep_Mind(const FGameplayAttributeData& OldMana) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Strength, OldStrength);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Mind, OldMana);
 }
 
-void UEntombedAttributeSet::OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const
+void UEntombedAttributeSet::OnRep_MaxMind(const FGameplayAttributeData& OldMaxMana) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Dexterity, OldDexterity);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxMind, OldMaxMana);
 }
 
-void UEntombedAttributeSet::OnRep_Endurance(const FGameplayAttributeData& OldEndurance) const
+void UEntombedAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Endurance, OldEndurance);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Vigor, OldVigor);
 }
 
-void UEntombedAttributeSet::OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const
+void UEntombedAttributeSet::OnRep_Instinct(const FGameplayAttributeData& OldInstinct) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Intelligence, OldIntelligence);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Instinct, OldInstinct);
 }
 
-void UEntombedAttributeSet::OnRep_Cunning(const FGameplayAttributeData& OldCunning) const
+void UEntombedAttributeSet::OnRep_Technique(const FGameplayAttributeData& OldTechnique) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Cunning, OldCunning);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Logic, OldTechnique);
 }
 
-void UEntombedAttributeSet::OnRep_Wisdom(const FGameplayAttributeData& OldWisdom) const
+void UEntombedAttributeSet::OnRep_Acumen(const FGameplayAttributeData& OldAcumen) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Wisdom, OldWisdom);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Acumen, OldAcumen);
+}
+
+void UEntombedAttributeSet::OnRep_Logic(const FGameplayAttributeData& OldLogic) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Technique, OldLogic);
+}
+
+void UEntombedAttributeSet::OnRep_Spirit(const FGameplayAttributeData& OldSpirit) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Spirit, OldSpirit);
+}
+
+void UEntombedAttributeSet::OnRep_LifeRegeneration(const FGameplayAttributeData& OldLifeRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, LifeRegeneration, OldLifeRegeneration);
+}
+
+void UEntombedAttributeSet::OnRep_FormRegeneration(const FGameplayAttributeData& OldFormRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, FormRegeneration, OldFormRegeneration);
+}
+
+void UEntombedAttributeSet::OnRep_MindRegeneration(const FGameplayAttributeData& OldMindRegeneration) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MindRegeneration, OldMindRegeneration);
+}
+
+void UEntombedAttributeSet::OnRep_CriticalChance(const FGameplayAttributeData& OldCriticalChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, CriticalChance, OldCriticalChance);
+}
+
+void UEntombedAttributeSet::OnRep_EvasionChance(const FGameplayAttributeData& OldEvasionChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, EvasionChance, OldEvasionChance);
 }
 
 void UEntombedAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const

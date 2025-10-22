@@ -61,45 +61,85 @@ public:
 	
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Life, Category="Attributes|Resource")
+	/*
+	 * CORE ATTRIBUTES
+	*/
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Life, Category="Attributes|Core")
 	FGameplayAttributeData Life;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Life);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxLife, Category="Attributes|Resource")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxLife, Category="Attributes|Core")
 	FGameplayAttributeData MaxLife;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxLife);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category="Attributes|Resource")
-	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Mana);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Form, Category="Attributes|Core")
+	FGameplayAttributeData Form;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Form);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category="Attributes|Resource")
-	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxMana);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxForm, Category="Attributes|Core")
+	FGameplayAttributeData MaxForm;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxForm);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category="Attributes|Primary")
-	FGameplayAttributeData Strength;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Strength);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mind, Category="Attributes|Core")
+	FGameplayAttributeData Mind;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Mind);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Dexterity, Category="Attributes|Primary")
-	FGameplayAttributeData Dexterity;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Dexterity);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMind, Category="Attributes|Core")
+	FGameplayAttributeData MaxMind;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxMind);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Endurance, Category="Attributes|Primary")
-	FGameplayAttributeData Endurance;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Endurance);
+	/*
+	 * PRIMARY ATTRIBUTES
+	*/
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category="Attributes|Primary")
-	FGameplayAttributeData Intelligence;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Intelligence);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category="Attributes|Primary")
+	FGameplayAttributeData Vigor;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Vigor); // Templar(I), Barbarian(II); MaxLife
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Cunning, Category="Attributes|Primary")
-	FGameplayAttributeData Cunning;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Cunning);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Instinct, Category="Attributes|Primary")
+	FGameplayAttributeData Instinct;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Instinct); // Barbarian(I), Saboteur(II); FormRegen, EvadeChance
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Wisdom, Category="Attributes|Primary")
-	FGameplayAttributeData Wisdom;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Wisdom);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Technique, Category="Attributes|Primary")
+	FGameplayAttributeData Technique;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Technique); // Saboteur(I), Mechanist(II); MaxForm, CritChance
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Acumen, Category="Attributes|Primary")
+	FGameplayAttributeData Acumen;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Acumen); // Sorcerer(I), Ritualist(II); MindRegen
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Logic, Category="Attributes|Primary")
+	FGameplayAttributeData Logic;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Logic); // Mechanist(I), Sorcerer(II); MaxMind
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Spirit, Category="Attributes|Primary")
+	FGameplayAttributeData Spirit;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Spirit); //Ritualist(I), Templar(II); LifeRegen
+
+	/*
+	 * SECONDARY ATTRIBUTES
+	*/
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LifeRegeneration, Category="Attributes|Secondary")
+	FGameplayAttributeData LifeRegeneration;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, LifeRegeneration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FormRegeneration, Category="Attributes|Secondary")
+	FGameplayAttributeData FormRegeneration;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, FormRegeneration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MindRegeneration, Category="Attributes|Secondary")
+	FGameplayAttributeData MindRegeneration;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MindRegeneration);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes|Secondary")
+	FGameplayAttributeData CriticalChance;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, CriticalChance);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EvasionChance, Category="Attributes|Secondary")
+	FGameplayAttributeData EvasionChance;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, EvasionChance);
 	
 	UFUNCTION()
 	void OnRep_Life(const FGameplayAttributeData& OldLife) const;
@@ -108,28 +148,49 @@ public:
 	void OnRep_MaxLife(const FGameplayAttributeData& OldMaxLife) const;
 
 	UFUNCTION()
-	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
+	void OnRep_Form(const FGameplayAttributeData& OldGrit) const;
 
 	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
+	void OnRep_MaxForm(const FGameplayAttributeData& OldMaxGrit) const;
 
 	UFUNCTION()
-	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
+	void OnRep_Mind(const FGameplayAttributeData& OldMana) const;
 
 	UFUNCTION()
-	void OnRep_Dexterity(const FGameplayAttributeData& OldDexterity) const;
+	void OnRep_MaxMind(const FGameplayAttributeData& OldMaxMana) const;
 
 	UFUNCTION()
-	void OnRep_Endurance(const FGameplayAttributeData& OldEndurance) const;
+	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
 
 	UFUNCTION()
-	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
+	void OnRep_Instinct(const FGameplayAttributeData& OldInstinct) const;
 
 	UFUNCTION()
-	void OnRep_Cunning(const FGameplayAttributeData& OldCunning) const;
+	void OnRep_Technique(const FGameplayAttributeData& OldTechnique) const;
+	
+	UFUNCTION()
+	void OnRep_Acumen(const FGameplayAttributeData& OldAcumen) const;
 
 	UFUNCTION()
-	void OnRep_Wisdom(const FGameplayAttributeData& OldWisdom) const;
+	void OnRep_Logic(const FGameplayAttributeData& OldLogic) const;
+
+	UFUNCTION()
+	void OnRep_Spirit(const FGameplayAttributeData& OldSpirit) const;
+
+	UFUNCTION()
+	void OnRep_LifeRegeneration(const FGameplayAttributeData& OldLifeRegeneration) const;
+
+	UFUNCTION()
+	void OnRep_FormRegeneration(const FGameplayAttributeData& OldFormRegeneration) const;
+
+	UFUNCTION()
+	void OnRep_MindRegeneration(const FGameplayAttributeData& OldMindRegeneration) const;
+
+	UFUNCTION()
+	void OnRep_CriticalChance(const FGameplayAttributeData& OldCriticalChance) const;
+
+	UFUNCTION()
+	void OnRep_EvasionChance(const FGameplayAttributeData& OldEvasionChance) const;
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const;

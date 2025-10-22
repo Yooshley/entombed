@@ -46,16 +46,21 @@ void AEntombedEnemyCharacter::UnHighlightActor()
 	HeadAttachment->SetRenderCustomDepth(false);
 }
 
+int32 AEntombedEnemyCharacter::GetCharacterLevel()
+{
+	return Level;
+}
+
 void AEntombedEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	InitAbilityActorInfo();
+	InitializeAbilityActorInfo();
 }
 
-void AEntombedEnemyCharacter::InitAbilityActorInfo()
+void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 {
-	Super::InitAbilityActorInfo();
+	Super::InitializeAbilityActorInfo();
 	
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();

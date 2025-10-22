@@ -3,6 +3,8 @@
 
 #include "Character/EntombedBaseCharacter.h"
 
+#include "AbilitySystemComponent.h"
+
 
 AEntombedBaseCharacter::AEntombedBaseCharacter()
 {
@@ -44,8 +46,25 @@ void AEntombedBaseCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AEntombedBaseCharacter::InitAbilityActorInfo()
+void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 {
+}
+
+void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const
+{
+	check(IsValid(GetAbilitySystemComponent()));
+	check(GameplayEffectClass);
+	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
+	ContextHandle.AddSourceObject(this);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
+	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
+}
+
+void AEntombedBaseCharacter::InitializeDefaultAttributes() const
+{
+	ApplyEffectToSelf(DefaultPrimaryAttributes);
+	ApplyEffectToSelf(DefaultSecondaryAttributes);
+	ApplyEffectToSelf(DefaultResourceAttributes);
 }
 
 USkeletalMeshComponent* AEntombedBaseCharacter::CreateEquipmentSlot(const FName& Name)

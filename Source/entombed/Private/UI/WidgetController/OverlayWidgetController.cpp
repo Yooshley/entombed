@@ -13,8 +13,8 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	const UEntombedAttributeSet* EntombedAttributeSet = CastChecked<UEntombedAttributeSet>(AttributeSet);
 	OnLifeChanged.Broadcast(EntombedAttributeSet->GetLife());
 	OnMaxLifeChanged.Broadcast(EntombedAttributeSet->GetMaxLife());
-	OnManaChanged.Broadcast(EntombedAttributeSet->GetMana());
-	OnMaxManaChanged.Broadcast(EntombedAttributeSet->GetMaxMana());
+	OnManaChanged.Broadcast(EntombedAttributeSet->GetMind());
+	OnMaxManaChanged.Broadcast(EntombedAttributeSet->GetMaxMind());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
@@ -35,13 +35,13 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		OnMaxLifeChanged.Broadcast(Data.NewValue);
 	});
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetManaAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetMindAttribute()).AddLambda(
 	[this](const FOnAttributeChangeData& Data)
 	{
 		OnManaChanged.Broadcast(Data.NewValue);
 	});
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetMaxManaAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetMaxMindAttribute()).AddLambda(
 [this](const FOnAttributeChangeData& Data)
 	{
 		OnMaxManaChanged.Broadcast(Data.NewValue);

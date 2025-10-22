@@ -27,7 +27,7 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	// init ability actor info for the server
-	InitAbilityActorInfo();
+	InitializeAbilityActorInfo();
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()
@@ -35,10 +35,18 @@ void AEntombedPlayerCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	// init ability actor info for the client
-	InitAbilityActorInfo();
+	InitializeAbilityActorInfo();
 }
 
-void AEntombedPlayerCharacter::InitAbilityActorInfo()
+int32 AEntombedPlayerCharacter::GetCharacterLevel()
+{
+	const AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
+	check(EntombedPlayerState);
+	
+	return EntombedPlayerState->GetPlayerLevel();
+}
+
+void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 {
 	AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
 	check(EntombedPlayerState);
@@ -55,4 +63,5 @@ void AEntombedPlayerCharacter::InitAbilityActorInfo()
 			EntombedHUD->InitializeOverlay(EntombedPlayerController, EntombedPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+	InitializeDefaultAttributes();
 }
