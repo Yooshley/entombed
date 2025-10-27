@@ -2,8 +2,11 @@
 
 
 #include "Player/EntombedPlayerController.h"
+
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
+#include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "Input/EntombedInputComponent.h"
 #include "Interaction/TargetInterface.h"
 
 AEntombedPlayerController::AEntombedPlayerController()
@@ -41,9 +44,9 @@ void AEntombedPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-
-	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEntombedPlayerController::Move);
+	UEntombedInputComponent* EntombedInputComponent = CastChecked<UEntombedInputComponent>(InputComponent);
+	EntombedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AEntombedPlayerController::Move);
+	EntombedInputComponent->BindAbilityActions(InputDataAsset, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
 
 void AEntombedPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -83,4 +86,30 @@ void AEntombedPlayerController::CursorTrace()
 			ThisActor->HighlightActor();
 		}
 	}
+}
+
+void AEntombedPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+}
+
+void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (GetEntombedAbilitySystemComponent() == nullptr) return;
+	GetEntombedAbilitySystemComponent()->AbilityInputReleased(InputTag);
+}
+
+void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (GetEntombedAbilitySystemComponent() == nullptr) return;
+	GetEntombedAbilitySystemComponent()->AbilityInputHeld(InputTag);
+}
+
+UEntombedAbilitySystemComponent* AEntombedPlayerController::GetEntombedAbilitySystemComponent()
+{
+	if (EntombedAbilitySystemComponent == nullptr)
+	{
+		UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>());
+		EntombedAbilitySystemComponent = Cast<UEntombedAbilitySystemComponent>(ASC);
+	}
+	return EntombedAbilitySystemComponent;
 }

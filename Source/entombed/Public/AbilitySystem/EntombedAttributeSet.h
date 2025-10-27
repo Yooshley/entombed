@@ -13,6 +13,8 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+DECLARE_DELEGATE_RetVal(FGameplayAttribute, FAttributeSignature);
+
 USTRUCT()
 struct FEffectProperties
 {
@@ -62,82 +64,82 @@ public:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 	/*
-	 * CORE ATTRIBUTES
+	 * RESOURCE ATTRIBUTES
 	*/
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Life, Category="Attributes|Core")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Life, Category="Attributes|Resource")
 	FGameplayAttributeData Life;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Life);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxLife, Category="Attributes|Core")
-	FGameplayAttributeData MaxLife;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxLife);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalLife, Category="Attributes|Resource")
+	FGameplayAttributeData TotalLife;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, TotalLife);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Form, Category="Attributes|Core")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Form, Category="Attributes|Resource")
 	FGameplayAttributeData Form;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Form);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxForm, Category="Attributes|Core")
-	FGameplayAttributeData MaxForm;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxForm);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalForm, Category="Attributes|Resource")
+	FGameplayAttributeData TotalForm;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, TotalForm);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mind, Category="Attributes|Core")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mind, Category="Attributes|Resource")
 	FGameplayAttributeData Mind;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Mind);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMind, Category="Attributes|Core")
-	FGameplayAttributeData MaxMind;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MaxMind);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalMind, Category="Attributes|Resource")
+	FGameplayAttributeData TotalMind;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, TotalMind);
 
 	/*
-	 * PRIMARY ATTRIBUTES
+	 * CORE ATTRIBUTES
 	*/
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category="Attributes|Primary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category="Attributes|Core")
 	FGameplayAttributeData Vigor;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Vigor); // Templar(I), Barbarian(II); MaxLife
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Vigor); // Templar(I), Barbarian(II); TotalLife
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Instinct, Category="Attributes|Primary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Instinct, Category="Attributes|Core")
 	FGameplayAttributeData Instinct;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Instinct); // Barbarian(I), Saboteur(II); FormRegen, EvadeChance
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Technique, Category="Attributes|Primary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Technique, Category="Attributes|Core")
 	FGameplayAttributeData Technique;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Technique); // Saboteur(I), Mechanist(II); MaxForm, CritChance
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Technique); // Saboteur(I), Mechanist(II); TotalForm, CritChance
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Acumen, Category="Attributes|Primary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Acumen, Category="Attributes|Core")
 	FGameplayAttributeData Acumen;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Acumen); // Sorcerer(I), Ritualist(II); MindRegen
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Logic, Category="Attributes|Primary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Logic, Category="Attributes|Core")
 	FGameplayAttributeData Logic;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Logic); // Mechanist(I), Sorcerer(II); MaxMind
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Logic); // Mechanist(I), Sorcerer(II); TotalMind
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Spirit, Category="Attributes|Primary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Spirit, Category="Attributes|Core")
 	FGameplayAttributeData Spirit;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Spirit); //Ritualist(I), Templar(II); LifeRegen
 
 	/*
-	 * SECONDARY ATTRIBUTES
+	 * DERIVED ATTRIBUTES
 	*/
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LifeRegeneration, Category="Attributes|Secondary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LifeRegeneration, Category="Attributes|Derived")
 	FGameplayAttributeData LifeRegeneration;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, LifeRegeneration);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FormRegeneration, Category="Attributes|Secondary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FormRegeneration, Category="Attributes|Derived")
 	FGameplayAttributeData FormRegeneration;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, FormRegeneration);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MindRegeneration, Category="Attributes|Secondary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MindRegeneration, Category="Attributes|Derived")
 	FGameplayAttributeData MindRegeneration;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MindRegeneration);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes|Secondary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes|Derived")
 	FGameplayAttributeData CriticalChance;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, CriticalChance);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EvasionChance, Category="Attributes|Secondary")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EvasionChance, Category="Attributes|Derived")
 	FGameplayAttributeData EvasionChance;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, EvasionChance);
 	
@@ -145,19 +147,19 @@ public:
 	void OnRep_Life(const FGameplayAttributeData& OldLife) const;
 
 	UFUNCTION()
-	void OnRep_MaxLife(const FGameplayAttributeData& OldMaxLife) const;
+	void OnRep_TotalLife(const FGameplayAttributeData& OldTotalLife) const;
 
 	UFUNCTION()
-	void OnRep_Form(const FGameplayAttributeData& OldGrit) const;
+	void OnRep_Form(const FGameplayAttributeData& OldForm) const;
 
 	UFUNCTION()
-	void OnRep_MaxForm(const FGameplayAttributeData& OldMaxGrit) const;
+	void OnRep_TotalForm(const FGameplayAttributeData& OldTotalForm) const;
 
 	UFUNCTION()
-	void OnRep_Mind(const FGameplayAttributeData& OldMana) const;
+	void OnRep_Mind(const FGameplayAttributeData& OldMind) const;
 
 	UFUNCTION()
-	void OnRep_MaxMind(const FGameplayAttributeData& OldMaxMana) const;
+	void OnRep_TotalMind(const FGameplayAttributeData& OldTotalMind) const;
 
 	UFUNCTION()
 	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;

@@ -6,11 +6,23 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemComponent.h"
+#include "EntombedGameplayTags.h"
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
 UEntombedAttributeSet::UEntombedAttributeSet()
 {
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	
+	// FAttributeSignature VigorDelegate;
+	// VigorDelegate.BindStatic(GetVigorAttribute);
+	// TagsToAttributes.Add(GameplayTags.Attribute_Core_Vigor, VigorDelegate);
+	//
+	// FAttributeSignature InstinctDelegate;
+	// VigorDelegate.BindStatic(GetInstinctAttribute);
+	// TagsToAttributes.Add(GameplayTags.Attribute_Core_Instinct, InstinctDelegate);
+	//
+	// FunctionPointer = GetVigorAttribute();
 }
 
 void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -18,11 +30,11 @@ void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Life, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxLife, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, TotalLife, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Form, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxForm, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, TotalForm, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Mind, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MaxMind, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, TotalMind, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Instinct, COND_None, REPNOTIFY_Always);
@@ -47,11 +59,17 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 
 	if (Data.EvaluatedData.Attribute == GetLifeAttribute())
 	{
-		SetLife(FMath::Clamp(GetLife(), 0.f, GetMaxLife()));
+		SetLife(FMath::Clamp(GetLife(), 0.f, GetTotalLife()));
 	}
+
+	if (Data.EvaluatedData.Attribute == GetFormAttribute())
+	{
+		SetForm(FMath::Clamp(GetForm(), 0.f, GetTotalForm()));
+	}
+	
 	if (Data.EvaluatedData.Attribute == GetMindAttribute())
 	{
-		SetMind(FMath::Clamp(GetMind(), 0.f, GetMaxMind()));
+		SetMind(FMath::Clamp(GetMind(), 0.f, GetTotalMind()));
 	}
 }
 
@@ -60,29 +78,29 @@ void UEntombedAttributeSet::OnRep_Life(const FGameplayAttributeData& OldLife) co
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Life, OldLife);
 }
 
-void UEntombedAttributeSet::OnRep_MaxLife(const FGameplayAttributeData& OldMaxLife) const
+void UEntombedAttributeSet::OnRep_TotalLife(const FGameplayAttributeData& OldTotalLife) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxLife, OldMaxLife);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, TotalLife, OldTotalLife);
 }
 
-void UEntombedAttributeSet::OnRep_Form(const FGameplayAttributeData& OldGrit) const
+void UEntombedAttributeSet::OnRep_Form(const FGameplayAttributeData& OldForm) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Form, OldGrit);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Form, OldForm);
 }
 
-void UEntombedAttributeSet::OnRep_MaxForm(const FGameplayAttributeData& OldMaxGrit) const
+void UEntombedAttributeSet::OnRep_TotalForm(const FGameplayAttributeData& OldTotalForm) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxForm, OldMaxGrit);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, TotalForm, OldTotalForm);
 }
 
-void UEntombedAttributeSet::OnRep_Mind(const FGameplayAttributeData& OldMana) const
+void UEntombedAttributeSet::OnRep_Mind(const FGameplayAttributeData& OldMind) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Mind, OldMana);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Mind, OldMind);
 }
 
-void UEntombedAttributeSet::OnRep_MaxMind(const FGameplayAttributeData& OldMaxMana) const
+void UEntombedAttributeSet::OnRep_TotalMind(const FGameplayAttributeData& OldTotalMind) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MaxMind, OldMaxMana);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, TotalMind, OldTotalMind);
 }
 
 void UEntombedAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const

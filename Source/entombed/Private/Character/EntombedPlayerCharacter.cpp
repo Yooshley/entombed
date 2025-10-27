@@ -28,6 +28,7 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 
 	// init ability actor info for the server
 	InitializeAbilityActorInfo();
+	AddDefaultAbilities();
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()

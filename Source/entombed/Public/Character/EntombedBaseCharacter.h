@@ -8,6 +8,7 @@
 #include "Interaction/CombatInterface.h"
 #include "EntombedBaseCharacter.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -64,10 +65,10 @@ protected:
 	TObjectPtr<USkeletalMeshComponent> OffHandItem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
-	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+	TSubclassOf<UGameplayEffect> DefaultCoreAttributes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
-	TSubclassOf<UGameplayEffect> DefaultSecondaryAttributes;
+	TSubclassOf<UGameplayEffect> DefaultDerivedAttributes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultResourceAttributes;
@@ -75,10 +76,15 @@ protected:
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	void InitializeDefaultAttributes() const;
 
+	void AddDefaultAbilities();
+
 private:
 	UFUNCTION()
 	USkeletalMeshComponent* CreateEquipmentSlot(const FName& Name);
 	
 	UFUNCTION()
 	void SetupDefaultEquipment();
+
+	UPROPERTY(EditAnywhere, Category="Abilities")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 };

@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "EntombedHUD.generated.h"
 
+class UAttributeMenuWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
 struct FWidgetControllerParameters;
@@ -24,6 +25,8 @@ public:
 
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParameters& WidgetControllerParameters);
 
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParameters& WidgetControllerParameters);
+
 	void InitializeOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
 protected:
@@ -37,4 +40,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UOverlayWidgetController> OverlayWidgetControllerClass;
+
+	UPROPERTY()
+	UAttributeMenuWidgetController* AttributeMenuWidgetController;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
 };

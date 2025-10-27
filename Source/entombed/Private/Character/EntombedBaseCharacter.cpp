@@ -4,6 +4,7 @@
 #include "Character/EntombedBaseCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/EntombedAbilitySystemComponent.h"
 
 
 AEntombedBaseCharacter::AEntombedBaseCharacter()
@@ -62,9 +63,17 @@ void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Game
 
 void AEntombedBaseCharacter::InitializeDefaultAttributes() const
 {
-	ApplyEffectToSelf(DefaultPrimaryAttributes);
-	ApplyEffectToSelf(DefaultSecondaryAttributes);
+	ApplyEffectToSelf(DefaultCoreAttributes);
+	ApplyEffectToSelf(DefaultDerivedAttributes);
 	ApplyEffectToSelf(DefaultResourceAttributes);
+}
+
+void AEntombedBaseCharacter::AddDefaultAbilities()
+{
+	UEntombedAbilitySystemComponent* ASC = CastChecked<UEntombedAbilitySystemComponent>(GetAbilitySystemComponent());
+	if (!HasAuthority()) return;
+
+	ASC->AddDefaultAbilities(DefaultAbilities);
 }
 
 USkeletalMeshComponent* AEntombedBaseCharacter::CreateEquipmentSlot(const FName& Name)

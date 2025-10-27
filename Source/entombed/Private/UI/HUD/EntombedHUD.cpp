@@ -3,6 +3,7 @@
 
 #include "UI/HUD/EntombedHUD.h"
 #include "UI/Widget/EntombedUserWidget.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 UOverlayWidgetController* AEntombedHUD::GetOverlayWidgetController(
@@ -17,6 +18,20 @@ UOverlayWidgetController* AEntombedHUD::GetOverlayWidgetController(
 		return OverlayWidgetController;
 	}
 	return OverlayWidgetController;
+}
+
+UAttributeMenuWidgetController* AEntombedHUD::GetAttributeMenuWidgetController(
+	const FWidgetControllerParameters& WidgetControllerParameters)
+{
+	if (AttributeMenuWidgetController == nullptr)
+	{
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParameters(WidgetControllerParameters);
+		AttributeMenuWidgetController->BindCallbacksToDependencies();
+		
+		return AttributeMenuWidgetController;
+	}
+	return AttributeMenuWidgetController;
 }
 
 void AEntombedHUD::InitializeOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS)

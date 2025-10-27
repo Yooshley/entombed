@@ -40,7 +40,10 @@ class ENTOMBED_API UEntombedWidgetController : public UObject
 public:
 	UFUNCTION(BlueprintCallable, Category = "WidgetController")
 	void SetWidgetControllerParameters(FWidgetControllerParameters Parameters);
+	
+	UFUNCTION(BlueprintCallable, Category = "WidgetController")
 	virtual void BroadcastInitialValues();
+	
 	virtual void BindCallbacksToDependencies();
 	
 protected:
