@@ -5,20 +5,28 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "entombed/entombed.h"
 
 
 AEntombedBaseCharacter::AEntombedBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	// setup item slots
-	MainHandItem = CreateDefaultSubobject<USkeletalMeshComponent>("MainHandItem");
-	MainHandItem->SetupAttachment(GetMesh(), FName("MainHandSocket"));
-	MainHandItem->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+	GetMesh()->SetGenerateOverlapEvents(true);
 
-	OffHandItem = CreateDefaultSubobject<USkeletalMeshComponent>("OffHandItem");
-	OffHandItem->SetupAttachment(GetMesh(), FName("OffHandSocket"));
-	OffHandItem->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	// setup item slots
+	MainHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("MainHandEquipment");
+	MainHandEquipment->SetupAttachment(GetMesh(), FName("MainHandSocket"));
+	MainHandEquipment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	OffHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("OffHandEquipment");
+	OffHandEquipment->SetupAttachment(GetMesh(), FName("OffHandSocket"));
+	OffHandEquipment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// setup equipment slots
 	HeadEquipment     = CreateEquipmentSlot(TEXT("HeadEquipment"));
@@ -49,6 +57,18 @@ void AEntombedBaseCharacter::BeginPlay()
 
 void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 {
+}
+
+FVector AEntombedBaseCharacter::GetMainHandSocketLocation()
+{
+	check(MainHandEquipment);
+	return MainHandEquipment->GetSocketLocation(FName(MainHandTipSocketName));
+}
+
+FVector AEntombedBaseCharacter::GetOffHandSocketLocation()
+{
+	check(OffHandEquipment);
+	return OffHandEquipment->GetSocketLocation(FName(OffHandTipSocketName));
 }
 
 void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const

@@ -60,6 +60,7 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 	if (Data.EvaluatedData.Attribute == GetLifeAttribute())
 	{
 		SetLife(FMath::Clamp(GetLife(), 0.f, GetTotalLife()));
+		UE_LOG(LogTemp, Warning, TEXT("Life Changed on %s, New Life: %f"), *Properties.TargetAvatarActor->GetName(), GetLife());
 	}
 
 	if (Data.EvaluatedData.Attribute == GetFormAttribute())
@@ -162,12 +163,12 @@ void UEntombedAttributeSet::SetEffectProperties(const FGameplayEffectModCallback
 {
 	
 	Properties.EffectContextHandle = Data.EffectSpec.GetContext();
-	Properties.SourceAbilitySystemComponent = Properties.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
+	Properties.SourceASC = Properties.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
-	if (IsValid(Properties.SourceAbilitySystemComponent))
+	if (IsValid(Properties.SourceASC) && Properties.SourceASC->AbilityActorInfo.IsValid() && Properties.SourceASC->AbilityActorInfo->AvatarActor.IsValid())
 	{
-		Properties.SourceAvatarActor = Properties.SourceAbilitySystemComponent->GetAvatarActor();
-		Properties.SourceController = Properties.SourceAbilitySystemComponent->AbilityActorInfo->PlayerController.Get();
+		Properties.SourceAvatarActor = Properties.SourceASC->GetAvatarActor();
+		Properties.SourceController = Properties.SourceASC->AbilityActorInfo->PlayerController.Get();
 		if (Properties.SourceController == nullptr && Properties.SourceAvatarActor != nullptr)
 		{
 			if (APawn* Pawn = Cast<APawn>(Properties.SourceAvatarActor))
@@ -185,7 +186,7 @@ void UEntombedAttributeSet::SetEffectProperties(const FGameplayEffectModCallback
 	{
 		Properties.TargetAvatarActor = Data.Target.GetAvatarActor();
 		Properties.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
-		Properties.TargetCharacter = Cast<ACharacter>(Properties.TargetController->GetPawn());
+		Properties.TargetCharacter = Cast<ACharacter>(Properties.TargetAvatarActor);
 		Properties.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Properties.TargetAvatarActor);
 	}
 }

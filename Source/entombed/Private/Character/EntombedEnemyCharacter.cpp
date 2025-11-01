@@ -4,8 +4,11 @@
 #include "Character/EntombedEnemyCharacter.h"
 
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
+#include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
+#include "UI/Widget/EntombedUserWidget.h"
 
 AEntombedEnemyCharacter::AEntombedEnemyCharacter()
 {
@@ -16,6 +19,9 @@ AEntombedEnemyCharacter::AEntombedEnemyCharacter()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<UEntombedAttributeSet>("AttributeSet");
+
+	LifeBar = CreateDefaultSubobject<UWidgetComponent>("LifeBar");
+	LifeBar->SetupAttachment(GetRootComponent());
 }
 
 void AEntombedEnemyCharacter::HighlightActor()
@@ -26,10 +32,10 @@ void AEntombedEnemyCharacter::HighlightActor()
 		Part->SetRenderCustomDepth(true);
 		Part->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	}
-	MainHandItem->SetRenderCustomDepth(true);
-	MainHandItem->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
-	OffHandItem->SetRenderCustomDepth(true);
-	OffHandItem->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	MainHandEquipment->SetRenderCustomDepth(true);
+	MainHandEquipment->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+	OffHandEquipment->SetRenderCustomDepth(true);
+	OffHandEquipment->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	HeadAttachment->SetRenderCustomDepth(true);
 	HeadAttachment->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
@@ -41,8 +47,8 @@ void AEntombedEnemyCharacter::UnHighlightActor()
 		if (!Part) continue;
 		Part->SetRenderCustomDepth(false);
 	}
-	MainHandItem->SetRenderCustomDepth(false);
-	OffHandItem->SetRenderCustomDepth(false);
+	MainHandEquipment->SetRenderCustomDepth(false);
+	OffHandEquipment->SetRenderCustomDepth(false);
 	HeadAttachment->SetRenderCustomDepth(false);
 }
 
@@ -56,6 +62,30 @@ void AEntombedEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	InitializeAbilityActorInfo();
+
+	if (UEntombedUserWidget* EntombedUserWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
+	{
+		EntombedUserWidget->SetWidgetController(this);
+	}
+
+	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetLifeAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnLifeChanged.Broadcast(Data.NewValue);
+			}
+		);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalLifeAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnTotalLifeChanged.Broadcast(Data.NewValue);
+			}
+		);
+		
+		OnLifeChanged.Broadcast(EntombedAS->GetLife());
+		OnTotalLifeChanged.Broadcast(EntombedAS->GetTotalLife());
+	}
 }
 
 void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
@@ -64,4 +94,11 @@ void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 	
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+
+	InitializeDefaultAttributes();
+}
+
+void AEntombedEnemyCharacter::InitializeDefaultAttributes() const
+{
+	UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(this, Profession, Level, AbilitySystemComponent);
 }

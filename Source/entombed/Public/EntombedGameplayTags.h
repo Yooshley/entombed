@@ -50,6 +50,11 @@ public:
 	FGameplayTag Input_Ability_Second;
 	FGameplayTag Input_Ability_Third;
 	FGameplayTag Input_Ability_Fourth;
+
+	/**
+	*EVENT TAGS
+	**/
+	FGameplayTag Event_Montage_Spell_Launch;
 	
 private:
 	static FEntombedGameplayTags GameplayTags;

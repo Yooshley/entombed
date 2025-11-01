@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystem/Data/ProfessionInfo.h"
 #include "Character/EntombedBaseCharacter.h"
 #include "Interaction/TargetInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "EntombedEnemyCharacter.generated.h"
 
+class UWidgetComponent;
 /**
  * 
  */
@@ -27,10 +30,23 @@ public:
 	virtual int32 GetCharacterLevel() override;
 	/** CombatInterface end */
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnLifeChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnTotalLifeChanged;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitializeAbilityActorInfo() override;
+	virtual  void InitializeDefaultAttributes() const override;
 	
-	UPROPERTY(VisibleAnywhere, Category="CharacterClassDefaults")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ProfessionDefaults")
 	int32 Level = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ProfessionDefaults")
+	EProfession Profession = EProfession::Crusader;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> LifeBar;
 };

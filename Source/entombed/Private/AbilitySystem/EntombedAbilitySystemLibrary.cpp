@@ -3,6 +3,9 @@
 
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/Data/ProfessionInfo.h"
+#include "Game/EntombedGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerState.h"
 #include "UI/HUD/EntombedHUD.h"
@@ -39,4 +42,30 @@ UAttributeMenuWidgetController* UEntombedAbilitySystemLibrary::GetAttributeMenuW
 		}
 	}
 	return nullptr;
+}
+
+void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, EProfession Profession, float Level, UAbilitySystemComponent* ASC)
+{
+	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (EntombedGameMode == nullptr) return;
+	
+	AActor* AvatarActor = ASC->GetAvatarActor();
+	
+	UProfessionInfo* ProfInfo = EntombedGameMode->ProfessionInformation;
+	FProfessionDefaultInfo ProfDefaultInfo = ProfInfo->GetProfessionDefaultInfo(Profession);
+	
+	FGameplayEffectContextHandle CoreAttributesContextHandle = ASC->MakeEffectContext();
+	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
+	FGameplayEffectSpecHandle CoreAttributesSpecHandle = ASC->MakeOutgoingSpec(ProfDefaultInfo.CoreAttributesEffect, Level, CoreAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*CoreAttributesSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle DerivedAttributesContextHandle = ASC->MakeEffectContext();
+	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
+	FGameplayEffectSpecHandle DerivedAttributesSpecHandle = ASC->MakeOutgoingSpec(ProfInfo->DerivedAttributesEffect, Level, DerivedAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*DerivedAttributesSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle ResourceAttributesContextHandle = ASC->MakeEffectContext();
+	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
+	FGameplayEffectSpecHandle ResourceAttributesSpecHandle = ASC->MakeOutgoingSpec(ProfInfo->ResourceAttributesEffect, Level, ResourceAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());
 }

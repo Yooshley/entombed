@@ -1,0 +1,50 @@
+// Copyright Yooshley
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Engine/DataAsset.h"
+#include "ProfessionInfo.generated.h"
+
+class UGameplayEffect;
+
+UENUM(BlueprintType)
+enum class EProfession : uint8
+{
+	Crusader,
+	Saboteur,
+	Sorcerer,
+	Marauder,
+	Mechanist,
+	Cultist
+};
+
+USTRUCT(BlueprintType)
+struct FProfessionDefaultInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category="Profession Defaults")
+	TSubclassOf<UGameplayEffect> CoreAttributesEffect;
+};
+
+/**
+ * 
+ */
+UCLASS()
+class ENTOMBED_API UProfessionInfo : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, Category="Profession Defaults")
+	TMap<EProfession, FProfessionDefaultInfo> ProfessionInformation;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Common Profession Defaults")
+	TSubclassOf<UGameplayEffect> DerivedAttributesEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Common Profession Defaults")
+	TSubclassOf<UGameplayEffect> ResourceAttributesEffect;
+
+	FProfessionDefaultInfo GetProfessionDefaultInfo(EProfession Profession);
+};

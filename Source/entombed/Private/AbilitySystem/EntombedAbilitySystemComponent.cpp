@@ -8,7 +8,7 @@
 
 void UEntombedAbilitySystemComponent::AbilityActorInfoSet()
 {
-	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UEntombedAbilitySystemComponent::EffectApplied);
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UEntombedAbilitySystemComponent::ClientEffectApplied);
 }
 
 void UEntombedAbilitySystemComponent::AddDefaultAbilities(const TArray<TSubclassOf<UGameplayAbility>>& DefaultAbilities)
@@ -56,7 +56,7 @@ void UEntombedAbilitySystemComponent::AbilityInputReleased(const FGameplayTag& I
 	}
 }
 
-void UEntombedAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
+void UEntombedAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
                                                     const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle ActiveEffectHandle)
 {
 	FGameplayTagContainer TagContainer;

@@ -5,7 +5,7 @@
 
 #include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
-#include "AbilitySystem/Data/AttributeInfoDataAsset.h"
+#include "AbilitySystem/Data/AttributeInfo.h"
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {

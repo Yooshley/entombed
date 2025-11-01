@@ -37,32 +37,41 @@ protected:
 	UPROPERTY()
 	TArray<TObjectPtr<USkeletalMeshComponent>> EquipmentSlots;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> HeadEquipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> TorsoEquipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> ArmLeftEquipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> ArmRightEquipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> LegLeftEquipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Body")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> LegRightEquipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment|Attachment")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Attachment")
 	TObjectPtr<USkeletalMeshComponent> HeadAttachment;
 
-	UPROPERTY(EditAnywhere, Category="Equipment|Item")
-	TObjectPtr<USkeletalMeshComponent> MainHandItem;
+	UPROPERTY(EditAnywhere, Category="Equipment")
+	TObjectPtr<USkeletalMeshComponent> MainHandEquipment;
 
-	UPROPERTY(EditAnywhere, Category="Equipment|Item")
-	TObjectPtr<USkeletalMeshComponent> OffHandItem;
+	UPROPERTY(EditAnywhere, Category="Equipment")
+	TObjectPtr<USkeletalMeshComponent> OffHandEquipment;
+
+	UPROPERTY(EditAnywhere, Category="Equipment")
+	FName MainHandTipSocketName;
+
+	UPROPERTY(EditAnywhere, Category="Equipment")
+	FName OffHandTipSocketName;
+
+	virtual FVector GetMainHandSocketLocation() override;
+	virtual FVector GetOffHandSocketLocation() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultCoreAttributes;
@@ -74,7 +83,7 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultResourceAttributes;
 
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
-	void InitializeDefaultAttributes() const;
+	virtual void InitializeDefaultAttributes() const;
 
 	void AddDefaultAbilities();
 

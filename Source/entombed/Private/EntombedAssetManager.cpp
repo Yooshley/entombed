@@ -3,6 +3,7 @@
 
 #include "EntombedAssetManager.h"
 #include "EntombedGameplayTags.h"
+#include "AbilitySystemGlobals.h"
 
 UEntombedAssetManager& UEntombedAssetManager::Get()
 {
@@ -17,4 +18,5 @@ void UEntombedAssetManager::StartInitialLoading()
 	Super::StartInitialLoading();
 
 	FEntombedGameplayTags::InitializeNativeGameplayTags();
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }

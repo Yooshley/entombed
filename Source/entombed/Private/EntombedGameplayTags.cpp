@@ -42,4 +42,9 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Input_Ability_Second = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Second"));
 	GameplayTags.Input_Ability_Third = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Third"));
 	GameplayTags.Input_Ability_Fourth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Fourth"));
+
+	/**
+	*EVENT TAGS
+	**/
+	GameplayTags.Event_Montage_Spell_Launch = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Spell.Launch"));
 }

@@ -25,7 +25,7 @@ struct FEffectProperties
 	FGameplayEffectContextHandle EffectContextHandle;
 
 	UPROPERTY()
-	UAbilitySystemComponent* SourceAbilitySystemComponent = nullptr;
+	UAbilitySystemComponent* SourceASC = nullptr;
 	
 	UPROPERTY()
 	AActor* SourceAvatarActor = nullptr;
