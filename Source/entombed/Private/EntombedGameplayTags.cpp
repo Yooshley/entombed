@@ -26,12 +26,15 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attribute_Resource_TotalForm = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.TotalForm"), FString("Total Form."));
 	GameplayTags.Attribute_Resource_TotalForm = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.TotalMind"), FString("Total Mind."));
 
-	GameplayTags.Attribute_Resource_LifeRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.LifeRegeneration"), FString("How quickly Life regenerates."));
-	GameplayTags.Attribute_Resource_FormRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.FormRegeneration"), FString("How quickly Form regenerates."));
-	GameplayTags.Attribute_Resource_MindRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.MindRegeneration"), FString("How quickly Mind regenerates."));
+	GameplayTags.Attribute_Resource_LifeRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.LifeRegeneration"));
+	GameplayTags.Attribute_Resource_FormRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.FormRegeneration"));
+	GameplayTags.Attribute_Resource_MindRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.MindRegeneration"));
 
-	GameplayTags.Attribute_Derived_CriticalChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.CriticalChance"), FString("Chance to do critical damage."));
-	GameplayTags.Attribute_Derived_EvasionChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.EvasionChance"), FString("Chance to do evade all damage."));
+	GameplayTags.Attribute_Derived_CriticalChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.CriticalChance"));
+	GameplayTags.Attribute_Derived_CriticalMultiplier = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.CriticalMultiplier"));
+	GameplayTags.Attribute_Derived_EvadeChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.EvadeChance"));
+	GameplayTags.Attribute_Derived_BlockChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.BlockChance"));
+	GameplayTags.Attribute_Derived_ArmorRating = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.ArmorRating"));
 
 	/**
 	*INPUT TAGS
@@ -42,6 +45,36 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Input_Ability_Second = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Second"));
 	GameplayTags.Input_Ability_Third = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Third"));
 	GameplayTags.Input_Ability_Fourth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Fourth"));
+
+	/**
+	*DAMAGE TAGS
+	**/
+	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"));
+	
+	GameplayTags.Damage_Slash = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Slash"));
+	GameplayTags.Damage_Pierce = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Pierce"));
+	GameplayTags.Damage_Blunt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Blunt"));
+
+	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Slash);
+	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Pierce);
+	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Blunt);
+	
+	GameplayTags.Damage_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Burn"));
+	GameplayTags.Damage_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Shock"));
+	GameplayTags.Damage_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Freeze"));
+	
+	GameplayTags.Resistance_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Burn"));
+	GameplayTags.Resistance_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Shock"));
+	GameplayTags.Resistance_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Freeze"));
+	
+	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Burn, GameplayTags.Resistance_Burn);
+	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Shock, GameplayTags.Resistance_Shock);
+	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Freeze, GameplayTags.Resistance_Freeze);
+
+	/**
+	*EFFECT TAGS
+	**/
+	GameplayTags.Effect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"));
 
 	/**
 	*EVENT TAGS

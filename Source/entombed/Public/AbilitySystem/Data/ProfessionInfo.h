@@ -6,6 +6,7 @@
 #include "Engine/DataAsset.h"
 #include "ProfessionInfo.generated.h"
 
+class UGameplayAbility;
 class UGameplayEffect;
 
 UENUM(BlueprintType)
@@ -40,11 +41,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Profession Defaults")
 	TMap<EProfession, FProfessionDefaultInfo> ProfessionInformation;
 	
-	UPROPERTY(EditDefaultsOnly, Category="Common Profession Defaults")
+	UPROPERTY(EditDefaultsOnly, Category="Shared Profession Defaults")
 	TSubclassOf<UGameplayEffect> DerivedAttributesEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category="Common Profession Defaults")
+	UPROPERTY(EditDefaultsOnly, Category="Shared Profession Defaults")
 	TSubclassOf<UGameplayEffect> ResourceAttributesEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category="Shared Profession Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> SharedAbilities;
+
+	UPROPERTY(EditDefaultsOnly, Category="Shared Profession Defaults")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
 
 	FProfessionDefaultInfo GetProfessionDefaultInfo(EProfession Profession);
 };

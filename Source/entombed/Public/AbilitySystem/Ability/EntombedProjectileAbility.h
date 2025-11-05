@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EntombedDamageGameplayAbility.h"
 #include "AbilitySystem/Ability/EntombedGameplayAbility.h"
 #include "EntombedProjectileAbility.generated.h"
 
@@ -11,7 +12,7 @@ class AEntombedProjectile;
  * 
  */
 UCLASS()
-class ENTOMBED_API UEntombedProjectileAbility : public UEntombedGameplayAbility
+class ENTOMBED_API UEntombedProjectileAbility : public UEntombedDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -23,7 +24,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly);
 	TSubclassOf<AEntombedProjectile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };

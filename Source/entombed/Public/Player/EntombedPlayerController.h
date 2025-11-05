@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EntombedPlayerController.generated.h"
 
+class UDamageTextComponent;
 class USplineComponent;
 class UEntombedAbilitySystemComponent;
 class UEntombedInputDataAsset;
@@ -26,6 +27,9 @@ class ENTOMBED_API AEntombedPlayerController : public APlayerController
 public:
 	AEntombedPlayerController();
 	virtual void PlayerTick(float DeltaTime) override;
+
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -79,4 +83,7 @@ private:
 	TObjectPtr<USplineComponent> Spline;
 
 	void AutoRun();
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };

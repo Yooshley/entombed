@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "EntombedGameplayTags.h"
 #include "Actor/EntombedProjectile.h"
 #include "Interaction/CombatInterface.h"
 
@@ -42,9 +43,27 @@ bool UEntombedProjectileAbility::SpawnProjectile(const FVector& ProjectileTarget
 		);
 
 		const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
-		Projectile->DamageEffectSpecHandle = SpecHandle;
+		FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+		EffectContextHandle.SetAbility(this);
+		EffectContextHandle.AddSourceObject(Projectile);
+		TArray<TWeakObjectPtr<AActor>> ProjectileActors;
+		ProjectileActors.Add(Projectile);
+		EffectContextHandle.AddActors(ProjectileActors);
+		FHitResult HitResult;
+		HitResult.Location = ProjectileTargetLocation;
+		EffectContextHandle.AddHitResult(HitResult);
 		
+		const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(),EffectContextHandle);
+
+		FEntombedGameplayTags GameplayTags = FEntombedGameplayTags::Get();
+
+		for(auto& Pair : DamageTypes)
+		{
+			const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
+		}
+
+		Projectile->DamageEffectSpecHandle = SpecHandle;
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 	return false;

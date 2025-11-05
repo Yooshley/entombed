@@ -1,10 +1,10 @@
 // Copyright Yooshley
 
 
-#include "AbilitySystem/ModMagCalc/MMC_MaxLife.h"
+#include "AbilitySystem/CustomCalculation/MagnitudeModifierCalculation/MMC_MaxLife.h"
 
 #include "AbilitySystem/EntombedAttributeSet.h"
-#include "Interaction/CombatInterface.h"
+//#include "Interaction/CombatInterface.h"
 
 UMMC_MaxLife::UMMC_MaxLife()
 {

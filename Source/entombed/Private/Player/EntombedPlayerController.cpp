@@ -10,8 +10,10 @@
 #include "NavigationSystem.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/Character.h"
 #include "Input/EntombedInputComponent.h"
 #include "Interaction/TargetInterface.h"
+#include "UI/Widget/DamageTextComponent.h"
 
 AEntombedPlayerController::AEntombedPlayerController()
 {
@@ -27,6 +29,18 @@ void AEntombedPlayerController::PlayerTick(float DeltaTime)
 	CursorTrace();
 
 	AutoRun();
+}
+
+void AEntombedPlayerController::ShowDamageNumber_Implementation(float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
+{
+	if (IsValid(TargetCharacter) && DamageTextComponentClass && IsLocalController())
+	{
+		UDamageTextComponent* DamageText = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DamageText->SetDamageText(Damage, bBlockedHit, bCriticalHit);
+	}
 }
 
 void AEntombedPlayerController::BeginPlay()

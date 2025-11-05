@@ -7,22 +7,16 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
+#include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
+#include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/EntombedPlayerController.h"
 
 UEntombedAttributeSet::UEntombedAttributeSet()
 {
 	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
-	
-	// FAttributeSignature VigorDelegate;
-	// VigorDelegate.BindStatic(GetVigorAttribute);
-	// TagsToAttributes.Add(GameplayTags.Attribute_Core_Vigor, VigorDelegate);
-	//
-	// FAttributeSignature InstinctDelegate;
-	// VigorDelegate.BindStatic(GetInstinctAttribute);
-	// TagsToAttributes.Add(GameplayTags.Attribute_Core_Instinct, InstinctDelegate);
-	//
-	// FunctionPointer = GetVigorAttribute();
 }
 
 void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -46,8 +40,18 @@ void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, LifeRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FormRegeneration, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MindRegeneration, COND_None, REPNOTIFY_Always);
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, CriticalChance, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, EvasionChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, CriticalMultiplier, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, EvadeChance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, ArmorRating, COND_None, REPNOTIFY_Always);
+	
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, BurnResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, ShockResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FreezeResistance, COND_None, REPNOTIFY_Always);
 }
 
 void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
@@ -71,6 +75,36 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 	if (Data.EvaluatedData.Attribute == GetMindAttribute())
 	{
 		SetMind(FMath::Clamp(GetMind(), 0.f, GetTotalMind()));
+	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
+	{
+		const float LocalIncomingDamage = GetIncomingDamage();
+		SetIncomingDamage(0);
+		if (LocalIncomingDamage >= 0.f)
+		{
+			const float NewLife = GetLife() - LocalIncomingDamage;
+			SetLife(FMath::Clamp(NewLife, 0.f, GetTotalLife()));
+
+			const bool bFatal = NewLife <= 0.f;
+			if (bFatal)
+			{
+				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetAvatarActor);
+				if (CombatInterface)
+				{
+					CombatInterface->Death();
+				}
+			}
+			else
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_HitReact);
+				Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+			}
+			const bool bBlocked = UEntombedAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);
+			const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
+			ShowFloatingText(Properties, LocalIncomingDamage, bBlocked, bCritical);
+		}
 	}
 }
 
@@ -154,9 +188,39 @@ void UEntombedAttributeSet::OnRep_CriticalChance(const FGameplayAttributeData& O
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, CriticalChance, OldCriticalChance);
 }
 
-void UEntombedAttributeSet::OnRep_EvasionChance(const FGameplayAttributeData& OldEvasionChance) const
+void UEntombedAttributeSet::OnRep_CriticalMultiplier(const FGameplayAttributeData& OldCriticalMultiplier) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, EvasionChance, OldEvasionChance);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, CriticalMultiplier, OldCriticalMultiplier);
+}
+
+void UEntombedAttributeSet::OnRep_EvadeChance(const FGameplayAttributeData& OldEvadeChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, EvadeChance, OldEvadeChance);
+}
+
+void UEntombedAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, BlockChance, OldBlockChance);
+}
+
+void UEntombedAttributeSet::OnRep_ArmorRating(const FGameplayAttributeData& OldArmorRating) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, ArmorRating, OldArmorRating);
+}
+
+void UEntombedAttributeSet::OnRep_BurnResistance(const FGameplayAttributeData& OldBurnResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, BurnResistance, OldBurnResistance);
+}
+
+void UEntombedAttributeSet::OnRep_ShockResistance(const FGameplayAttributeData& OldShockResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, ShockResistance, OldShockResistance);
+}
+
+void UEntombedAttributeSet::OnRep_FreezeResistance(const FGameplayAttributeData& OldFreezeResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, FreezeResistance, OldFreezeResistance);
 }
 
 void UEntombedAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const
@@ -188,5 +252,16 @@ void UEntombedAttributeSet::SetEffectProperties(const FGameplayEffectModCallback
 		Properties.TargetController = Data.Target.AbilityActorInfo->PlayerController.Get();
 		Properties.TargetCharacter = Cast<ACharacter>(Properties.TargetAvatarActor);
 		Properties.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Properties.TargetAvatarActor);
+	}
+}
+
+const void UEntombedAttributeSet::ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit)
+{
+	if (Properties.SourceCharacter != Properties.TargetCharacter)
+	{
+		if (AEntombedPlayerController* EntombedPC = Cast<AEntombedPlayerController>(Properties.SourceCharacter->GetController()))
+		{
+			EntombedPC->ShowDamageNumber(Damage, Properties.TargetCharacter, bBlockedHit, bCriticalHit);
+		}
 	}
 }

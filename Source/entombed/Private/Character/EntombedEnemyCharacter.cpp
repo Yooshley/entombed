@@ -3,11 +3,13 @@
 
 #include "Character/EntombedEnemyCharacter.h"
 
+#include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/EntombedUserWidget.h"
 
 AEntombedEnemyCharacter::AEntombedEnemyCharacter()
@@ -57,11 +59,29 @@ int32 AEntombedEnemyCharacter::GetCharacterLevel()
 	return Level;
 }
 
+void AEntombedEnemyCharacter::Death()
+{
+	SetLifeSpan(LifeSpanPostDeath);
+	Super::Death();
+}
+
+void AEntombedEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+}
+
 void AEntombedEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	
 	InitializeAbilityActorInfo();
+
+	if (HasAuthority())
+	{
+		UEntombedAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	}
 
 	if (UEntombedUserWidget* EntombedUserWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
 	{
@@ -83,6 +103,10 @@ void AEntombedEnemyCharacter::BeginPlay()
 			}
 		);
 		
+		AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Effect_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this, &AEntombedEnemyCharacter::HitReactTagChanged
+		);
+		
 		OnLifeChanged.Broadcast(EntombedAS->GetLife());
 		OnTotalLifeChanged.Broadcast(EntombedAS->GetTotalLife());
 	}
@@ -95,7 +119,10 @@ void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	InitializeDefaultAttributes();
+	if (HasAuthority())
+	{
+		InitializeDefaultAttributes();
+	}
 }
 
 void AEntombedEnemyCharacter::InitializeDefaultAttributes() const

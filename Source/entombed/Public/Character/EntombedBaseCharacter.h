@@ -23,6 +23,11 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual void Death() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
 protected:
 	virtual void BeginPlay() override;
 
@@ -87,6 +92,15 @@ protected:
 
 	void AddDefaultAbilities();
 
+	/* Dissolve Effect */
+	void Dissolve();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeline(const TArray<UMaterialInstanceDynamic*>& DynamicMaterialInstances);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
 private:
 	UFUNCTION()
 	USkeletalMeshComponent* CreateEquipmentSlot(const FName& Name);
@@ -96,4 +110,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
+
+	UPROPERTY(EditAnywhere, Category="Abilities")
+	TObjectPtr<UAnimMontage> HitReactMontage;
 };

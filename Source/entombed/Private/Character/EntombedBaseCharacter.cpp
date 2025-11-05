@@ -50,6 +50,36 @@ UAbilitySystemComponent* AEntombedBaseCharacter::GetAbilitySystemComponent() con
 	return AbilitySystemComponent;
 }
 
+UAnimMontage* AEntombedBaseCharacter::GetHitReactMontage_Implementation()
+{
+	return HitReactMontage;
+}
+
+void AEntombedBaseCharacter::Death()
+{
+	MainHandEquipment->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	OffHandEquipment->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath_Implementation();
+}
+
+void AEntombedBaseCharacter::MulticastHandleDeath_Implementation()
+{
+	MainHandEquipment->SetSimulatePhysics(true);
+	MainHandEquipment->SetEnableGravity(true);
+	MainHandEquipment->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	OffHandEquipment->SetSimulatePhysics(true);
+	OffHandEquipment->SetEnableGravity(true);
+	OffHandEquipment->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Dissolve();
+}
+
 void AEntombedBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -94,6 +124,55 @@ void AEntombedBaseCharacter::AddDefaultAbilities()
 	if (!HasAuthority()) return;
 
 	ASC->AddDefaultAbilities(DefaultAbilities);
+}
+
+void AEntombedBaseCharacter::Dissolve()
+{
+	if (!IsValid(DissolveMaterialInstance)) return;
+
+	//TODO: nested for loop + dynamic instance for each equipment slot for each dead character might not be performance friendly->figure out better alternative
+	TArray<UMaterialInstanceDynamic*> DynamicMaterialInstances;
+    for (const TObjectPtr<USkeletalMeshComponent> Equipment : EquipmentSlots)
+    {
+    	if (!IsValid(Equipment)) continue;
+    	
+    	const int32 MaterialCount = Equipment->GetNumMaterials();
+    	if (MaterialCount <= 0) continue;
+
+    	UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+    	for (int32 i = 0; i < MaterialCount; ++i)
+    	{
+    		Equipment->SetMaterial(i, DynamicMatInst);
+    	}
+    	DynamicMaterialInstances.AddUnique(DynamicMatInst);
+    }
+	if (IsValid(MainHandEquipment))
+	{
+		const int32 MaterialCount = MainHandEquipment->GetNumMaterials();
+		if (MaterialCount > 0)
+		{
+			UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+			for (int32 i = 0; i < MaterialCount; ++i)
+			{
+				MainHandEquipment->SetMaterial(i, DynamicMatInst);
+			}
+			DynamicMaterialInstances.AddUnique(DynamicMatInst);
+		}
+	}
+	if (IsValid(OffHandEquipment))
+	{
+		const int32 MaterialCount = OffHandEquipment->GetNumMaterials();
+		if (MaterialCount > 0)
+		{
+			UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+			for (int32 i = 0; i < MaterialCount; ++i)
+			{
+				OffHandEquipment->SetMaterial(i, DynamicMatInst);
+			}
+			DynamicMaterialInstances.AddUnique(DynamicMatInst);
+		}
+	}
+    StartDissolveTimeline(DynamicMaterialInstances);
 }
 
 USkeletalMeshComponent* AEntombedBaseCharacter::CreateEquipmentSlot(const FName& Name)

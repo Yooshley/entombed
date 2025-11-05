@@ -39,7 +39,10 @@ public:
 	FGameplayTag Attribute_Resource_MindRegeneration;
 	
 	FGameplayTag Attribute_Derived_CriticalChance;
-	FGameplayTag Attribute_Derived_EvasionChance;
+	FGameplayTag Attribute_Derived_CriticalMultiplier;
+	FGameplayTag Attribute_Derived_EvadeChance;
+	FGameplayTag Attribute_Derived_BlockChance;
+	FGameplayTag Attribute_Derived_ArmorRating;
 
 	/**
 	*INPUT TAGS
@@ -50,6 +53,33 @@ public:
 	FGameplayTag Input_Ability_Second;
 	FGameplayTag Input_Ability_Third;
 	FGameplayTag Input_Ability_Fourth;
+
+	/**
+	*DAMAGE TAGS
+	**/
+	
+	FGameplayTag Damage;
+
+	FGameplayTag Damage_Slash;
+	FGameplayTag Damage_Pierce;
+	FGameplayTag Damage_Blunt;
+
+	TArray<FGameplayTag> PhysicalDamageTypes;
+	
+	FGameplayTag Damage_Burn;
+	FGameplayTag Damage_Shock;
+	FGameplayTag Damage_Freeze;
+
+	FGameplayTag Resistance_Burn;
+	FGameplayTag Resistance_Shock;
+	FGameplayTag Resistance_Freeze;
+
+	TMap<FGameplayTag, FGameplayTag> ElementalDamageTypesToResistances;
+
+	/**
+	*EFFECT TAGS
+	**/
+	FGameplayTag Effect_HitReact;
 
 	/**
 	*EVENT TAGS
