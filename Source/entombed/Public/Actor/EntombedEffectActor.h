@@ -36,7 +36,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	bool bDestroyOnEffectRemoval = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	bool bDestroyOnEffectApplication = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	bool bApplyEffectToEnemy = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
 	float ActorLevel = 1.f;

@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "EntombedGameModeBase.generated.h"
 
-class UProfessionInfo;
+class UArchetypeInfo;
 
 /**
  * 
@@ -17,6 +17,6 @@ class ENTOMBED_API AEntombedGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditDefaultsOnly, Category="Profession Defaults")
-	TObjectPtr<UProfessionInfo> ProfessionInformation;
+	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
+	TObjectPtr<UArchetypeInfo> ArchetypeInformation;
 };

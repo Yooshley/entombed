@@ -4,6 +4,7 @@
 #include "Character/EntombedBaseCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "entombed/entombed.h"
@@ -21,11 +22,11 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 
 	// setup item slots
 	MainHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("MainHandEquipment");
-	MainHandEquipment->SetupAttachment(GetMesh(), FName("MainHandSocket"));
+	MainHandEquipment->SetupAttachment(GetMesh(), MAIN_HAND_SOCKET_NAME);
 	MainHandEquipment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	OffHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("OffHandEquipment");
-	OffHandEquipment->SetupAttachment(GetMesh(), FName("OffHandSocket"));
+	OffHandEquipment->SetupAttachment(GetMesh(), OFF_HAND_SOCKET_NAME);
 	OffHandEquipment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// setup equipment slots
@@ -41,7 +42,7 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 
 	// setup attachment slots
 	HeadAttachment = CreateDefaultSubobject<USkeletalMeshComponent>("HeadAttachment");
-	HeadAttachment->SetupAttachment(GetMesh(), FName("HeadSocket"));
+	HeadAttachment->SetupAttachment(GetMesh(), HEAD_SOCKET_NAME);
 	HeadAttachment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -59,7 +60,7 @@ void AEntombedBaseCharacter::Death()
 {
 	MainHandEquipment->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	OffHandEquipment->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	MulticastHandleDeath_Implementation();
+	MulticastHandleDeath();
 }
 
 void AEntombedBaseCharacter::MulticastHandleDeath_Implementation()
@@ -77,6 +78,8 @@ void AEntombedBaseCharacter::MulticastHandleDeath_Implementation()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	bDead = true;
 	Dissolve();
 }
 
@@ -89,16 +92,46 @@ void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 {
 }
 
-FVector AEntombedBaseCharacter::GetMainHandSocketLocation()
+FVector AEntombedBaseCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	check(MainHandEquipment);
-	return MainHandEquipment->GetSocketLocation(FName(MainHandTipSocketName));
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_MainHand))
+	{
+		if (IsValid(MainHandEquipment))
+		{
+			return MainHandEquipment->GetSocketLocation(TIP_SOCKET_NAME);
+		}
+		return GetMesh()->GetSocketLocation(MAIN_HAND_SOCKET_NAME); //unarmed mainhand
+	}
+	if (MontageTag.MatchesTagExact(GameplayTags.Montage_OffHand))
+	{
+		if (IsValid(OffHandEquipment))
+		{
+			return OffHandEquipment->GetSocketLocation(TIP_SOCKET_NAME);
+		}
+		return GetMesh()->GetSocketLocation(FName(OFF_HAND_SOCKET_NAME)); //unarmed offhand
+	}
+	return FVector();
 }
 
-FVector AEntombedBaseCharacter::GetOffHandSocketLocation()
+bool AEntombedBaseCharacter::IsDead_Implementation() const
 {
-	check(OffHandEquipment);
-	return OffHandEquipment->GetSocketLocation(FName(OffHandTipSocketName));
+	return bDead;
+}
+
+AActor* AEntombedBaseCharacter::GetAvatarActor_Implementation()
+{
+	return this;
+}
+
+TArray<FTaggedMontage> AEntombedBaseCharacter::GetTaggedMontages_Implementation()
+{
+	return TaggedMontages;
+}
+
+UNiagaraSystem* AEntombedBaseCharacter::GetImpactEffect_Implementation()
+{
+	return ImpactEffect;
 }
 
 void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const
@@ -116,14 +149,6 @@ void AEntombedBaseCharacter::InitializeDefaultAttributes() const
 	ApplyEffectToSelf(DefaultCoreAttributes);
 	ApplyEffectToSelf(DefaultDerivedAttributes);
 	ApplyEffectToSelf(DefaultResourceAttributes);
-}
-
-void AEntombedBaseCharacter::AddDefaultAbilities()
-{
-	UEntombedAbilitySystemComponent* ASC = CastChecked<UEntombedAbilitySystemComponent>(GetAbilitySystemComponent());
-	if (!HasAuthority()) return;
-
-	ASC->AddDefaultAbilities(DefaultAbilities);
 }
 
 void AEntombedBaseCharacter::Dissolve()
@@ -168,6 +193,19 @@ void AEntombedBaseCharacter::Dissolve()
 			for (int32 i = 0; i < MaterialCount; ++i)
 			{
 				OffHandEquipment->SetMaterial(i, DynamicMatInst);
+			}
+			DynamicMaterialInstances.AddUnique(DynamicMatInst);
+		}
+	}
+	if (IsValid(HeadAttachment))
+	{
+		const int32 MaterialCount = HeadAttachment->GetNumMaterials();
+		if (MaterialCount > 0)
+		{
+			UMaterialInstanceDynamic* DynamicMatInst = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+			for (int32 i = 0; i < MaterialCount; ++i)
+			{
+				HeadAttachment->SetMaterial(i, DynamicMatInst);
 			}
 			DynamicMaterialInstances.AddUnique(DynamicMatInst);
 		}

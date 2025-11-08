@@ -52,7 +52,7 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	{
 		for (const FGameplayTag& Tag : AssetTags)
 		{
-			FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message.Potion"));
+			FGameplayTag MessageTag = FGameplayTag::RequestGameplayTag(FName("Message.Potion")); //TODO: gameplay tag magic string
 			if (Tag.MatchesTag(MessageTag))
 			{
 				FUIWidgetRow* Row = GetDataTableRowByTag<FUIWidgetRow>(MessageWidgetDataTable, Tag);

@@ -146,16 +146,20 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+			const FVector Start = ControlledPawn->GetActorLocation();
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, Start, CachedDestination))
 			{
 				Spline->ClearSplinePoints();
-				for (const FVector& PointLoc : NavPath->PathPoints)
+				const int32 NumPts = NavPath->PathPoints.Num();
+				if (NumPts > 0)
 				{
-					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					//DrawDebugSphere(GetWorld(), PointLoc, 8.f, 8, FColor::Green, false, 5.f);
+					for (const FVector& P : NavPath->PathPoints)
+					{
+						Spline->AddSplinePoint(P, ESplineCoordinateSpace::World);
+					}
+					CachedDestination = NavPath->PathPoints.Last();
+					bAutoRunning = true;
 				}
-				CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1]; //check last point on path
-				bAutoRunning = true;
 			}
 		}
 		FollowTime = 0.f;

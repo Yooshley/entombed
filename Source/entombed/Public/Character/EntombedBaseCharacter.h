@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "EntombedBaseCharacter.generated.h"
 
+enum class EEntombedArchetype : uint8;
+class UNiagaraSystem;
 class UGameplayAbility;
 class UGameplayEffect;
 class UAttributeSet;
@@ -23,11 +26,22 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	virtual void Death() override;
-
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
+
+	/* CombatInterface begin */
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual void Death() override;
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag ) override;
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatarActor_Implementation() override;
+	virtual TArray<FTaggedMontage> GetTaggedMontages_Implementation() override;
+	virtual UNiagaraSystem* GetImpactEffect_Implementation() override;
+	/* CombatInterface end */
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TArray<FTaggedMontage> TaggedMontages;
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -69,15 +83,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Equipment")
 	TObjectPtr<USkeletalMeshComponent> OffHandEquipment;
 
-	UPROPERTY(EditAnywhere, Category="Equipment")
-	FName MainHandTipSocketName;
-
-	UPROPERTY(EditAnywhere, Category="Equipment")
-	FName OffHandTipSocketName;
-
-	virtual FVector GetMainHandSocketLocation() override;
-	virtual FVector GetOffHandSocketLocation() override;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultCoreAttributes;
 
@@ -87,10 +92,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultResourceAttributes;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
+	EEntombedArchetype Archetype = EEntombedArchetype::Templar;
+
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
 	virtual void InitializeDefaultAttributes() const;
 
-	void AddDefaultAbilities();
+	bool bDead = false;
 
 	/* Dissolve Effect */
 	void Dissolve();
@@ -101,15 +109,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UNiagaraSystem* ImpactEffect;
+
 private:
 	UFUNCTION()
 	USkeletalMeshComponent* CreateEquipmentSlot(const FName& Name);
 	
 	UFUNCTION()
 	void SetupDefaultEquipment();
-
-	UPROPERTY(EditAnywhere, Category="Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 
 	UPROPERTY(EditAnywhere, Category="Abilities")
 	TObjectPtr<UAnimMontage> HitReactMontage;

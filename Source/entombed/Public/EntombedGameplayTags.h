@@ -60,8 +60,8 @@ public:
 	
 	FGameplayTag Damage;
 
-	FGameplayTag Damage_Slash;
-	FGameplayTag Damage_Pierce;
+	FGameplayTag Damage_Sharp;
+	FGameplayTag Damage_Point;
 	FGameplayTag Damage_Blunt;
 
 	TArray<FGameplayTag> PhysicalDamageTypes;
@@ -77,14 +77,27 @@ public:
 	TMap<FGameplayTag, FGameplayTag> ElementalDamageTypesToResistances;
 
 	/**
+	*ABILITY TAGS
+	**/
+	FGameplayTag Ability;
+
+	/**
 	*EFFECT TAGS
 	**/
 	FGameplayTag Effect_HitReact;
 
 	/**
-	*EVENT TAGS
+	*MONTAGE TAGS
 	**/
-	FGameplayTag Event_Montage_Spell_Launch;
+	FGameplayTag Montage_MainHand;
+	FGameplayTag Montage_OffHand;
+	FGameplayTag Montage_TwoHand;
+
+	/**
+	*MONTAGE EVENT TAGS
+	**/
+	FGameplayTag Event_Montage_Ability_Shoot;
+	FGameplayTag Event_Montage_Ability_Melee;
 	
 private:
 	static FEntombedGameplayTags GameplayTags;

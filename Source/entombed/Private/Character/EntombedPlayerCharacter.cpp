@@ -3,8 +3,10 @@
 
 #include "Character/EntombedPlayerCharacter.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/EntombedPlayerController.h"
 #include "Player/EntombedPlayerState.h"
@@ -28,7 +30,10 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 
 	// init ability actor info for the server
 	InitializeAbilityActorInfo();
-	AddDefaultAbilities();
+	if (HasAuthority())
+	{
+		UEntombedAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, Archetype);
+	}
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()

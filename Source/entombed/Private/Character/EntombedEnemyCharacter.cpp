@@ -7,6 +7,9 @@
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
+#include "AI/EntombedAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -20,10 +23,32 @@ AEntombedEnemyCharacter::AEntombedEnemyCharacter()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	BaseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed; //blueprint driven
+
 	AttributeSet = CreateDefaultSubobject<UEntombedAttributeSet>("AttributeSet");
 
 	LifeBar = CreateDefaultSubobject<UWidgetComponent>("LifeBar");
 	LifeBar->SetupAttachment(GetRootComponent());
+}
+
+void AEntombedEnemyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority()) return;
+	
+	EntombedAIController = Cast<AEntombedAIController>(NewController);
+	EntombedAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	EntombedAIController->RunBehaviorTree(BehaviorTree);
+	EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_HITREACTING_BOOL, false);
+	
+	UArchetypeInfo* ArchetypeInfo = UEntombedAbilitySystemLibrary::GetArchetypeInfo(EntombedAIController);
+	checkf(ArchetypeInfo, TEXT("Missing ArchetypeInfo for Archetype: [%s]"), *StaticEnum<EEntombedArchetype>()->GetValueAsString(Archetype));
+	EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_RANGED_BOOL, ArchetypeInfo->GetArchetypeDefaultInfo(Archetype).bIsRanged);
 }
 
 void AEntombedEnemyCharacter::HighlightActor()
@@ -62,13 +87,31 @@ int32 AEntombedEnemyCharacter::GetCharacterLevel()
 void AEntombedEnemyCharacter::Death()
 {
 	SetLifeSpan(LifeSpanPostDeath);
+	if (EntombedAIController)
+	{
+		EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_DEAD_BOOL, true);
+	}
 	Super::Death();
+}
+
+void AEntombedEnemyCharacter::SetTarget_Implementation(AActor* InTarget)
+{
+	TargetActor = InTarget;
+}
+
+AActor* AEntombedEnemyCharacter::GetTarget_Implementation() const
+{
+	return TargetActor;
 }
 
 void AEntombedEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	if (EntombedAIController && EntombedAIController->GetBlackboardComponent())
+	{
+		EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_HITREACTING_BOOL, bHitReacting);
+	}
 }
 
 void AEntombedEnemyCharacter::BeginPlay()
@@ -80,7 +123,7 @@ void AEntombedEnemyCharacter::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UEntombedAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+		UEntombedAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, Archetype);
 	}
 
 	if (UEntombedUserWidget* EntombedUserWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
@@ -127,5 +170,5 @@ void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 
 void AEntombedEnemyCharacter::InitializeDefaultAttributes() const
 {
-	UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(this, Profession, Level, AbilitySystemComponent);
+	UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(this, Archetype, Level, AbilitySystemComponent);
 }

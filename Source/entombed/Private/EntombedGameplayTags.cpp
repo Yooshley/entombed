@@ -51,12 +51,12 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	**/
 	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"));
 	
-	GameplayTags.Damage_Slash = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Slash"));
-	GameplayTags.Damage_Pierce = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Pierce"));
+	GameplayTags.Damage_Sharp = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Sharp"));
+	GameplayTags.Damage_Point = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Point"));
 	GameplayTags.Damage_Blunt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Blunt"));
 
-	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Slash);
-	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Pierce);
+	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Sharp);
+	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Point);
 	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Blunt);
 	
 	GameplayTags.Damage_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Burn"));
@@ -72,12 +72,26 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Freeze, GameplayTags.Resistance_Freeze);
 
 	/**
+	*ABILITY TAGS
+	**/
+	
+	GameplayTags.Ability = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability"));
+
+	/**
 	*EFFECT TAGS
 	**/
 	GameplayTags.Effect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"));
 
 	/**
-	*EVENT TAGS
+	*MONTAGE TAGS
 	**/
-	GameplayTags.Event_Montage_Spell_Launch = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Spell.Launch"));
+	GameplayTags.Montage_MainHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand"));
+	GameplayTags.Montage_OffHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.OffHand"));
+	GameplayTags.Montage_TwoHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.TwoHand"));
+
+	/**
+	*MONTAGE EVENT TAGS
+	**/
+	GameplayTags.Event_Montage_Ability_Shoot = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Ability.Shoot"));
+	GameplayTags.Event_Montage_Ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Ability.Melee"));
 }

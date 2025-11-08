@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "entombed/entombed.h"
 
 
 AEntombedEffectActor::AEntombedEffectActor()
@@ -21,6 +22,8 @@ void AEntombedEffectActor::BeginPlay()
 
 void AEntombedEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectClass)
 {
+	if (TargetActor->ActorHasTag(ENEMY_TAG) && !bApplyEffectToEnemy) return;
+	
 	UAbilitySystemComponent* TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor); // alternative to using IAbilitySystemInterface to get ASC
 	if (TargetAbilitySystemComponent == nullptr) return;
 
@@ -37,10 +40,17 @@ void AEntombedEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<
 	{
 		ActiveEffectHandles.Add(ActiveEffectHandle, TargetAbilitySystemComponent);
 	}
+
+	if (!bIsInfinite && bDestroyOnEffectApplication)
+	{
+		Destroy();
+	}
 }
 
 void AEntombedEffectActor::OnBeginOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag(ENEMY_TAG) && !bApplyEffectToEnemy) return;
+	
 	if (InstantApplicationPolicy == EEffectApplicationPolicy::ApplyOnBeginOverlap)
 	{
 		for (const TSubclassOf<UGameplayEffect> EffectClass : InstantGameplayEffectClasses)
@@ -68,6 +78,8 @@ void AEntombedEffectActor::OnBeginOverlap(AActor* TargetActor)
 
 void AEntombedEffectActor::OnEndOverlap(AActor* TargetActor)
 {
+	if (TargetActor->ActorHasTag(ENEMY_TAG) && !bApplyEffectToEnemy) return;
+	
 	if (InstantApplicationPolicy == EEffectApplicationPolicy::ApplyOnEndOverlap)
 	{
 		for (const TSubclassOf<UGameplayEffect> EffectClass : InstantGameplayEffectClasses)

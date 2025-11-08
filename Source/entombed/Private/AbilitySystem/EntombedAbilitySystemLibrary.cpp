@@ -6,12 +6,16 @@
 #include "AbilitySystemComponent.h"
 #include "EntombedAbilityTypes.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "AbilitySystem/Data/ProfessionInfo.h"
+#include "AbilitySystem/Ability/EntombedGameplayAbility.h"
+#include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "Game/EntombedGameModeBase.h"
+#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerState.h"
 #include "UI/HUD/EntombedHUD.h"
 #include "UI/WidgetController/EntombedWidgetController.h"
+
+class UEntombedGameplayAbility;
 
 UOverlayWidgetController* UEntombedAbilitySystemLibrary::GetOverlayWidgetController(const UObject* WorldContextObject)
 {
@@ -46,12 +50,12 @@ UAttributeMenuWidgetController* UEntombedAbilitySystemLibrary::GetAttributeMenuW
 	return nullptr;
 }
 
-void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, EProfession Profession, float Level, UAbilitySystemComponent* ASC)
+void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject, EEntombedArchetype Archetype, float Level, UAbilitySystemComponent* ASC)
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();
 	
-	UProfessionInfo* ProfInfo = GetProfessionInfo(WorldContextObject);
-	FProfessionDefaultInfo ProfDefaultInfo = ProfInfo->GetProfessionDefaultInfo(Profession);
+	UArchetypeInfo* ProfInfo = GetArchetypeInfo(WorldContextObject);
+	FEntombedArchetypeDefaultInfo ProfDefaultInfo = ProfInfo->GetArchetypeDefaultInfo(Archetype);
 	
 	FGameplayEffectContextHandle CoreAttributesContextHandle = ASC->MakeEffectContext();
 	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
@@ -70,21 +74,39 @@ void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* W
 }
 
 void UEntombedAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject,
-	UAbilitySystemComponent* ASC)
+	UAbilitySystemComponent* ASC, EEntombedArchetype Archetype)
 {
-	UProfessionInfo* ProfInfo = GetProfessionInfo(WorldContextObject);
-	for (TSubclassOf<UGameplayAbility> AbilityClass : ProfInfo->SharedAbilities)
+	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
+	if (ArchetypeInfo == nullptr) return;
+	for (TSubclassOf<UGameplayAbility> AbilityClass : ArchetypeInfo->SharedAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
+		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
+		{
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->StartupInputTag);
+		}
 		ASC->GiveAbility(AbilitySpec);
+	}
+	const FEntombedArchetypeDefaultInfo& DefaultInfo = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
+	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.StartupAbilities)
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel());
+			if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
+			{
+				AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->StartupInputTag);
+			}
+			ASC->GiveAbility(AbilitySpec);
+		}
 	}
 }
 
-UProfessionInfo* UEntombedAbilitySystemLibrary::GetProfessionInfo(const UObject* WorldContextObject)
+UArchetypeInfo* UEntombedAbilitySystemLibrary::GetArchetypeInfo(const UObject* WorldContextObject)
 {
 	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (EntombedGameMode == nullptr) return nullptr;
-	return EntombedGameMode->ProfessionInformation;
+	return EntombedGameMode->ArchetypeInformation;
 }
 
 bool UEntombedAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
@@ -121,4 +143,37 @@ void UEntombedAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandl
 	{
 		EntombedContext->SetIsCriticalHit(bInIsCriticalHit);
 	}
+}
+
+void UEntombedAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+	TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
+	const FVector& Origin)
+{
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+
+	TArray<FOverlapResult> OverlapResults;
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		World->OverlapMultiByObjectType(OverlapResults, Origin, FQuat::Identity, FCollisionObjectQueryParams(FCollisionObjectQueryParams::InitType::AllDynamicObjects), FCollisionShape::MakeSphere(Radius), SphereParams);
+		for (FOverlapResult& OverlapResult : OverlapResults)
+		{
+			const bool bHasCombatInterface = OverlapResult.GetActor()->Implements<UCombatInterface>();
+			if (bHasCombatInterface)
+			{
+				const bool bIsDead = ICombatInterface::Execute_IsDead(OverlapResult.GetActor());
+				if (!bIsDead)
+				{
+					OutOverlappingActors.AddUnique(OverlapResult.GetActor());
+				}
+			}
+		}
+	}
+}
+
+bool UEntombedAbilitySystemLibrary::IsAlly(AActor* FirstActor, AActor* SecondActor)
+{
+	const bool bBothArePlayers = FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
+	const bool bBothAreEnemies = FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
+	return bBothArePlayers || bBothAreEnemies;
 }

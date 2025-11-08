@@ -259,7 +259,12 @@ const void UEntombedAttributeSet::ShowFloatingText(const FEffectProperties& Prop
 {
 	if (Properties.SourceCharacter != Properties.TargetCharacter)
 	{
-		if (AEntombedPlayerController* EntombedPC = Cast<AEntombedPlayerController>(Properties.SourceCharacter->GetController()))
+		if (AEntombedPlayerController* EntombedPC = Cast<AEntombedPlayerController>(Properties.SourceCharacter->GetController())) //dealing damage
+		{
+			EntombedPC->ShowDamageNumber(Damage, Properties.TargetCharacter, bBlockedHit, bCriticalHit);
+			return;
+		}
+		if (AEntombedPlayerController* EntombedPC = Cast<AEntombedPlayerController>(Properties.TargetCharacter->GetController())) //taking damage
 		{
 			EntombedPC->ShowDamageNumber(Damage, Properties.TargetCharacter, bBlockedHit, bCriticalHit);
 		}

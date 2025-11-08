@@ -9,7 +9,7 @@
 #include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
-#include "AbilitySystem/Data/ProfessionInfo.h"
+#include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "Interaction/CombatInterface.h"
 
 struct EntombedDamageStatics
@@ -114,11 +114,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorRatingDef, EvaluationParameters, TargetArmorRating);
 	TargetArmorRating = FMath::Max<float>(TargetArmorRating, 0.f);
 
-	UProfessionInfo* ProfessionInfo = UEntombedAbilitySystemLibrary::GetProfessionInfo(SourceActor);
-	FRealCurve* DamageCoefficientCurve = ProfessionInfo->DamageCalculationCoefficients->FindCurve(FName("DamageCoefficient"), FString()); //CAUTION: magic string
+	UArchetypeInfo* ArchetypeInfo = UEntombedAbilitySystemLibrary::GetArchetypeInfo(SourceActor);
+	FRealCurve* DamageCoefficientCurve = ArchetypeInfo->DamageCalculationCoefficients->FindCurve(FName("DamageCoefficient"), FString()); //TODO: magic string
 	const float DamageCoefficient = DamageCoefficientCurve->Eval(SourceCombatInterface->GetCharacterLevel());
-	
-	float DamageReduction = TargetArmorRating / (TargetArmorRating + DamageCoefficient * Damage); //TODO: change damage coefficient to something that scales better
+
+	float DamageReductionFactor = FMath::Max(TargetArmorRating + DamageCoefficient * Damage, 1);
+	float DamageReduction = TargetArmorRating / DamageReductionFactor; //TODO: change damage coefficient to something that scales better
 	Damage = Damage * (1 - DamageReduction);
 
 	//get elemental damage SetByCaller magnitudes

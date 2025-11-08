@@ -101,19 +101,19 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Instinct, Category="Attributes|Core")
 	FGameplayAttributeData Instinct;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Instinct); // Barbarian(I), Saboteur(II); FormRegen, BlockChance
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Instinct); // Barbarian(I), Outlaw(II); FormRegen, BlockChance
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Technique, Category="Attributes|Core")
 	FGameplayAttributeData Technique;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Technique); // Saboteur(I), Mechanist(II); TotalForm, CritChance
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Technique); // Outlaw(I), Engineer(II); TotalForm, CritChance
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Acumen, Category="Attributes|Core")
 	FGameplayAttributeData Acumen;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Acumen); // Sorcerer(I), Ritualist(II); MindRegen
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Acumen); // Alchemist(I), Ritualist(II); MindRegen
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Logic, Category="Attributes|Core")
 	FGameplayAttributeData Logic;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Logic); // Mechanist(I), Sorcerer(II); TotalMind
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Logic); // Engineer(I), Alchemist(II); TotalMind
 
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Spirit, Category="Attributes|Core")
 	FGameplayAttributeData Spirit;
