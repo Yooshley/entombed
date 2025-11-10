@@ -84,14 +84,28 @@ public:
 	/**
 	*EFFECT TAGS
 	**/
-	FGameplayTag Effect_HitReact;
+	FGameplayTag Effect_Knockback;
+
+	/**
+	*CUE TAGS
+	**/
+	FGameplayTag GameplayCue_Impact;
+	
+	/**
+	*SOCKET TAGS
+	**/
+	FGameplayTag Socket_MainHand;
+	FGameplayTag Socket_OffHand;
 
 	/**
 	*MONTAGE TAGS
 	**/
-	FGameplayTag Montage_MainHand;
-	FGameplayTag Montage_OffHand;
-	FGameplayTag Montage_TwoHand;
+	FGameplayTag Montage_MainHand_Chop;
+	FGameplayTag Montage_MainHand_Slice;
+	FGameplayTag Montage_MainHand_Punch;
+	FGameplayTag Montage_MainHand_Cast;
+	FGameplayTag Montage_MainHand_Shoot;
+	FGameplayTag Montage_MainHand_Throw;
 
 	/**
 	*MONTAGE EVENT TAGS

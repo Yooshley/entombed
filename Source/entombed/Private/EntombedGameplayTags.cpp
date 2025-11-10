@@ -80,14 +80,28 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	/**
 	*EFFECT TAGS
 	**/
-	GameplayTags.Effect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.HitReact"));
+	GameplayTags.Effect_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.Knockback"));
+
+	/**
+	*EFFECT TAGS
+	**/
+	GameplayTags.GameplayCue_Impact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Impact"));
+
+	/**
+	*SOCKET TAGS
+	**/
+	GameplayTags.Socket_MainHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Socket.MainHand"));
+	GameplayTags.Socket_OffHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Socket.OffHand"));
 
 	/**
 	*MONTAGE TAGS
 	**/
-	GameplayTags.Montage_MainHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand"));
-	GameplayTags.Montage_OffHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.OffHand"));
-	GameplayTags.Montage_TwoHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.TwoHand"));
+	GameplayTags.Montage_MainHand_Chop = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand.Chop"));
+	GameplayTags.Montage_MainHand_Slice = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand.Slice"));
+	GameplayTags.Montage_MainHand_Punch = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand.Punch"));
+	GameplayTags.Montage_MainHand_Cast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand.Cast"));
+	GameplayTags.Montage_MainHand_Shoot = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand.Shoot"));
+	GameplayTags.Montage_MainHand_Throw = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.MainHand.Throw"));
 
 	/**
 	*MONTAGE EVENT TAGS

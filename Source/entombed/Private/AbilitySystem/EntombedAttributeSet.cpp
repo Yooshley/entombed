@@ -98,7 +98,7 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 			else
 			{
 				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_HitReact);
+				TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
 				Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
 			}
 			const bool bBlocked = UEntombedAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);

@@ -49,6 +49,7 @@ void AEntombedProjectile::Destroyed()
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
 		if (FlightAudioComponent) FlightAudioComponent->Stop();
+		bHit = true;
 	}
 	Super::Destroyed();
 }
@@ -64,6 +65,7 @@ void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedCompone
 		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
 		if (FlightAudioComponent) FlightAudioComponent->Stop();
+		bHit = true;
 	}
 	
 	if (HasAuthority())

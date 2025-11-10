@@ -16,6 +16,9 @@ struct FTaggedMontage
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UAnimMontage* Montage = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    FGameplayTag SocketTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag MontageTag;
@@ -40,7 +43,7 @@ public:
 	virtual int32 GetCharacterLevel();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	FVector GetCombatSocketLocation(const FGameplayTag& MontageTag);
+	FVector GetCombatSocketLocation(const FGameplayTag& SocketTag);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UAnimMontage* GetHitReactMontage();
@@ -51,8 +54,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	AActor* GetTarget() const;
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void UpdateFacingTarget(const FVector& Target);
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetOrientationMode(const bool bStrafe);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FRotator GetTargetDirection() const;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetTargetDirection(FVector TargetLocation);
 
 	virtual void Death() = 0;
 	
@@ -67,4 +76,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UNiagaraSystem* GetImpactEffect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FTaggedMontage GetTaggedMontageByTag(const FGameplayTag& MontageTag);
 };

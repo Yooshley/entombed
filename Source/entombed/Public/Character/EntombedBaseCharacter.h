@@ -25,6 +25,8 @@ public:
 	AEntombedBaseCharacter();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+	
+	FVector StrafeTarget = FVector::ZeroVector;
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
@@ -35,16 +37,27 @@ public:
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag ) override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatarActor_Implementation() override;
-	virtual TArray<FTaggedMontage> GetTaggedMontages_Implementation() override;
 	virtual UNiagaraSystem* GetImpactEffect_Implementation() override;
+	virtual TArray<FTaggedMontage> GetTaggedMontages_Implementation() override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
+	virtual void SetTarget_Implementation(AActor* InTarget) override;
+	virtual AActor* GetTarget_Implementation() const override;
+	virtual FRotator GetTargetDirection_Implementation() const override;
+	virtual void SetTargetDirection_Implementation(FVector TargetLocation) override;
+	virtual void SetOrientationMode_Implementation(const bool bStrafe) override;
 	/* CombatInterface end */
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	TObjectPtr<AActor> TargetActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	FRotator TargetDirection;
+	
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> TaggedMontages;
 	
 protected:
 	virtual void BeginPlay() override;
-
 	virtual void InitializeAbilityActorInfo();
 
 	UPROPERTY()
@@ -92,6 +105,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	TSubclassOf<UGameplayEffect> DefaultResourceAttributes;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
+	float BaseWalkSpeed = 250.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
+	float BaseRunSpeed = 750.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
 	EEntombedArchetype Archetype = EEntombedArchetype::Templar;
 
@@ -99,6 +118,9 @@ protected:
 	virtual void InitializeDefaultAttributes() const;
 
 	bool bDead = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	USoundBase* DeathSound;
 
 	/* Dissolve Effect */
 	void Dissolve();
@@ -109,7 +131,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	UNiagaraSystem* ImpactEffect;
 
 private:

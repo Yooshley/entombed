@@ -8,11 +8,26 @@
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "entombed/entombed.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/EntombedPlayerController.h"
 
+
+class AEntombedPlayerController;
 
 AEntombedBaseCharacter::AEntombedBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+	GetCharacterMovement()->bConstrainToPlane = true;
+	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+	GetCharacterMovement()->MaxWalkSpeed = BaseRunSpeed;
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
@@ -65,6 +80,8 @@ void AEntombedBaseCharacter::Death()
 
 void AEntombedBaseCharacter::MulticastHandleDeath_Implementation()
 {
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
+	
 	MainHandEquipment->SetSimulatePhysics(true);
 	MainHandEquipment->SetEnableGravity(true);
 	MainHandEquipment->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -95,7 +112,7 @@ void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 FVector AEntombedBaseCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
 	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_MainHand))
+	if (MontageTag.MatchesTagExact(GameplayTags.Socket_MainHand))
 	{
 		if (IsValid(MainHandEquipment))
 		{
@@ -103,7 +120,7 @@ FVector AEntombedBaseCharacter::GetCombatSocketLocation_Implementation(const FGa
 		}
 		return GetMesh()->GetSocketLocation(MAIN_HAND_SOCKET_NAME); //unarmed mainhand
 	}
-	if (MontageTag.MatchesTagExact(GameplayTags.Montage_OffHand))
+	if (MontageTag.MatchesTagExact(GameplayTags.Socket_OffHand))
 	{
 		if (IsValid(OffHandEquipment))
 		{
@@ -132,6 +149,58 @@ TArray<FTaggedMontage> AEntombedBaseCharacter::GetTaggedMontages_Implementation(
 UNiagaraSystem* AEntombedBaseCharacter::GetImpactEffect_Implementation()
 {
 	return ImpactEffect;
+}
+
+FTaggedMontage AEntombedBaseCharacter::GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag)
+{
+	for(FTaggedMontage& TaggedMontage : TaggedMontages)
+	{
+		if (TaggedMontage.MontageTag.MatchesTagExact(MontageTag))
+		{
+			return TaggedMontage;
+		}
+	}
+	return FTaggedMontage();
+}
+
+void AEntombedBaseCharacter::SetTarget_Implementation(AActor* InTarget)
+{
+	TargetActor = InTarget;
+}
+
+AActor* AEntombedBaseCharacter::GetTarget_Implementation() const
+{
+	return TargetActor;
+}
+
+FRotator AEntombedBaseCharacter::GetTargetDirection_Implementation() const
+{
+	return TargetDirection;
+}
+
+void AEntombedBaseCharacter::SetTargetDirection_Implementation(FVector TargetLocation)
+{
+	FVector TargetVector = TargetLocation - GetActorLocation();
+	TargetVector.Z = 0.f;
+
+	if (!TargetVector.IsNearlyZero())
+	{
+		TargetDirection = TargetVector.Rotation();
+	}
+}
+
+void AEntombedBaseCharacter::SetOrientationMode_Implementation(const bool bStrafe)
+{
+	if (bStrafe)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->MaxWalkSpeed = BaseRunSpeed;
+	}
 }
 
 void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const

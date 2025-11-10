@@ -17,17 +17,13 @@
 
 AEntombedEnemyCharacter::AEntombedEnemyCharacter()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UEntombedAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
-
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationRoll = false;
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
-	BaseWalkSpeed = GetCharacterMovement()->MaxWalkSpeed; //blueprint driven
 
 	AttributeSet = CreateDefaultSubobject<UEntombedAttributeSet>("AttributeSet");
 
@@ -94,16 +90,6 @@ void AEntombedEnemyCharacter::Death()
 	Super::Death();
 }
 
-void AEntombedEnemyCharacter::SetTarget_Implementation(AActor* InTarget)
-{
-	TargetActor = InTarget;
-}
-
-AActor* AEntombedEnemyCharacter::GetTarget_Implementation() const
-{
-	return TargetActor;
-}
-
 void AEntombedEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
@@ -146,7 +132,7 @@ void AEntombedEnemyCharacter::BeginPlay()
 			}
 		);
 		
-		AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Effect_HitReact, EGameplayTagEventType::NewOrRemoved).AddUObject(
+		AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Effect_Knockback, EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this, &AEntombedEnemyCharacter::HitReactTagChanged
 		);
 		

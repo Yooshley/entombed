@@ -1,31 +1,40 @@
 // Copyright Yooshley
 
 
-#include "AbilitySystem/Ability/EntombedProjectileAbility.h"
+#include "AbilitySystem/Ability/EntombedRangedAbility.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
+#include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "Actor/EntombedProjectile.h"
+#include "Character/EntombedBaseCharacter.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interaction/CombatInterface.h"
 
-
-void UEntombedProjectileAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                 const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                                 const FGameplayEventData* TriggerEventData)
+void UEntombedRangedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
 }
 
-bool UEntombedProjectileAbility::SpawnProjectile(const FVector& ProjectileTargetLocation)
+void UEntombedRangedAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
 	if (!bIsServer) return true;
 
-	const FVector SocketLocation = 	ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FEntombedGameplayTags::Get().Montage_MainHand);
+	const FVector SocketLocation = 	ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
-	Rotation.Pitch = 0.f; //ensure rotation is paralell to ground
+	Rotation.Pitch = 0.f; //ensure rotation is parallel to ground
 	
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SocketLocation);

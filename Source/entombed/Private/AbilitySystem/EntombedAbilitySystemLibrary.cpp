@@ -9,6 +9,7 @@
 #include "AbilitySystem/Ability/EntombedGameplayAbility.h"
 #include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "Game/EntombedGameModeBase.h"
+#include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerState.h"

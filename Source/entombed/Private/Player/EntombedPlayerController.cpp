@@ -18,7 +18,6 @@
 AEntombedPlayerController::AEntombedPlayerController()
 {
 	bReplicates = true;
-
 	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
 }
 
@@ -28,7 +27,10 @@ void AEntombedPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 
-	AutoRun();
+	if (bClickToMove)
+	{
+		AutoRun();
+	}
 }
 
 void AEntombedPlayerController::ShowDamageNumber_Implementation(float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
@@ -46,8 +48,8 @@ void AEntombedPlayerController::ShowDamageNumber_Implementation(float Damage, AC
 void AEntombedPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	check(PlayerContext);
-
 	if(UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(PlayerContext, 0);
@@ -60,6 +62,16 @@ void AEntombedPlayerController::BeginPlay()
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 	InputModeData.SetHideCursorDuringCapture(false);
 	SetInputMode(InputModeData);
+}
+
+void AEntombedPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+}
+
+void AEntombedPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
 }
 
 void AEntombedPlayerController::SetupInputComponent()
@@ -76,23 +88,21 @@ void AEntombedPlayerController::SetupInputComponent()
 void AEntombedPlayerController::Move(const FInputActionValue& InputActionValue)
 {
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FRotator YawRotation(0, GetControlRotation().Yaw, 0);
+	const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
 	if (APawn* ControlPawn = GetPawn<APawn>())
 	{
-		ControlPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		ControlPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+		ControlPawn->AddMovementInput(Forward, InputAxisVector.Y);
+		ControlPawn->AddMovementInput(Right, InputAxisVector.X);
 	}
 }
 
 void AEntombedPlayerController::AutoRun()
 {
 	if (!bAutoRunning) return;
-	
+
 	if (APawn* ControlPawn = GetPawn())
 	{
 		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlPawn->GetActorLocation(), ESplineCoordinateSpace::World);
@@ -140,8 +150,10 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	}
 	
 	if (GetEntombedASC()) GetEntombedASC()->AbilityInputReleased(InputTag);
+
+	return;
 	
-	if (!bTargeting && !bModifierRunning)
+	if (!bTargeting && !bModifierRunning && bClickToMove)
 	{
 		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
@@ -175,22 +187,29 @@ void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 		return;
 	}
 
+	if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
+
+	return;
+
 	if (bTargeting || bModifierRunning)
 	{
 		if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
 	}
 	else
 	{
-		FollowTime += GetWorld()->GetDeltaSeconds();
-		if (CursorHit.bBlockingHit)
+		if (bClickToMove)
 		{
-			CachedDestination = CursorHit.ImpactPoint;
-		}
+			FollowTime += GetWorld()->GetDeltaSeconds();
+			if (CursorHit.bBlockingHit)
+			{
+				CachedDestination = CursorHit.ImpactPoint;
+			}
 
-		if (APawn* ControlPawn = GetPawn<APawn>())
-		{
-			const FVector WorldDirection = (CachedDestination - ControlPawn->GetActorLocation()).GetSafeNormal();
-			ControlPawn->AddMovementInput(WorldDirection);
+			if (APawn* ControlPawn = GetPawn<APawn>())
+			{
+				const FVector WorldDirection = (CachedDestination - ControlPawn->GetActorLocation()).GetSafeNormal();
+				ControlPawn->AddMovementInput(WorldDirection);
+			}
 		}
 	}
 }

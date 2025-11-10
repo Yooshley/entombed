@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "EntombedPlayerController.generated.h"
 
+class AEntombedPlayerCharacter;
 class UDamageTextComponent;
 class USplineComponent;
 class UEntombedAbilitySystemComponent;
@@ -30,9 +31,13 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit);
+
+	FORCEINLINE const FHitResult& GetCursorHit() const { return CursorHit; }
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 	virtual void SetupInputComponent() override;
 
 private:
@@ -44,7 +49,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> ModifierAction;
-
 
 	void Move(const FInputActionValue& InputActionValue);
 
@@ -68,7 +72,6 @@ private:
 	TObjectPtr<UEntombedAbilitySystemComponent> EntombedAbilitySystemComponent;
 
 	UEntombedAbilitySystemComponent* GetEntombedASC();
-
 	
 	FVector CachedDestination = FVector::ZeroVector;
 	float FollowTime = 0.f;
@@ -76,6 +79,9 @@ private:
 	bool bAutoRunning = false;
 	bool bTargeting = false;
 
+	UPROPERTY(EditDefaultsOnly)
+	bool bClickToMove = false;
+	
 	UPROPERTY(EditDefaultsOnly)
 	float AutoRunAcceptanceRadius = 50.f;
 
