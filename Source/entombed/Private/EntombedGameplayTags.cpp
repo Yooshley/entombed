@@ -41,10 +41,10 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	**/
 	GameplayTags.Input_MainHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.MainHand"));
 	GameplayTags.Input_OffHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.OffHand"));
-	GameplayTags.Input_Ability_First = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.First"));
-	GameplayTags.Input_Ability_Second = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Second"));
-	GameplayTags.Input_Ability_Third = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Third"));
-	GameplayTags.Input_Ability_Fourth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Ability.Fourth"));
+	GameplayTags.Input_Ability_First = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Abilit_Attack.First"));
+	GameplayTags.Input_Ability_Second = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Abilit_Attack.Second"));
+	GameplayTags.Input_Ability_Third = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Abilit_Attack.Third"));
+	GameplayTags.Input_Ability_Fourth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Input.Abilit_Attack.Fourth"));
 
 	/**
 	*DAMAGE TAGS
@@ -75,7 +75,8 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	*ABILITY TAGS
 	**/
 	
-	GameplayTags.Ability = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability"));
+	GameplayTags.Abilit_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"));
+	GameplayTags.Ability_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Summon"));
 
 	/**
 	*EFFECT TAGS
@@ -106,6 +107,6 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	/**
 	*MONTAGE EVENT TAGS
 	**/
-	GameplayTags.Event_Montage_Ability_Shoot = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Ability.Shoot"));
-	GameplayTags.Event_Montage_Ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Ability.Melee"));
+	GameplayTags.Event_Montage_Ability_Shoot = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Abilit_Attack.Shoot"));
+	GameplayTags.Event_Montage_Ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Abilit_Attack.Melee"));
 }

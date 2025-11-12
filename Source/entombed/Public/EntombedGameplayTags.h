@@ -79,7 +79,9 @@ public:
 	/**
 	*ABILITY TAGS
 	**/
-	FGameplayTag Ability;
+	FGameplayTag Abilit_Attack;
+	FGameplayTag Ability_Ranged;
+	FGameplayTag Ability_Summon;
 
 	/**
 	*EFFECT TAGS

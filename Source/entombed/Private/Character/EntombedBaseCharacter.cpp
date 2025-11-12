@@ -203,6 +203,16 @@ void AEntombedBaseCharacter::SetOrientationMode_Implementation(const bool bStraf
 	}
 }
 
+int32 AEntombedBaseCharacter::GetMinionCount_Implementation()
+{
+	return MinionCount;
+}
+
+void AEntombedBaseCharacter::SetMinionCount_Implementation(int32 Count)
+{
+	MinionCount = Count;
+}
+
 void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const
 {
 	check(IsValid(GetAbilitySystemComponent()));

@@ -33,6 +33,11 @@
 		{
 			"Name": "MotionWarping",
 			"Enabled": true
+		},
+		{
+			"Name": "AnimModTool",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/298f68da04b9401297b798a4d58bee6a"
 		}
 	]
 }

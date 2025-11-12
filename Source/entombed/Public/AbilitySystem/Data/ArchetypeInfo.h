@@ -27,6 +27,8 @@ enum class EEntombedArchetype : uint8
 	Risen_Marauder,
 	Risen_Stalker,
 	Risen_Warlock,
+
+	Necromancer,
 };
 
 USTRUCT(BlueprintType)

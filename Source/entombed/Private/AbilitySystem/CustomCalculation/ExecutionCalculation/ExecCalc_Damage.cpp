@@ -105,7 +105,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	//get physical damage SetByCaller magnitudes
 	for (auto& PhysicalDamageType : FEntombedGameplayTags::Get().PhysicalDamageTypes)
 	{
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(PhysicalDamageType); //DefaultIfNotFound=0
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(PhysicalDamageType, false); //DefaultIfNotFound=0
 		Damage += DamageTypeValue;
 	}
 
@@ -135,7 +135,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 		
-		float DamageTypeValue = Spec.GetSetByCallerMagnitude(ElementalDamagePair.Key); //DefaultIfNotFound=0
+		float DamageTypeValue = Spec.GetSetByCallerMagnitude(ElementalDamagePair.Key, false); //DefaultIfNotFound=0
 		DamageTypeValue *= (100.f - Resistance)/100;
 		Damage += DamageTypeValue;
 	}

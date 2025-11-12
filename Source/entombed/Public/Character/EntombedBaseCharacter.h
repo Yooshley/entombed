@@ -45,6 +45,8 @@ public:
 	virtual FRotator GetTargetDirection_Implementation() const override;
 	virtual void SetTargetDirection_Implementation(FVector TargetLocation) override;
 	virtual void SetOrientationMode_Implementation(const bool bStrafe) override;
+	virtual int32 GetMinionCount_Implementation() override;
+	virtual void SetMinionCount_Implementation(int32 Count) override;
 	/* CombatInterface end */
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
@@ -52,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	FRotator TargetDirection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
+	int32 MinionCount;
 	
 	UPROPERTY(EditAnywhere, Category="Combat")
 	TArray<FTaggedMontage> TaggedMontages;
