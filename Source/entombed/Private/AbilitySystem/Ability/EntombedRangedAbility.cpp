@@ -34,7 +34,7 @@ bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 
 	const FVector SocketLocation = 	ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
-	Rotation.Pitch = 0.f; //ensure rotation is parallel to ground
+	//Rotation.Pitch = 0.f; //ensure rotation is parallel to ground
 	
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SocketLocation);
