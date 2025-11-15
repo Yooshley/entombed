@@ -27,6 +27,25 @@ void UEntombedRangedAbility::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void UEntombedRangedAbility::SetProjectileTarget(FVector Location)
+{
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	if (!AvatarActor) return;
+
+	const FVector AvatarLocation = AvatarActor->GetActorLocation();
+
+	ProjectileTargetLocation = Location;
+	const float MinZ = AvatarLocation.Z + 50.f; //ensure minimum height for projectile target
+	
+	ProjectileTargetLocation.Z = FMath::Max(Location.Z, MinZ);
+
+	if (AvatarActor->Implements<UCombatInterface>())
+	{
+		ICombatInterface::Execute_SetTargetDirection(AvatarActor, ProjectileTargetLocation);
+		ICombatInterface::Execute_SetOrientationMode(AvatarActor, true);
+	}
+}
+
 bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
@@ -34,7 +53,6 @@ bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 
 	const FVector SocketLocation = 	ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
-	//Rotation.Pitch = 0.f; //ensure rotation is parallel to ground
 	
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SocketLocation);

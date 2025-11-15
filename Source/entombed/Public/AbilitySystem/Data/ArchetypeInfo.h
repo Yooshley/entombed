@@ -43,7 +43,7 @@ struct FEntombedArchetypeDefaultInfo
 	TSubclassOf<UGameplayEffect> CoreAttributesEffect;
 
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
-	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
 };
 
 /**

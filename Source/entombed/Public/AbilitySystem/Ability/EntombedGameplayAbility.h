@@ -16,5 +16,5 @@ class ENTOMBED_API UEntombedGameplayAbility : public UGameplayAbility
 	
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
-	FGameplayTag StartupInputTag;
+	FGameplayTag AbilityInputTag;
 };

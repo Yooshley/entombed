@@ -22,10 +22,6 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 
 	// init ability actor info for the server
 	InitializeAbilityActorInfo();
-	if (HasAuthority())
-	{
-		UEntombedAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, Archetype);
-	}
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()
@@ -62,4 +58,10 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 		}
 	}
 	InitializeDefaultAttributes();
+
+	if (HasAuthority())
+	{
+		UEntombedAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent, Archetype);
+		Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->OnGrantedAbilities();
+	}
 }

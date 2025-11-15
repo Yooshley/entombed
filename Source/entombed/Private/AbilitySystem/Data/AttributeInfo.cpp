@@ -3,6 +3,8 @@
 
 #include "AbilitySystem/Data/AttributeInfo.h"
 
+#include "entombed/EntombedLogChannels.h"
+
 FEntombedAttributeInfo UAttributeInfo::FindAttributeInfoByTag(const FGameplayTag& AttributeTag,
                                                               bool bLogNotFound) const
 {
@@ -16,7 +18,7 @@ FEntombedAttributeInfo UAttributeInfo::FindAttributeInfoByTag(const FGameplayTag
 
 	if (bLogNotFound)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AttributeTag [%s] Tag not found in AttributeInfo [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
+		UE_LOG(LogEntombed, Error, TEXT("AttributeTag [%s] Tag not found in AttributeInfo [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
 	}
 	
 	return FEntombedAttributeInfo();

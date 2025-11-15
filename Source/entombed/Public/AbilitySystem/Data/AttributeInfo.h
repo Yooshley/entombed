@@ -8,6 +8,8 @@
 #include "Engine/DataAsset.h"
 #include "AttributeInfo.generated.h"
 
+struct FGameplayTag;
+
 USTRUCT(BlueprintType)
 struct FEntombedAttributeInfo
 {

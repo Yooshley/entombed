@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "UI/WidgetController/EntombedWidgetController.h"
 #include "OverlayWidgetController.generated.h"
 
+class UEntombedAbilitySystemComponent;
+class UAbilityInfo;
 class UEntombedUserWidget;
 struct FOnAttributeChangeData;
 
@@ -30,6 +33,7 @@ struct FUIWidgetRow : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, FUIWidgetRow, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FEntombedAbilityInfo&, Info);
 
 /**
  * 
@@ -41,6 +45,9 @@ class ENTOMBED_API UOverlayWidgetController : public UEntombedWidgetController
 public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
+
+	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|XP")
+	FOnAttributeChangedSignature OnXPChangedDelegate;
 
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Attributes")
 	FOnAttributeChangedSignature OnLifeChanged;
@@ -57,12 +64,22 @@ public:
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
+	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+
 	template<typename T>
 	T* GetDataTableRowByTag(UDataTable* DataTable, const FGameplayTag& Tag);
+
+	void OnInitializeDefaultAbilities(UEntombedAbilitySystemComponent* EntombedASC);
+
+	void OnXPChanged(int32 NewXP);
 };
 
 template <typename T>

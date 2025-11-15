@@ -6,11 +6,14 @@
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "AbilitySystem/EntombedAttributeSet.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerController.h"
+#include "UI/Widget/EntombedUserWidget.h"
 
 
 class AEntombedPlayerController;
@@ -34,6 +37,9 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
 	GetMesh()->SetGenerateOverlapEvents(true);
+
+	LifeBar = CreateDefaultSubobject<UWidgetComponent>("LifeBar");
+	LifeBar->SetupAttachment(GetRootComponent());
 
 	// setup item slots
 	MainHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("MainHandEquipment");
@@ -103,10 +109,33 @@ void AEntombedBaseCharacter::MulticastHandleDeath_Implementation()
 void AEntombedBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (UEntombedUserWidget* EntombedUserWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
+	{
+		EntombedUserWidget->SetWidgetController(this);
+	}
 }
 
 void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 {
+	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetLifeAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnLifeChanged.Broadcast(Data.NewValue);
+			}
+		);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalLifeAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnTotalLifeChanged.Broadcast(Data.NewValue);
+			}
+		);
+    	
+		OnLifeChanged.Broadcast(EntombedAS->GetLife());
+		OnTotalLifeChanged.Broadcast(EntombedAS->GetTotalLife());
+	}
 }
 
 FVector AEntombedBaseCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)

@@ -23,13 +23,44 @@ void AEntombedPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AEntombedPlayerState, Level);
+	DOREPLIFETIME(AEntombedPlayerState, XP);
 }
 
 void AEntombedPlayerState::OnRep_Level(int32 OldLevel)
 {
+	
+}
+
+void AEntombedPlayerState::OnRep_XP(int32 OldXP)
+{
+	
 }
 
 UAbilitySystemComponent* AEntombedPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AEntombedPlayerState::AddXP(const int32 InXP)
+{
+	XP += InXP;
+	OnXPChangedDelegate.Broadcast(XP);
+}
+
+void AEntombedPlayerState::AddLevel(const int32 InLevel)
+{
+	Level += InLevel;
+	OnLevelsChangedDelegate.Broadcast(Level);
+}
+
+void AEntombedPlayerState::SetXP(const int32 InXP)
+{
+	XP = InXP;
+	OnXPChangedDelegate.Broadcast(XP);
+}
+
+void AEntombedPlayerState::SetLevel(const int32 InLevel)
+{
+	Level = InLevel;
+	OnLevelsChangedDelegate.Broadcast(Level);
 }

@@ -74,7 +74,7 @@ void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* W
 	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());
 }
 
-void UEntombedAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject,
+void UEntombedAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContextObject,
 	UAbilitySystemComponent* ASC, EEntombedArchetype Archetype)
 {
 	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
@@ -84,19 +84,19 @@ void UEntombedAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldCon
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->StartupInputTag);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityInputTag);
 		}
 		ASC->GiveAbility(AbilitySpec);
 	}
 	const FEntombedArchetypeDefaultInfo& DefaultInfo = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
-	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.StartupAbilities)
+	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultAbilities)
 	{
 		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
 		{
 			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel());
 			if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
 			{
-				AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->StartupInputTag);
+				AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityInputTag);
 			}
 			ASC->GiveAbility(AbilitySpec);
 		}

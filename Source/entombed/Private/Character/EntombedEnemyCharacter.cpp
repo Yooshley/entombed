@@ -13,7 +13,6 @@
 #include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "UI/Widget/EntombedUserWidget.h"
 
 AEntombedEnemyCharacter::AEntombedEnemyCharacter()
 {
@@ -26,9 +25,6 @@ AEntombedEnemyCharacter::AEntombedEnemyCharacter()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 
 	AttributeSet = CreateDefaultSubobject<UEntombedAttributeSet>("AttributeSet");
-
-	LifeBar = CreateDefaultSubobject<UWidgetComponent>("LifeBar");
-	LifeBar->SetupAttachment(GetRootComponent());
 }
 
 void AEntombedEnemyCharacter::PossessedBy(AController* NewController)
@@ -109,35 +105,14 @@ void AEntombedEnemyCharacter::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UEntombedAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, Archetype);
-	}
-
-	if (UEntombedUserWidget* EntombedUserWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
-	{
-		EntombedUserWidget->SetWidgetController(this);
+		UEntombedAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent, Archetype);
 	}
 
 	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))
 	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetLifeAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnLifeChanged.Broadcast(Data.NewValue);
-			}
-		);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalLifeAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnTotalLifeChanged.Broadcast(Data.NewValue);
-			}
-		);
-		
 		AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Effect_Knockback, EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this, &AEntombedEnemyCharacter::HitReactTagChanged
 		);
-		
-		OnLifeChanged.Broadcast(EntombedAS->GetLife());
-		OnTotalLifeChanged.Broadcast(EntombedAS->GetTotalLife());
 	}
 }
 

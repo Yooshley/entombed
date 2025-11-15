@@ -31,7 +31,7 @@ public:
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, EEntombedArchetype Archetype, float Level, UAbilitySystemComponent* ASC);
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|ArchetypeDefaults")
-	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, EEntombedArchetype Archetype);
+	static void GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, EEntombedArchetype Archetype);
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|ArchetypeDefaults")
 	static UArchetypeInfo* GetArchetypeInfo(const UObject* WorldContextObject);

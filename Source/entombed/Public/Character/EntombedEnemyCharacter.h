@@ -33,12 +33,6 @@ public:
 	virtual void Death() override;
 	/** CombatInterface end */
 
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnLifeChanged;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnTotalLifeChanged;
-
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
@@ -54,9 +48,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
 	int32 Level = 1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UWidgetComponent> LifeBar;
 
 	UPROPERTY(EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;

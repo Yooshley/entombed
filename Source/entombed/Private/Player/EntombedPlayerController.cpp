@@ -134,7 +134,7 @@ void AEntombedPlayerController::CursorTrace()
 
 void AEntombedPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	if (InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_MainHand))
+	if (InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
 		bTargeting = ThisActor ? true : false;
 		bAutoRunning = false;
@@ -143,7 +143,7 @@ void AEntombedPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (!InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_MainHand))
+	if (!InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
 		if (GetEntombedASC()) GetEntombedASC()->AbilityInputReleased(InputTag);
 		return;
@@ -181,7 +181,7 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (!InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_MainHand))
+	if (!InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
 		if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
 		return;

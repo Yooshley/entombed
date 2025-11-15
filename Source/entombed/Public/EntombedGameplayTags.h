@@ -47,12 +47,15 @@ public:
 	/**
 	*INPUT TAGS
 	**/
-	FGameplayTag Input_MainHand;
-	FGameplayTag Input_OffHand;
-	FGameplayTag Input_Ability_First;
-	FGameplayTag Input_Ability_Second;
-	FGameplayTag Input_Ability_Third;
-	FGameplayTag Input_Ability_Fourth;
+	FGameplayTag Input;
+	FGameplayTag Input_Ability_MainHand_1;
+	FGameplayTag Input_Ability_MainHand_2;
+	FGameplayTag Input_Ability_OffHand_1;
+	FGameplayTag Input_Ability_OffHand_2;
+	FGameplayTag Input_Ability_OffHand_3;
+	FGameplayTag Input_Ability_Archetype_1;
+	FGameplayTag Input_Ability_Archetype_2;
+	FGameplayTag Input_Ability_Archetype_3;
 
 	/**
 	*DAMAGE TAGS
@@ -79,9 +82,13 @@ public:
 	/**
 	*ABILITY TAGS
 	**/
-	FGameplayTag Abilit_Attack;
+	FGameplayTag Ability;
+	FGameplayTag Ability_Attack;
 	FGameplayTag Ability_Ranged;
 	FGameplayTag Ability_Summon;
+	
+	FGameplayTag Ability_FireBolt;
+	FGameplayTag Cooldown_FireBolt;
 
 	/**
 	*EFFECT TAGS

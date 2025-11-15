@@ -7,8 +7,10 @@
 #include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
+#include "UI/WidgetController/OverlayWidgetController.h"
 #include "EntombedBaseCharacter.generated.h"
 
+class UWidgetComponent;
 enum class EEntombedArchetype : uint8;
 class UNiagaraSystem;
 class UGameplayAbility;
@@ -49,6 +51,12 @@ public:
 	virtual void SetMinionCount_Implementation(int32 Count) override;
 	/* CombatInterface end */
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnLifeChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnTotalLifeChanged;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> TargetActor;
 
@@ -64,6 +72,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitializeAbilityActorInfo();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> LifeBar;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
