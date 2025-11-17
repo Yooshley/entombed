@@ -12,10 +12,10 @@ void UANS_RotateToTarget::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSeq
 	ElapsedTime = 0.f;
 
 	OwnerActor = MeshComp->GetOwner();
-	if (OwnerActor && OwnerActor->Implements<UCombatInterface>())
+	if (OwnerActor.IsValid() && OwnerActor->Implements<UCombatInterface>())
 	{
 		InitialRotation = OwnerActor->GetActorRotation();
-		TargetRotation = ICombatInterface::Execute_GetTargetDirection(OwnerActor);
+		TargetRotation = ICombatInterface::Execute_GetTargetDirection(OwnerActor.Get());
 	}
 }
 

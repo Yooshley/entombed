@@ -26,7 +26,7 @@ private:
 	FRotator InitialRotation = FRotator::ZeroRotator;
 	float NotifyDuration = 0.f;
 	float ElapsedTime = 0.f;
-	
-	UPROPERTY()
-	AActor* OwnerActor = nullptr;
+
+	TWeakObjectPtr<AActor> OwnerActor = nullptr;
+	TWeakObjectPtr<AController> OwnerController = nullptr;
 };

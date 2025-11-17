@@ -68,10 +68,19 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 
 	AActor* SourceActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
-	ICombatInterface* SourceCombatInterface = Cast<ICombatInterface>(SourceActor);
-	
 	AActor* TargetActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
-	ICombatInterface* TargetCombatInterface = Cast<ICombatInterface>(TargetActor);
+
+	int32 SourceLevel = 1;
+	if (SourceActor->Implements<UCombatInterface>())
+	{
+		SourceLevel = ICombatInterface::Execute_GetCharacterLevel(SourceActor);
+	}
+
+	int32 TargetLevel = 1;
+	if (TargetActor->Implements<UCombatInterface>())
+	{
+		TargetLevel = ICombatInterface::Execute_GetCharacterLevel(TargetActor);
+	}
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
@@ -116,7 +125,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	UArchetypeInfo* ArchetypeInfo = UEntombedAbilitySystemLibrary::GetArchetypeInfo(SourceActor);
 	FRealCurve* DamageCoefficientCurve = ArchetypeInfo->DamageCalculationCoefficients->FindCurve(FName("DamageCoefficient"), FString()); //TODO: magic string
-	const float DamageCoefficient = DamageCoefficientCurve->Eval(SourceCombatInterface->GetCharacterLevel());
+	const float DamageCoefficient = DamageCoefficientCurve->Eval(SourceLevel);
 
 	float DamageReductionFactor = FMath::Max(TargetArmorRating + DamageCoefficient * Damage, 1);
 	float DamageReduction = TargetArmorRating / DamageReductionFactor; //TODO: change damage coefficient to something that scales better

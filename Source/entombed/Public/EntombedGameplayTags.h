@@ -121,6 +121,11 @@ public:
 	**/
 	FGameplayTag Event_Montage_Ability_Shoot;
 	FGameplayTag Event_Montage_Ability_Melee;
+
+	/**
+	*META TAGS
+	**/
+	FGameplayTag Attribute_Meta_IncomingXP;
 	
 private:
 	static FEntombedGameplayTags GameplayTags;

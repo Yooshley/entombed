@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
 #include "ArchetypeInfo.generated.h"
 
@@ -44,6 +45,12 @@ struct FEntombedArchetypeDefaultInfo
 
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
+
+	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> DefaultPassiveAbilities;
+
+	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
+	FScalableFloat XPAward = FScalableFloat();
 };
 
 /**

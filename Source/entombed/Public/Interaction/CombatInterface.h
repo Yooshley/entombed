@@ -40,7 +40,8 @@ class ENTOMBED_API ICombatInterface
 {
 	GENERATED_BODY()
 public:
-	virtual int32 GetCharacterLevel();
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetCharacterLevel();
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetCombatSocketLocation(const FGameplayTag& SocketTag);
@@ -85,4 +86,7 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetMinionCount(int32 Count);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	EEntombedArchetype GetArchetype() const;
 };

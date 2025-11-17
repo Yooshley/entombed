@@ -46,8 +46,11 @@ public:
 	virtual void BroadcastInitialValues() override;
 	virtual void BindCallbacksToDependencies() override;
 
-	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|XP")
+	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Level")
 	FOnAttributeChangedSignature OnXPChangedDelegate;
+
+	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Level")
+	FOnPlayerStatChangedSignature OnLevelChangedDelegate;
 
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Attributes")
 	FOnAttributeChangedSignature OnLifeChanged;

@@ -74,7 +74,7 @@ void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* W
 	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());
 }
 
-void UEntombedAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContextObject,
+void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldContextObject,
 	UAbilitySystemComponent* ASC, EEntombedArchetype Archetype)
 {
 	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
@@ -89,17 +89,24 @@ void UEntombedAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldCon
 		ASC->GiveAbility(AbilitySpec);
 	}
 	const FEntombedArchetypeDefaultInfo& DefaultInfo = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
+	int32 Level = 1;
+	if (ASC->GetAvatarActor()->Implements<UCombatInterface>())
+	{
+		Level = ICombatInterface::Execute_GetCharacterLevel(ASC->GetAvatarActor());
+	}
 	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultAbilities)
 	{
-		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(ASC->GetAvatarActor()))
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, Level);
+		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
 		{
-			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel());
-			if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
-			{
-				AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityInputTag);
-			}
-			ASC->GiveAbility(AbilitySpec);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityInputTag);
 		}
+		ASC->GiveAbility(AbilitySpec);
+	}
+	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultPassiveAbilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, Level);
+		ASC->GiveAbilityAndActivateOnce(AbilitySpec);
 	}
 }
 
@@ -177,4 +184,16 @@ bool UEntombedAbilitySystemLibrary::IsAlly(AActor* FirstActor, AActor* SecondAct
 	const bool bBothArePlayers = FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
 	const bool bBothAreEnemies = FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
 	return bBothArePlayers || bBothAreEnemies;
+}
+
+int32 UEntombedAbilitySystemLibrary::GetXPAwardForArchetype(const UObject* WorldContextObject,
+	EEntombedArchetype Archetype, int32 Level)
+{
+	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
+	if (ArchetypeInfo == nullptr) 0;
+	
+	FEntombedArchetypeDefaultInfo Info = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
+	const float XPAward = Info.XPAward.GetValueAtLevel(Level);
+
+	return static_cast<int32>(XPAward);
 }

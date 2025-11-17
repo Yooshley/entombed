@@ -115,4 +115,9 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	**/
 	GameplayTags.Event_Montage_Ability_Shoot = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Ability_Attack.Shoot"));
 	GameplayTags.Event_Montage_Ability_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Ability_Attack.Melee"));
+
+	/**
+	*META TAGS
+	**/
+	GameplayTags.Attribute_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Meta.IncomingXP"));
 }

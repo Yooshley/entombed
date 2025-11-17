@@ -3,9 +3,11 @@
 
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "EntombedGameplayTags.h"
 #include "AbilitySystem/Ability/EntombedGameplayAbility.h"
 #include "entombed/EntombedLogChannels.h"
+#include "Interaction/PlayerInterface.h"
 
 void UEntombedAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -108,6 +110,31 @@ void UEntombedAbilitySystemComponent::OnGrantedAbilities()
 	{
 		bGrantedDefaultAbilities = true;
 		GrantedAbilitiesDelegate.Broadcast(this);
+	}
+}
+
+void UEntombedAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
+		{
+			ServerUpgradeAttribute(AttributeTag);
+		}
+	}
+}
+
+void UEntombedAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		IPlayerInterface::Execute_AddAttributePoints(GetAvatarActor(), -1);
 	}
 }
 

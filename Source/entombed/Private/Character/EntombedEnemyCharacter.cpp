@@ -71,7 +71,7 @@ void AEntombedEnemyCharacter::UnHighlightActor()
 	HeadAttachment->SetRenderCustomDepth(false);
 }
 
-int32 AEntombedEnemyCharacter::GetCharacterLevel()
+int32 AEntombedEnemyCharacter::GetCharacterLevel_Implementation()
 {
 	return Level;
 }
@@ -105,7 +105,7 @@ void AEntombedEnemyCharacter::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UEntombedAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent, Archetype);
+		UEntombedAbilitySystemLibrary::GrantDefaultAbilities(this, AbilitySystemComponent, Archetype);
 	}
 
 	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))

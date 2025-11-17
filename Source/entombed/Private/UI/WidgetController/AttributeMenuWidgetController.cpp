@@ -3,13 +3,20 @@
 
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
-#include "EntombedGameplayTags.h"
+#include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "AbilitySystem/Data/AttributeInfo.h"
+#include "Player/EntombedPlayerState.h"
 
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
+
+	AEntombedPlayerState* EntombedPlayerState = CastChecked<AEntombedPlayerState>(PlayerState);
+	EntombedPlayerState->OnAttributePointsChangedDelegate.AddLambda([this](int32 NewValue)
+	{
+		AttributePointsChangedDelegate.Broadcast(NewValue);
+	});
 
 	check(AttributeInformation);
 	for (auto& Tag : AttributeInformation.Get()->AttributeInformation)
@@ -31,6 +38,15 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	{
 		BroadcastAttributeInfo(Tag.AttributeTag);
 	}
+
+	AEntombedPlayerState* EntombedPlayerState = CastChecked<AEntombedPlayerState>(PlayerState);
+	AttributePointsChangedDelegate.Broadcast(EntombedPlayerState->GetAttributePoints());
+}
+
+void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UEntombedAbilitySystemComponent* EntombedASC = CastChecked<UEntombedAbilitySystemComponent>(AbilitySystemComponent);
+	EntombedASC->UpgradeAttribute(AttributeTag);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& Tag) const

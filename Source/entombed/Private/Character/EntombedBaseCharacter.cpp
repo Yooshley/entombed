@@ -40,6 +40,7 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 
 	LifeBar = CreateDefaultSubobject<UWidgetComponent>("LifeBar");
 	LifeBar->SetupAttachment(GetRootComponent());
+	LifeBar->SetEnableGravity(false);
 
 	// setup item slots
 	MainHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("MainHandEquipment");
@@ -222,11 +223,13 @@ void AEntombedBaseCharacter::SetOrientationMode_Implementation(const bool bStraf
 {
 	if (bStrafe)
 	{
+		//bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
 		GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	}
 	else
 	{
+		//bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		GetCharacterMovement()->MaxWalkSpeed = BaseRunSpeed;
 	}
@@ -240,6 +243,11 @@ int32 AEntombedBaseCharacter::GetMinionCount_Implementation()
 void AEntombedBaseCharacter::SetMinionCount_Implementation(int32 Count)
 {
 	MinionCount = Count;
+}
+
+EEntombedArchetype AEntombedBaseCharacter::GetArchetype_Implementation() const
+{
+	return Archetype;
 }
 
 void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const

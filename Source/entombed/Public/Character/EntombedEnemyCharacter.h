@@ -29,7 +29,7 @@ public:
 	/** TargetInterface end */
 
 	/** CombatInterface start */
-	virtual int32 GetCharacterLevel() override;
+	virtual int32 GetCharacterLevel_Implementation() override;
 	virtual void Death() override;
 	/** CombatInterface end */
 

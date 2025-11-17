@@ -63,6 +63,8 @@ public:
 	
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+
 	/*
 	 * RESOURCE ATTRIBUTES
 	*/
@@ -173,6 +175,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Attributes|Meta")
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, IncomingDamage);
+
+	UPROPERTY(BlueprintReadOnly, Category="Attributes|Meta")
+	FGameplayAttributeData IncomingXP;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, IncomingXP);
 	
 	UFUNCTION()
 	void OnRep_Life(const FGameplayAttributeData& OldLife) const;
@@ -247,4 +253,10 @@ private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const;
 
 	const void ShowFloatingText(const FEffectProperties& Properties, float Damage, bool bBlockedHit, bool bCriticalHit);
+
+	void SendXPEvent(const FEffectProperties& Props) const;
+
+	bool bMaxOutLife = false;
+	bool bMaxOutForm = false;
+	bool bMaxOutMind = false;
 };

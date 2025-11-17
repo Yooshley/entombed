@@ -10,7 +10,7 @@
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/GameplayStatics.h"
+#include "Interaction/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/EntombedPlayerController.h"
 
@@ -64,7 +64,6 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 	if (Data.EvaluatedData.Attribute == GetLifeAttribute())
 	{
 		SetLife(FMath::Clamp(GetLife(), 0.f, GetTotalLife()));
-		UE_LOG(LogTemp, Warning, TEXT("Life Changed on %s, New Life: %f"), *Properties.TargetAvatarActor->GetName(), GetLife());
 	}
 
 	if (Data.EvaluatedData.Attribute == GetFormAttribute())
@@ -94,6 +93,7 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 				{
 					CombatInterface->Death();
 				}
+				SendXPEvent(Properties);
 			}
 			else
 			{
@@ -105,6 +105,61 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 			const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
 			ShowFloatingText(Properties, LocalIncomingDamage, bBlocked, bCritical);
 		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+	{
+		const float LocalIncomingXP = GetIncomingXP();
+		SetIncomingXP(0);
+
+		if (Properties.SourceCharacter->Implements<UPlayerInterface>() && Properties.SourceCharacter->Implements<UCombatInterface>())
+		{
+			const int32 CurrentLevel = ICombatInterface::Execute_GetCharacterLevel(Properties.SourceCharacter);
+			const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Properties.SourceCharacter);
+			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Properties.SourceCharacter, CurrentXP + LocalIncomingXP);
+			const int32 NumLevelUps = NewLevel - CurrentLevel;
+			if (NumLevelUps > 0)
+			{
+				int32 AttributePointsAward = 0;
+				int32 AbilityPointsAward = 0;
+				for (int32 i = 0; i < NumLevelUps; i++)
+				{
+					AttributePointsAward += IPlayerInterface::Execute_GetAttributePointsAward(Properties.SourceCharacter, CurrentLevel+i);
+					AbilityPointsAward += IPlayerInterface::Execute_GetAbilityPointsAward(Properties.SourceCharacter, CurrentLevel+i);
+				}
+				IPlayerInterface::Execute_AddLevel(Properties.SourceCharacter, NumLevelUps);
+				IPlayerInterface::Execute_LevelUp(Properties.SourceCharacter);
+				IPlayerInterface::Execute_AddAttributePoints(Properties.SourceCharacter, AttributePointsAward);
+				IPlayerInterface::Execute_AddAbilityPoints(Properties.SourceCharacter, AbilityPointsAward);
+
+				bMaxOutLife = true;
+				bMaxOutForm = true;
+				bMaxOutMind = true;
+			}
+			
+			IPlayerInterface::Execute_AddXP(Properties.SourceCharacter, LocalIncomingXP);
+		}
+	}
+}
+
+void UEntombedAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetTotalLifeAttribute() && bMaxOutLife)
+	{
+		SetLife(GetTotalLife());
+		bMaxOutLife = false;
+	}
+	if (Attribute == GetTotalFormAttribute() && bMaxOutForm)
+	{
+		SetForm(GetTotalForm());
+		bMaxOutForm = false;
+	}
+	if (Attribute == GetTotalMindAttribute() && bMaxOutMind)
+	{
+		SetMind(GetTotalMind());
+		bMaxOutMind = false;
 	}
 }
 
@@ -268,5 +323,21 @@ const void UEntombedAttributeSet::ShowFloatingText(const FEffectProperties& Prop
 		{
 			EntombedPC->ShowDamageNumber(Damage, Properties.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
+	}
+}
+
+void UEntombedAttributeSet::SendXPEvent(const FEffectProperties& Props) const
+{
+	if (Props.TargetCharacter->Implements<UCombatInterface>())
+	{
+		int32 TargetLevel = ICombatInterface::Execute_GetCharacterLevel(Props.TargetCharacter);
+		EEntombedArchetype TargetArchetype = ICombatInterface::Execute_GetArchetype(Props.TargetCharacter);
+		const int32 XPAward = UEntombedAbilitySystemLibrary::GetXPAwardForArchetype(Props.TargetCharacter, TargetArchetype, TargetLevel);
+
+		const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+		FGameplayEventData Payload;
+		Payload.EventTag = GameplayTags.Attribute_Meta_IncomingXP;
+		Payload.EventMagnitude = XPAward;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Props.SourceCharacter, GameplayTags.Attribute_Meta_IncomingXP, Payload);
 	}
 }

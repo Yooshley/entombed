@@ -9,6 +9,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "Character/EntombedPlayerCharacter.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "Input/EntombedInputComponent.h"
@@ -87,16 +88,19 @@ void AEntombedPlayerController::SetupInputComponent()
 
 void AEntombedPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	const FRotator YawRotation(0, GetControlRotation().Yaw, 0);
-	const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+    const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 
-	if (APawn* ControlPawn = GetPawn<APawn>())
-	{
-		ControlPawn->AddMovementInput(Forward, InputAxisVector.Y);
-		ControlPawn->AddMovementInput(Right, InputAxisVector.X);
-	}
+    if (AEntombedPlayerCharacter* PC = GetPawn<AEntombedPlayerCharacter>())
+    {
+        const FRotator CamRot = PC->GetCameraBoomRotation();
+        const FRotator YawRotation(0.f, CamRot.Yaw, 0.f);
+
+        const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+        const FVector RightDirection   = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+        PC->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+        PC->AddMovementInput(RightDirection,   InputAxisVector.X);
+    }
 }
 
 void AEntombedPlayerController::AutoRun()

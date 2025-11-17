@@ -49,6 +49,7 @@ public:
 	virtual void SetOrientationMode_Implementation(const bool bStrafe) override;
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void SetMinionCount_Implementation(int32 Count) override;
+	virtual EEntombedArchetype GetArchetype_Implementation() const override;
 	/* CombatInterface end */
 
 	UPROPERTY(BlueprintAssignable)
