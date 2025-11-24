@@ -21,8 +21,6 @@ struct EntombedDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(BurnResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ShockResistance);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(FreezeResistance);
-
-	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDef;
 	
 	EntombedDamageStatics()
 	{
@@ -33,14 +31,6 @@ struct EntombedDamageStatics
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UEntombedAttributeSet, BurnResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UEntombedAttributeSet, ShockResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UEntombedAttributeSet, FreezeResistance, Target, false);
-
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Attribute_Derived_CriticalChance, CriticalChanceDef);
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Attribute_Derived_CriticalMultiplier, CriticalMultiplierDef);
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Attribute_Derived_BlockChance, BlockChanceDef);
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Attribute_Derived_ArmorRating, ArmorRatingDef);
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Resistance_Burn, BurnResistanceDef);
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Resistance_Shock, ShockResistanceDef);
-		TagsToCaptureDef.Add(FEntombedGameplayTags::Get().Resistance_Freeze, FreezeResistanceDef);
 	}
 };
 
@@ -61,9 +51,58 @@ UExecCalc_Damage::UExecCalc_Damage()
 	RelevantAttributesToCapture.Add(DamageStatics().FreezeResistanceDef);
 }
 
+void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& Spec, FAggregatorEvaluateParameters EvaluationParameters, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& InTagsToCaptureDef) const
+{
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	for (const TTuple<FGameplayTag, FGameplayTag>& ElementalDebuffPair : GameplayTags.ElementalDamageTypesToDebuffs)
+	{
+		const FGameplayTag DamageTypeTag = ElementalDebuffPair.Key;
+		const FGameplayTag DebuffTag = ElementalDebuffPair.Value;
+    	
+		const float TypeDamage = Spec.GetSetByCallerMagnitude(DamageTypeTag, false, -1.f);
+		if (TypeDamage > -0.5f) //padding for floating point imprecision
+		{
+			const float SourceDebuffChance = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Chance, false, -1.f);
+    		
+			float TargetDebuffResistance = 0.f;
+			const FGameplayTag& ResistanceTag = GameplayTags.ElementalDamageTypesToResistances[DamageTypeTag];
+			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(InTagsToCaptureDef[ResistanceTag], EvaluationParameters, TargetDebuffResistance);
+			TargetDebuffResistance = FMath::Max<float>(TargetDebuffResistance, 0.f);
+			const float EffectiveDebuffChance = SourceDebuffChance * (100 - TargetDebuffResistance) / 100.f;
+			const bool bDebuff = FMath::RandRange(1, 100) < EffectiveDebuffChance;
+			if (bDebuff)
+			{
+    			FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
+				UEntombedAbilitySystemLibrary::SetIsDebuffed(ContextHandle, true);
+				UEntombedAbilitySystemLibrary::SetDamageType(ContextHandle, DamageTypeTag);
+
+				const float DebuffDamage = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Damage, false, -1.f);
+				const float DebuffDuration = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Duration, false, -1.f);
+				const float DebuffFrequency = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Frequency, false, -1.f);
+
+				UEntombedAbilitySystemLibrary::SetDebuffDamage(ContextHandle, DebuffDamage);
+				UEntombedAbilitySystemLibrary::SetDebuffDuration(ContextHandle, DebuffDuration);
+				UEntombedAbilitySystemLibrary::SetDebuffFrequency(ContextHandle, DebuffFrequency);
+			}
+		}
+	}
+}
+
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDef;
+
+	TagsToCaptureDef.Add(GameplayTags.Attribute_Derived_CriticalChance, DamageStatics().CriticalChanceDef);
+	TagsToCaptureDef.Add(GameplayTags.Attribute_Derived_CriticalMultiplier, DamageStatics().CriticalMultiplierDef);
+	TagsToCaptureDef.Add(GameplayTags.Attribute_Derived_BlockChance, DamageStatics().BlockChanceDef);
+	TagsToCaptureDef.Add(GameplayTags.Attribute_Derived_ArmorRating, DamageStatics().ArmorRatingDef);
+	TagsToCaptureDef.Add(GameplayTags.Resistance_Burn, DamageStatics().BurnResistanceDef);
+	TagsToCaptureDef.Add(GameplayTags.Resistance_Shock, DamageStatics().ShockResistanceDef);
+	TagsToCaptureDef.Add(GameplayTags.Resistance_Freeze, DamageStatics().FreezeResistanceDef);
+	
 	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 
@@ -112,7 +151,7 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	}
 	
 	//get physical damage SetByCaller magnitudes
-	for (auto& PhysicalDamageType : FEntombedGameplayTags::Get().PhysicalDamageTypes)
+	for (const FGameplayTag& PhysicalDamageType : GameplayTags.PhysicalDamageTypes)
 	{
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(PhysicalDamageType, false); //DefaultIfNotFound=0
 		Damage += DamageTypeValue;
@@ -130,15 +169,18 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	float DamageReductionFactor = FMath::Max(TargetArmorRating + DamageCoefficient * Damage, 1);
 	float DamageReduction = TargetArmorRating / DamageReductionFactor; //TODO: change damage coefficient to something that scales better
 	Damage = Damage * (1 - DamageReduction);
+	
+	//get elemental debuff SetByCaller magnitudes
+	DetermineDebuff(ExecutionParams, Spec, EvaluationParameters, TagsToCaptureDef);
 
 	//get elemental damage SetByCaller magnitudes
-	for (auto& ElementalDamagePair : FEntombedGameplayTags::Get().ElementalDamageTypesToResistances)
+	for (const TTuple<FGameplayTag, FGameplayTag>& ElementalDamagePair : GameplayTags.ElementalDamageTypesToResistances)
 	{
 		const FGameplayTag DamageTypeTag = ElementalDamagePair.Key;
 		const FGameplayTag ResistanceTag = ElementalDamagePair.Value;
 		
-		checkf(EntombedDamageStatics().TagsToCaptureDef.Contains(ResistanceTag), TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
-		const FGameplayEffectAttributeCaptureDefinition CaptureDef = EntombedDamageStatics().TagsToCaptureDef[ResistanceTag];
+		checkf(TagsToCaptureDef.Contains(ResistanceTag), TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
+		const FGameplayEffectAttributeCaptureDefinition CaptureDef = TagsToCaptureDef[ResistanceTag];
 
 		float Resistance = 0.f;
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);

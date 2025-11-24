@@ -60,10 +60,12 @@ class ENTOMBED_API UEntombedAttributeSet : public UAttributeSet
 public:
 	UEntombedAttributeSet();
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
-
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	
+	void HandleIncomingDamage(FEffectProperties Properties);
+	void HandleIncomingXP(FEffectProperties Properties);
+	void HandleIncomingDebuff(FEffectProperties Properties);
 
 	/*
 	 * RESOURCE ATTRIBUTES

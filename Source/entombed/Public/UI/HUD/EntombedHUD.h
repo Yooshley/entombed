@@ -6,6 +6,7 @@
 #include "GameFramework/HUD.h"
 #include "EntombedHUD.generated.h"
 
+class UAbilityMenuWidgetController;
 class UAttributeMenuWidgetController;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -26,6 +27,8 @@ public:
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParameters& WidgetControllerParameters);
 
 	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParameters& WidgetControllerParameters);
+	
+	UAbilityMenuWidgetController* GetAbilityMenuWidgetController(const FWidgetControllerParameters& WidgetControllerParameters);
 
 	void InitializeOverlay(APlayerController* PC, APlayerState* PS, UAbilitySystemComponent* ASC, UAttributeSet* AS);
 
@@ -44,6 +47,12 @@ private:
 	UPROPERTY()
 	UAttributeMenuWidgetController* AttributeMenuWidgetController;
 
+	UPROPERTY()
+	UAbilityMenuWidgetController* AbilityMenuWidgetController;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+	
+	UPROPERTY(EditAnywhere)
+    TSubclassOf<UAbilityMenuWidgetController> AbilityMenuWidgetControllerClass;
 };

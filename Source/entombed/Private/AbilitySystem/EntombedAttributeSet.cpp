@@ -78,67 +78,12 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		const float LocalIncomingDamage = GetIncomingDamage();
-		SetIncomingDamage(0);
-		if (LocalIncomingDamage >= 0.f)
-		{
-			const float NewLife = GetLife() - LocalIncomingDamage;
-			SetLife(FMath::Clamp(NewLife, 0.f, GetTotalLife()));
-
-			const bool bFatal = NewLife <= 0.f;
-			if (bFatal)
-			{
-				ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetAvatarActor);
-				if (CombatInterface)
-				{
-					CombatInterface->Death();
-				}
-				SendXPEvent(Properties);
-			}
-			else
-			{
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
-				Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
-			}
-			const bool bBlocked = UEntombedAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);
-			const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
-			ShowFloatingText(Properties, LocalIncomingDamage, bBlocked, bCritical);
-		}
+		HandleIncomingDamage(Properties);
 	}
 
 	if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
 	{
-		const float LocalIncomingXP = GetIncomingXP();
-		SetIncomingXP(0);
-
-		if (Properties.SourceCharacter->Implements<UPlayerInterface>() && Properties.SourceCharacter->Implements<UCombatInterface>())
-		{
-			const int32 CurrentLevel = ICombatInterface::Execute_GetCharacterLevel(Properties.SourceCharacter);
-			const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Properties.SourceCharacter);
-			const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Properties.SourceCharacter, CurrentXP + LocalIncomingXP);
-			const int32 NumLevelUps = NewLevel - CurrentLevel;
-			if (NumLevelUps > 0)
-			{
-				int32 AttributePointsAward = 0;
-				int32 AbilityPointsAward = 0;
-				for (int32 i = 0; i < NumLevelUps; i++)
-				{
-					AttributePointsAward += IPlayerInterface::Execute_GetAttributePointsAward(Properties.SourceCharacter, CurrentLevel+i);
-					AbilityPointsAward += IPlayerInterface::Execute_GetAbilityPointsAward(Properties.SourceCharacter, CurrentLevel+i);
-				}
-				IPlayerInterface::Execute_AddLevel(Properties.SourceCharacter, NumLevelUps);
-				IPlayerInterface::Execute_LevelUp(Properties.SourceCharacter);
-				IPlayerInterface::Execute_AddAttributePoints(Properties.SourceCharacter, AttributePointsAward);
-				IPlayerInterface::Execute_AddAbilityPoints(Properties.SourceCharacter, AbilityPointsAward);
-
-				bMaxOutLife = true;
-				bMaxOutForm = true;
-				bMaxOutMind = true;
-			}
-			
-			IPlayerInterface::Execute_AddXP(Properties.SourceCharacter, LocalIncomingXP);
-		}
+		HandleIncomingXP(Properties);
 	}
 }
 
@@ -161,6 +106,80 @@ void UEntombedAttributeSet::PostAttributeChange(const FGameplayAttribute& Attrib
 		SetMind(GetTotalMind());
 		bMaxOutMind = false;
 	}
+}
+
+void UEntombedAttributeSet::HandleIncomingDamage(FEffectProperties Properties)
+{
+	const float LocalIncomingDamage = GetIncomingDamage();
+	SetIncomingDamage(0);
+	if (LocalIncomingDamage >= 0.f)
+	{
+		const float NewLife = GetLife() - LocalIncomingDamage;
+		SetLife(FMath::Clamp(NewLife, 0.f, GetTotalLife()));
+
+		const bool bFatal = NewLife <= 0.f;
+		if (bFatal)
+		{
+			ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetAvatarActor);
+			if (CombatInterface)
+			{
+				CombatInterface->Death();
+			}
+			SendXPEvent(Properties);
+		}
+		else
+		{
+			FGameplayTagContainer TagContainer;
+			TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
+			Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+		}
+		const bool bBlocked = UEntombedAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);
+		const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
+		ShowFloatingText(Properties, LocalIncomingDamage, bBlocked, bCritical);
+		if (UEntombedAbilitySystemLibrary::IsDebuffed(Properties.EffectContextHandle))
+		{
+			HandleIncomingDebuff(Properties);
+		}
+	}
+}
+
+void UEntombedAttributeSet::HandleIncomingXP(FEffectProperties Properties)
+{
+	const float LocalIncomingXP = GetIncomingXP();
+	SetIncomingXP(0);
+
+	if (Properties.SourceCharacter->Implements<UPlayerInterface>() && Properties.SourceCharacter->Implements<UCombatInterface>())
+	{
+		const int32 CurrentLevel = ICombatInterface::Execute_GetCharacterLevel(Properties.SourceCharacter);
+		const int32 CurrentXP = IPlayerInterface::Execute_GetXP(Properties.SourceCharacter);
+		const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(Properties.SourceCharacter, CurrentXP + LocalIncomingXP);
+		const int32 NumLevelUps = NewLevel - CurrentLevel;
+		if (NumLevelUps > 0)
+		{
+			int32 AttributePointsAward = 0;
+			int32 AbilityPointsAward = 0;
+			for (int32 i = 0; i < NumLevelUps; i++)
+			{
+				AttributePointsAward += IPlayerInterface::Execute_GetAttributePointsAward(Properties.SourceCharacter, CurrentLevel+i);
+				AbilityPointsAward += IPlayerInterface::Execute_GetAbilityPointsAward(Properties.SourceCharacter, CurrentLevel+i);
+			}
+			IPlayerInterface::Execute_AddLevel(Properties.SourceCharacter, NumLevelUps);
+			IPlayerInterface::Execute_LevelUp(Properties.SourceCharacter);
+			IPlayerInterface::Execute_AddAttributePoints(Properties.SourceCharacter, AttributePointsAward);
+			IPlayerInterface::Execute_AddAbilityPoints(Properties.SourceCharacter, AbilityPointsAward);
+
+			bMaxOutLife = true;
+			bMaxOutForm = true;
+			bMaxOutMind = true;
+		}
+			
+		IPlayerInterface::Execute_AddXP(Properties.SourceCharacter, LocalIncomingXP);
+	}
+}
+
+void UEntombedAttributeSet::HandleIncomingDebuff(FEffectProperties Properties)
+{
+	
 }
 
 void UEntombedAttributeSet::OnRep_Life(const FGameplayAttributeData& OldLife) const

@@ -66,6 +66,16 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Damage_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Shock"));
 	GameplayTags.Damage_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Freeze"));
 	
+	GameplayTags.Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff"));
+	GameplayTags.Debuff_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Chance"));
+	GameplayTags.Debuff_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Damage"));
+	GameplayTags.Debuff_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Duration"));
+	GameplayTags.Debuff_Frequency = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Frequency"));
+	
+	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn"));
+	GameplayTags.Debuff_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock"));
+	GameplayTags.Debuff_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Freeze"));
+	
 	GameplayTags.Resistance_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Burn"));
 	GameplayTags.Resistance_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Shock"));
 	GameplayTags.Resistance_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Freeze"));
@@ -74,15 +84,34 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Shock, GameplayTags.Resistance_Shock);
 	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Freeze, GameplayTags.Resistance_Freeze);
 
+	GameplayTags.ElementalDamageTypesToDebuffs.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn);
+	GameplayTags.ElementalDamageTypesToDebuffs.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock);
+	GameplayTags.ElementalDamageTypesToDebuffs.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze);
+
 	/**
 	*ABILITY TAGS
 	**/
 	GameplayTags.Ability = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability"));
+	GameplayTags.Ability_None = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.None"));
 	GameplayTags.Ability_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Attack"));
 	GameplayTags.Ability_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Summon"));
+
+	GameplayTags.Ability_Knock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Knock"));
+
+	GameplayTags.Ability_Status = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status"));
+	GameplayTags.Ability_Status_Locked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Locked"));
+	GameplayTags.Ability_Status_Eligible = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Eligible"));
+	GameplayTags.Ability_Status_Unlocked = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Unlocked"));
+	GameplayTags.Ability_Status_Equipped = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Status.Equipped"));
+
+	GameplayTags.Ability_Type_Active = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.Active"));
+	GameplayTags.Ability_Type_Passive = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.Passive"));
+	GameplayTags.Ability_Type_None = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Type.None"));
 	
 	GameplayTags.Ability_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.FireBolt"));
 	GameplayTags.Cooldown_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.FireBolt"));
+	
+	GameplayTags.Ability_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Electrocute"));
 
 	/**
 	*EFFECT TAGS

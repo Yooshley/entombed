@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
+#include "EntombedAbilityTypes.h"
 #include "GameFramework/Actor.h"
 #include "EntombedProjectile.generated.h"
 
@@ -23,10 +23,11 @@ public:
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn=true))
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParameters DamageEffectParameters;
 
 protected:
 	virtual void BeginPlay() override;
+	void OnHit();
 	virtual void Destroyed() override;
 
 	UFUNCTION()

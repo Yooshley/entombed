@@ -58,6 +58,12 @@ void AEntombedPlayerCharacter::AddLevel_Implementation(int32 InLevel)
 	AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
 	check(EntombedPlayerState);
 	EntombedPlayerState->AddLevel(InLevel);
+	
+	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(GetAbilitySystemComponent()))
+	{
+		EntombedASC->UpdateAbilityStatus(EntombedPlayerState->GetPlayerLevel());
+	}
+	
 }
 
 void AEntombedPlayerCharacter::AddAttributePoints_Implementation(int32 InAttributePoints)

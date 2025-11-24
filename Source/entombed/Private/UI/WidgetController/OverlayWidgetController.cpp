@@ -3,6 +3,7 @@
 
 #include "UI/WidgetController/OverlayWidgetController.h"
 
+#include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
@@ -13,7 +14,8 @@ void UOverlayWidgetController::BroadcastInitialValues()
 {
 	Super::BroadcastInitialValues();
 
-	const UEntombedAttributeSet* EntombedAttributeSet = CastChecked<UEntombedAttributeSet>(AttributeSet);
+	const UEntombedAttributeSet* EntombedAttributeSet = GetEntombedAttributeSet();
+	
 	OnLifeChanged.Broadcast(EntombedAttributeSet->GetLife());
 	OnMaxLifeChanged.Broadcast(EntombedAttributeSet->GetTotalLife());
 	OnManaChanged.Broadcast(EntombedAttributeSet->GetMind());
@@ -24,14 +26,15 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
 
-	AEntombedPlayerState* EntombedPlayerState = CastChecked<AEntombedPlayerState>(PlayerState);
+	AEntombedPlayerState* EntombedPlayerState = GetEntombedPlayerState();
+	
 	EntombedPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
 	EntombedPlayerState->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
 	{
 		OnLevelChangedDelegate.Broadcast(NewLevel);
 	});
 	
-	const UEntombedAttributeSet* EntombedAttributeSet = CastChecked<UEntombedAttributeSet>(AttributeSet);
+	const UEntombedAttributeSet* EntombedAttributeSet = GetEntombedAttributeSet();
 	
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetLifeAttribute()).AddLambda(
 	[this](const FOnAttributeChangeData& Data)
@@ -57,15 +60,16 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 		OnMaxManaChanged.Broadcast(Data.NewValue);
 	});
 
-	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent))
+	if (GetEntombedAbilitySystemComponent())
 	{
+		EntombedASC->AbilityEquippedDelegate.AddUObject(this, &UOverlayWidgetController::OnAbilityEquipped);
 		if (EntombedASC->bGrantedDefaultAbilities)
 		{
-			OnInitializeDefaultAbilities(EntombedASC);
+			BroadcastAbilityInfo();
 		}
 		else
 		{
-			EntombedASC->GrantedAbilitiesDelegate.AddUObject(this, &UOverlayWidgetController::OnInitializeDefaultAbilities);
+			EntombedASC->GrantedAbilitiesDelegate.AddUObject(this, &UOverlayWidgetController::BroadcastAbilityInfo);
 		}
 
 		EntombedASC->EffectAssetTags.AddLambda(
@@ -84,24 +88,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	}
 }
 
-void UOverlayWidgetController::OnInitializeDefaultAbilities(UEntombedAbilitySystemComponent* EntombedASC)
-{
-	if (!EntombedASC->bGrantedDefaultAbilities) return;
-
-	FForEachAbility BroadcastDelegate;
-	BroadcastDelegate.BindLambda([this, EntombedASC](const FGameplayAbilitySpec& AbilitySpec)
-	{
-		FEntombedAbilityInfo Info = AbilityInfo->FindAbilityInfoByTag(EntombedASC->GetAbilityTagFromSpec(AbilitySpec));
-		Info.InputTag = EntombedASC->GetInputTagFromSpec(AbilitySpec);
-		AbilityInfoDelegate.Broadcast(Info);
-	});
-	EntombedASC->ForEachAbility(BroadcastDelegate);
-}
-
 void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 {
-	const AEntombedPlayerState* EntombedPlayerState = CastChecked<AEntombedPlayerState>(PlayerState);
-	const ULevelInfo* LevelInfo = EntombedPlayerState->LevelInfo;
+	const ULevelInfo* LevelInfo = GetEntombedPlayerState()->LevelInfo;
 	checkf(LevelInfo, TEXT("LevelInfo not found in PlayerState"));
 
 	const int32 Level = LevelInfo->FindLevelForXP(NewXP);
@@ -120,4 +109,23 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 		OnXPChangedDelegate.Broadcast(XPPercentage);
 	}
 
+}
+
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag,
+	const FGameplayTag& SlotTag, const FGameplayTag& PrevSlotTag) const
+{
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	
+	FEntombedAbilityInfo PrevAbilityInfo;
+	PrevAbilityInfo.StatusTag = GameplayTags.Ability_Status_Unlocked;
+	PrevAbilityInfo.InputTag = PrevSlotTag;
+	PrevAbilityInfo.AbilityTag = GameplayTags.Ability_None;
+
+	AbilityInfoDelegate.Broadcast(PrevAbilityInfo); //clear out prev slot
+
+	FEntombedAbilityInfo NewAbilityInfo = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+	NewAbilityInfo.StatusTag = StatusTag;
+	NewAbilityInfo.InputTag = SlotTag;
+
+	AbilityInfoDelegate.Broadcast(NewAbilityInfo); //fill in new slot
 }

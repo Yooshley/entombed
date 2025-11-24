@@ -72,23 +72,50 @@ public:
 	FGameplayTag Damage_Burn;
 	FGameplayTag Damage_Shock;
 	FGameplayTag Damage_Freeze;
+	
+	FGameplayTag Debuff;
+	FGameplayTag Debuff_Chance;
+	FGameplayTag Debuff_Damage;
+	FGameplayTag Debuff_Duration;
+	FGameplayTag Debuff_Frequency;
+	
+	FGameplayTag Debuff_Burn;
+	FGameplayTag Debuff_Shock;
+	FGameplayTag Debuff_Freeze;
 
 	FGameplayTag Resistance_Burn;
 	FGameplayTag Resistance_Shock;
 	FGameplayTag Resistance_Freeze;
 
 	TMap<FGameplayTag, FGameplayTag> ElementalDamageTypesToResistances;
+	TMap<FGameplayTag, FGameplayTag> ElementalDamageTypesToDebuffs;
 
 	/**
 	*ABILITY TAGS
 	**/
 	FGameplayTag Ability;
+	FGameplayTag Ability_None;
 	FGameplayTag Ability_Attack;
 	FGameplayTag Ability_Ranged;
 	FGameplayTag Ability_Summon;
 	
+	FGameplayTag Ability_Knock;
+
+	FGameplayTag Ability_Status;
+	FGameplayTag Ability_Status_Locked;
+	FGameplayTag Ability_Status_Eligible;
+	FGameplayTag Ability_Status_Unlocked;
+	FGameplayTag Ability_Status_Equipped;
+
+	FGameplayTag Ability_Type_Active;
+	FGameplayTag Ability_Type_Passive;
+	FGameplayTag Ability_Type_None;
+	
+	
 	FGameplayTag Ability_FireBolt;
 	FGameplayTag Cooldown_FireBolt;
+
+	FGameplayTag Ability_Electrocute;
 
 	/**
 	*EFFECT TAGS

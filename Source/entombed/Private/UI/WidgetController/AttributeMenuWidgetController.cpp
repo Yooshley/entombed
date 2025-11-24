@@ -11,9 +11,8 @@
 void UAttributeMenuWidgetController::BindCallbacksToDependencies()
 {
 	Super::BindCallbacksToDependencies();
-
-	AEntombedPlayerState* EntombedPlayerState = CastChecked<AEntombedPlayerState>(PlayerState);
-	EntombedPlayerState->OnAttributePointsChangedDelegate.AddLambda([this](int32 NewValue)
+	
+	GetEntombedPlayerState()->OnAttributePointsChangedDelegate.AddLambda([this](int32 NewValue)
 	{
 		AttributePointsChangedDelegate.Broadcast(NewValue);
 	});
@@ -39,14 +38,12 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 		BroadcastAttributeInfo(Tag.AttributeTag);
 	}
 
-	AEntombedPlayerState* EntombedPlayerState = CastChecked<AEntombedPlayerState>(PlayerState);
-	AttributePointsChangedDelegate.Broadcast(EntombedPlayerState->GetAttributePoints());
+	AttributePointsChangedDelegate.Broadcast(GetEntombedPlayerState()->GetAttributePoints());
 }
 
 void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
-	UEntombedAbilitySystemComponent* EntombedASC = CastChecked<UEntombedAbilitySystemComponent>(AbilitySystemComponent);
-	EntombedASC->UpgradeAttribute(AttributeTag);
+	GetEntombedAbilitySystemComponent()->UpgradeAttribute(AttributeTag);
 }
 
 void UAttributeMenuWidgetController::BroadcastAttributeInfo(const FGameplayTag& Tag) const

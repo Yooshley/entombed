@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EntombedAbilityTypes.h"
 #include "AbilitySystem/Ability/EntombedGameplayAbility.h"
 #include "EntombedDamageGameplayAbility.generated.h"
 
@@ -18,10 +19,32 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
 
+	FDamageEffectParameters MakeDamageParametersFromClassDefaults(AActor* TargetActor = nullptr) const;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
+	//UPROPERTY(EditDefaultsOnly, Category="Damage")
+	//TMap<FGameplayTag, FScalableFloat> DamageTypes;
+
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
-	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+	FGameplayTag DamageType;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	FScalableFloat DamageValue;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float DebuffChance = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float DebuffDamage = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float DebuffFrequency = 1.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float DebuffDuration = 5.f;
+
+	//float GetDamageByTypeTag(float InLevel, const FGameplayTag& DamageType);
 };

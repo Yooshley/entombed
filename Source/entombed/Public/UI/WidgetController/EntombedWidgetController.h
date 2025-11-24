@@ -5,7 +5,13 @@
 #include "CoreMinimal.h"
 #include "EntombedWidgetController.generated.h"
 
+class UAbilityInfo;
+class UEntombedAttributeSet;
+class UEntombedAbilitySystemComponent;
+class AEntombedPlayerState;
+class AEntombedPlayerController;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FEntombedAbilityInfo&, Info);
 
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -44,10 +50,18 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "WidgetController")
 	virtual void BroadcastInitialValues();
+
+	virtual void BroadcastAbilityInfo();
 	
 	virtual void BindCallbacksToDependencies();
+
+	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Messages")
+	FAbilityInfoSignature AbilityInfoDelegate;
 	
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Widget Data")
+	TObjectPtr<UAbilityInfo> AbilityInfo;
+	
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<APlayerController> PlayerController;
 
@@ -59,4 +73,21 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
 	TObjectPtr<UAttributeSet> AttributeSet;
+
+	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
+	TObjectPtr<AEntombedPlayerController> EntombedPC;
+
+	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
+	TObjectPtr<AEntombedPlayerState> EntombedPS;
+
+	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
+	TObjectPtr<UEntombedAbilitySystemComponent> EntombedASC;
+
+	UPROPERTY(BlueprintReadOnly, Category="WidgetController")
+	TObjectPtr<UEntombedAttributeSet> EntombedAS;
+
+	AEntombedPlayerController* GetEntombedPlayerController();
+	AEntombedPlayerState* GetEntombedPlayerState();
+	UEntombedAbilitySystemComponent* GetEntombedAbilitySystemComponent();
+	UEntombedAttributeSet* GetEntombedAttributeSet();
 };

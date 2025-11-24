@@ -42,14 +42,19 @@ void AEntombedProjectile::BeginPlay()
 	FlightAudioComponent = UGameplayStatics::SpawnSoundAttached(FlightSound, GetRootComponent());
 }
 
+void AEntombedProjectile::OnHit()
+{
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
+	if (FlightAudioComponent) FlightAudioComponent->Stop();
+	bHit = true;
+}
+
 void AEntombedProjectile::Destroyed()
 {
 	if (!bHit && !HasAuthority())
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
-		if (FlightAudioComponent) FlightAudioComponent->Stop();
-		bHit = true;
+		OnHit();
 	}
 	Super::Destroyed();
 }
@@ -57,22 +62,21 @@ void AEntombedProjectile::Destroyed()
 void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!DamageEffectSpecHandle.Data.IsValid() || DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor) return;
-	if (UEntombedAbilitySystemLibrary::IsAlly(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor)) return;
+	AActor* SourceAvatarActor = DamageEffectParameters.SourceAbilitySystemComponent->GetAvatarActor();
+	if (SourceAvatarActor == OtherActor) return;
+	if (UEntombedAbilitySystemLibrary::IsAlly(SourceAvatarActor, OtherActor)) return;
 	
 	if(!bHit)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
-		if (FlightAudioComponent) FlightAudioComponent->Stop();
-		bHit = true;
+		OnHit();
 	}
 	
 	if (HasAuthority())
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+			DamageEffectParameters.TargetAbilitySystemComponent = TargetASC;
+			UEntombedAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParameters);
 		}
 		
 		Destroy();
