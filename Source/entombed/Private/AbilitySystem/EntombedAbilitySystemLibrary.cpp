@@ -214,6 +214,24 @@ FGameplayTag UEntombedAbilitySystemLibrary::GetDamageType(const FGameplayEffectC
 	return FGameplayTag();
 }
 
+FVector UEntombedAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EntombedContext->GetDeathImpulse();
+	}
+	return FVector::ZeroVector;
+}
+
+FVector UEntombedAbilitySystemLibrary::GetKnockbackVector(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EntombedContext->GetKnockbackVector();
+	}
+	return FVector::ZeroVector;
+}
+
 void UEntombedAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle,
                                                     bool bInIsBlockedHit)
 {
@@ -276,6 +294,24 @@ void UEntombedAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& 
     }
 }
 
+void UEntombedAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle,
+	const FVector& InImpulse)
+{
+	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EntombedContext->SetDeathImpulse(InImpulse);
+	}
+}
+
+void UEntombedAbilitySystemLibrary::SetKnockbackVector(FGameplayEffectContextHandle& EffectContextHandle,
+	const FVector& InVector)
+{
+	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EntombedContext->SetKnockbackVector(InVector);
+	}
+}
+
 void UEntombedAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
                                                                TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
                                                                const FVector& Origin)
@@ -317,6 +353,8 @@ FGameplayEffectContextHandle UEntombedAbilitySystemLibrary::ApplyDamageEffect(
 	
 	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParameters.SourceAbilitySystemComponent->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
+	SetDeathImpulse(EffectContextHandle, DamageEffectParameters.DeathImpulse);
+	SetKnockbackVector(EffectContextHandle, DamageEffectParameters.KnockbackVector);
 
 	const FGameplayEffectSpecHandle EffectSpecHandle = DamageEffectParameters.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParameters.DamageEffectClass, DamageEffectParameters.AbilityLevel, EffectContextHandle);
 

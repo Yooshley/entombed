@@ -34,6 +34,16 @@ FDamageEffectParameters UEntombedDamageGameplayAbility::MakeDamageParametersFrom
 	DamageEffectParameters.DebuffDamage = DebuffDamage;
 	DamageEffectParameters.DebuffDuration = DebuffDuration;
 	DamageEffectParameters.DebuffFrequency = DebuffFrequency;
+	DamageEffectParameters.DeathImpulseMagnitude = DeathImpulseMagnitude;
+	DamageEffectParameters.KnockbackMagnitude = KnockbackMagnitude;
+
+	if (IsValid(TargetActor))
+	{
+		const FRotator Rotation = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
+		const FVector ToTarget = Rotation.Vector();
+		DamageEffectParameters.DeathImpulse = ToTarget * DeathImpulseMagnitude;
+		DamageEffectParameters.KnockbackVector = ToTarget * KnockbackMagnitude;
+	}
 	return DamageEffectParameters;
 }
 

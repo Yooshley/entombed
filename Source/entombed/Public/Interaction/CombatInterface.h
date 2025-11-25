@@ -7,7 +7,11 @@
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
+class UAbilitySystemComponent;
 class UNiagaraSystem;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAbilitySystemReady, UAbilitySystemComponent*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, DeadActor);
 
 USTRUCT(BlueprintType)
 struct FTaggedMontage
@@ -64,7 +68,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetTargetDirection(FVector TargetLocation);
 
-	virtual void Death() = 0;
+	virtual void Death(const FVector& DeathImpulse) = 0;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsDead() const;
@@ -89,4 +93,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	EEntombedArchetype GetArchetype() const;
+
+	virtual FOnAbilitySystemReady& GetOnAbilitySystemReadyDelegate() = 0;
+	virtual FOnDeath& GetOnDeathDelegate() = 0;
 };

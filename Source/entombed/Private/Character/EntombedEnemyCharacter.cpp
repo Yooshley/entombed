@@ -76,14 +76,14 @@ int32 AEntombedEnemyCharacter::GetCharacterLevel_Implementation()
 	return Level;
 }
 
-void AEntombedEnemyCharacter::Death()
+void AEntombedEnemyCharacter::Death(const FVector& DeathImpulse)
 {
 	SetLifeSpan(LifeSpanPostDeath);
 	if (EntombedAIController)
 	{
 		EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_DEAD_BOOL, true);
 	}
-	Super::Death();
+	Super::Death(DeathImpulse);
 }
 
 void AEntombedEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
@@ -127,6 +127,8 @@ void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 	{
 		InitializeDefaultAttributes();
 	}
+
+	OnAbilitySystemReady.Broadcast(AbilitySystemComponent);
 }
 
 void AEntombedEnemyCharacter::InitializeDefaultAttributes() const

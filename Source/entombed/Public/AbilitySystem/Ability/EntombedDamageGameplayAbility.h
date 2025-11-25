@@ -19,6 +19,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CauseDamage(AActor* TargetActor);
 
+	UFUNCTION(BlueprintPure)
 	FDamageEffectParameters MakeDamageParametersFromClassDefaults(AActor* TargetActor = nullptr) const;
 
 protected:
@@ -45,6 +46,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	float DebuffDuration = 5.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float DeathImpulseMagnitude = 5000.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	float KnockbackMagnitude = 500.f;
 
 	//float GetDamageByTypeTag(float InLevel, const FGameplayTag& DamageType);
 };

@@ -144,6 +144,7 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 	Cast<UEntombedAbilitySystemComponent>(EntombedPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = EntombedPlayerState->GetAbilitySystemComponent();
 	AttributeSet = EntombedPlayerState->GetAttributeSet();
+	OnAbilitySystemReady.Broadcast(AbilitySystemComponent);
 
 	if (AEntombedPlayerController* EntombedPlayerController = Cast<AEntombedPlayerController>(GetController()))
 	{

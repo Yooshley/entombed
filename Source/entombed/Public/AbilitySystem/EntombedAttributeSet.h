@@ -63,9 +63,9 @@ public:
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 	
-	void HandleIncomingDamage(FEffectProperties Properties);
-	void HandleIncomingXP(FEffectProperties Properties);
-	void HandleIncomingDebuff(FEffectProperties Properties);
+	void HandleIncomingDamage(const FEffectProperties& Properties);
+	void HandleIncomingXP(const FEffectProperties& Properties);
+	void HandleIncomingDebuff(const FEffectProperties& Properties);
 
 	/*
 	 * RESOURCE ATTRIBUTES

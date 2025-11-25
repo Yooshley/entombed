@@ -5,14 +5,13 @@
 
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
-#include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Player/EntombedPlayerController.h"
+#include "Niagara/DebuffNiagaraComponent.h"
 #include "UI/Widget/EntombedUserWidget.h"
 
 
@@ -66,6 +65,10 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 	HeadAttachment = CreateDefaultSubobject<USkeletalMeshComponent>("HeadAttachment");
 	HeadAttachment->SetupAttachment(GetMesh(), HEAD_SOCKET_NAME);
 	HeadAttachment->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuffComponent");
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffComponent->DebuffTag = FEntombedGameplayTags::Get().Debuff_Burn;
 }
 
 UAbilitySystemComponent* AEntombedBaseCharacter::GetAbilitySystemComponent() const
@@ -73,38 +76,54 @@ UAbilitySystemComponent* AEntombedBaseCharacter::GetAbilitySystemComponent() con
 	return AbilitySystemComponent;
 }
 
+FOnAbilitySystemReady& AEntombedBaseCharacter::GetOnAbilitySystemReadyDelegate()
+{
+	return OnAbilitySystemReady;
+}
+
+FOnDeath& AEntombedBaseCharacter::GetOnDeathDelegate()
+{
+	return OnDeath;
+}
+
 UAnimMontage* AEntombedBaseCharacter::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
 }
 
-void AEntombedBaseCharacter::Death()
+void AEntombedBaseCharacter::Death(const FVector& DeathImpulse)
 {
 	MainHandEquipment->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	OffHandEquipment->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
-	MulticastHandleDeath();
+	MulticastHandleDeath(DeathImpulse);
 }
 
-void AEntombedBaseCharacter::MulticastHandleDeath_Implementation()
+void AEntombedBaseCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
 	
 	MainHandEquipment->SetSimulatePhysics(true);
 	MainHandEquipment->SetEnableGravity(true);
 	MainHandEquipment->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	MainHandEquipment->AddImpulse(DeathImpulse, NAME_None, true);
 
 	OffHandEquipment->SetSimulatePhysics(true);
 	OffHandEquipment->SetEnableGravity(true);
 	OffHandEquipment->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	OffHandEquipment->AddImpulse(DeathImpulse, NAME_None, true);
 
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetEnableGravity(true);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	GetMesh()->AddImpulse(DeathImpulse, NAME_None, true);
+	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	bDead = true;
 	Dissolve();
+
+	OnDeath.Broadcast(this);
 }
 
 void AEntombedBaseCharacter::BeginPlay()

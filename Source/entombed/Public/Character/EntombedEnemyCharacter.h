@@ -30,7 +30,7 @@ public:
 
 	/** CombatInterface start */
 	virtual int32 GetCharacterLevel_Implementation() override;
-	virtual void Death() override;
+	virtual void Death(const FVector& DeathImpulse) override;
 	/** CombatInterface end */
 
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);

@@ -75,6 +75,12 @@ void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedCompone
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
+			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParameters.DeathImpulseMagnitude;
+			DamageEffectParameters.DeathImpulse = DeathImpulse;
+			
+			const FVector KnockbackVector = GetActorForwardVector() * DamageEffectParameters.KnockbackMagnitude;
+			DamageEffectParameters.KnockbackVector = KnockbackVector;
+			
 			DamageEffectParameters.TargetAbilitySystemComponent = TargetASC;
 			UEntombedAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParameters);
 		}

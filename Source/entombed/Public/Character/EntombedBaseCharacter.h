@@ -10,6 +10,7 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "EntombedBaseCharacter.generated.h"
 
+class UDebuffNiagaraComponent;
 class UWidgetComponent;
 enum class EEntombedArchetype : uint8;
 class UNiagaraSystem;
@@ -31,11 +32,13 @@ public:
 	FVector StrafeTarget = FVector::ZeroVector;
 
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	/* CombatInterface begin */
+	virtual FOnAbilitySystemReady& GetOnAbilitySystemReadyDelegate() override;
+	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
-	virtual void Death() override;
+	virtual void Death(const FVector& DeathImpulse) override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag ) override;
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatarActor_Implementation() override;
@@ -51,6 +54,10 @@ public:
 	virtual void SetMinionCount_Implementation(int32 Count) override;
 	virtual EEntombedArchetype GetArchetype_Implementation() const override;
 	/* CombatInterface end */
+
+	FOnAbilitySystemReady OnAbilitySystemReady;
+
+	FOnDeath OnDeath;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnLifeChanged;
@@ -151,6 +158,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	UNiagaraSystem* ImpactEffect;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+	
 private:
 	UFUNCTION()
 	USkeletalMeshComponent* CreateEquipmentSlot(const FName& Name);

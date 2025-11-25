@@ -67,6 +67,12 @@ public:
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
 	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
+	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
+	static FVector GetKnockbackVector(const FGameplayEffectContextHandle& EffectContextHandle);
+
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
 	static void SetIsBlockedHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit);
 
@@ -88,13 +94,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
 	static void SetDamageType(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InType);
 
+	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
+	static void SetDeathImpulse(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InImpulse);
+
+	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
+	static void SetKnockbackVector(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InVector);
+
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius, const FVector& Origin);
 
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayMechanics")
 	static bool IsAlly(AActor* FirstActor, AActor* SecondActor);
 
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayMechanics")
+	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayMechanics")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParameters& DamageEffectParameters);
 
 	static int32 GetXPAwardForArchetype(const UObject* WorldContextObject, EEntombedArchetype Archetype, int32 Level);

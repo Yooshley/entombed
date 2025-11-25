@@ -6,8 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystemComponent.h"
+#include "EntombedAbilityTypes.h"
 #include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
+#include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
@@ -16,7 +18,6 @@
 
 UEntombedAttributeSet::UEntombedAttributeSet()
 {
-	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
 }
 
 void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -60,6 +61,8 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 
 	FEffectProperties Properties;
 	SetEffectProperties(Data, Properties);
+	
+	if (Properties.TargetCharacter->Implements<UCombatInterface>() && ICombatInterface::Execute_IsDead(Properties.TargetCharacter)) return;
 
 	if (Data.EvaluatedData.Attribute == GetLifeAttribute())
 	{
@@ -108,7 +111,7 @@ void UEntombedAttributeSet::PostAttributeChange(const FGameplayAttribute& Attrib
 	}
 }
 
-void UEntombedAttributeSet::HandleIncomingDamage(FEffectProperties Properties)
+void UEntombedAttributeSet::HandleIncomingDamage(const FEffectProperties& Properties)
 {
 	const float LocalIncomingDamage = GetIncomingDamage();
 	SetIncomingDamage(0);
@@ -123,7 +126,7 @@ void UEntombedAttributeSet::HandleIncomingDamage(FEffectProperties Properties)
 			ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetAvatarActor);
 			if (CombatInterface)
 			{
-				CombatInterface->Death();
+				CombatInterface->Death(UEntombedAbilitySystemLibrary::GetDeathImpulse(Properties.EffectContextHandle));
 			}
 			SendXPEvent(Properties);
 		}
@@ -132,6 +135,12 @@ void UEntombedAttributeSet::HandleIncomingDamage(FEffectProperties Properties)
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
 			Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+
+			const FVector& KnockbackVector = UEntombedAbilitySystemLibrary::GetKnockbackVector(Properties.EffectContextHandle);
+			if (!KnockbackVector.IsNearlyZero(1.f))
+			{
+				Properties.TargetCharacter->LaunchCharacter(KnockbackVector, true, false);
+			}
 		}
 		const bool bBlocked = UEntombedAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);
 		const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
@@ -143,7 +152,7 @@ void UEntombedAttributeSet::HandleIncomingDamage(FEffectProperties Properties)
 	}
 }
 
-void UEntombedAttributeSet::HandleIncomingXP(FEffectProperties Properties)
+void UEntombedAttributeSet::HandleIncomingXP(const FEffectProperties& Properties)
 {
 	const float LocalIncomingXP = GetIncomingXP();
 	SetIncomingXP(0);
@@ -177,9 +186,48 @@ void UEntombedAttributeSet::HandleIncomingXP(FEffectProperties Properties)
 	}
 }
 
-void UEntombedAttributeSet::HandleIncomingDebuff(FEffectProperties Properties)
+void UEntombedAttributeSet::HandleIncomingDebuff(const FEffectProperties& Properties)
 {
+	//TODO: switch to ChanceToApplyGameplayEffect/CustomApplyGameplayEffectComponent to handle debuff/DoT effects
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	FGameplayEffectContextHandle EffectContext = Properties.SourceASC->MakeEffectContext();
+	EffectContext.AddSourceObject(Properties.SourceAvatarActor);
+
+	const FGameplayTag DamageType = UEntombedAbilitySystemLibrary::GetDamageType(Properties.EffectContextHandle);
+	const float DebuffDamage = UEntombedAbilitySystemLibrary::GetDebuffDamage(Properties.EffectContextHandle);
+	const float DebuffDuration = UEntombedAbilitySystemLibrary::GetDebuffDuration(Properties.EffectContextHandle);
+	const float DebuffFrequency = UEntombedAbilitySystemLibrary::GetDebuffFrequency(Properties.EffectContextHandle);
 	
+	FString DebuffName = FString::Printf(TEXT("DynamicDebuff_%s"), *DamageType.ToString()); 
+	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
+	
+	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+	Effect->Period = DebuffFrequency;
+	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
+
+	FInheritedTagContainer TagContainer;
+	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+	TagContainer.Added.AddTag(GameplayTags.ElementalDamageTypesToDebuffs[DamageType]);
+	Component.SetAndApplyTargetTagChanges(TagContainer);
+
+	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource; //TODO: deprecation incoming in 5.11  
+	Effect->StackLimitCount = 1; //TODO: extend stack limits for certain debuffs
+
+	const int32 Index = Effect->Modifiers.Add(FGameplayModifierInfo());
+	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
+
+	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
+	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+	ModifierInfo.Attribute = GetIncomingDamageAttribute();
+
+	if (FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f))
+	{
+		FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(MutableSpec->GetContext().Get());
+		TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
+		EntombedContext->SetDamageType(DebuffDamageType);
+		
+		Properties.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+	}
 }
 
 void UEntombedAttributeSet::OnRep_Life(const FGameplayAttributeData& OldLife) const
