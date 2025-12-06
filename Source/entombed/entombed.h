@@ -7,6 +7,8 @@
 #define CUSTOM_DEPTH_RED 250
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1
+#define ECC_Target ECollisionChannel::ECC_GameTraceChannel2
+#define ECC_ExcludeActors ECollisionChannel::ECC_GameTraceChannel3
 
 /* SOCKET NAMES */
 #define MAIN_HAND_SOCKET_NAME  FName("MainHandSocket")
@@ -19,5 +21,6 @@
 
 /*BLACKBOARD KEYS*/
 #define BB_KEY_HITREACTING_BOOL "IsHitReacting"
+#define BB_KEY_STUNNED_BOOL "IsStunned"
 #define BB_KEY_RANGED_BOOL "IsRanged"
 #define BB_KEY_DEAD_BOOL "IsDead"

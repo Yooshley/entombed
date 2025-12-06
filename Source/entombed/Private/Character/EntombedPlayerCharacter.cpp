@@ -4,6 +4,7 @@
 #include "Character/EntombedPlayerCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "AbilitySystem/Data/LevelInfo.h"
@@ -13,6 +14,7 @@
 #include "NiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Niagara/DebuffNiagaraComponent.h"
 
 AEntombedPlayerCharacter::AEntombedPlayerCharacter()
 {
@@ -75,9 +77,9 @@ void AEntombedPlayerCharacter::AddAttributePoints_Implementation(int32 InAttribu
 
 void AEntombedPlayerCharacter::AddAbilityPoints_Implementation(int32 InAbilityPoints)
 {
-		AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
-    	check(EntombedPlayerState);
-    	EntombedPlayerState->AddAbilityPoints(InAbilityPoints);
+	AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
+    check(EntombedPlayerState);
+    EntombedPlayerState->AddAbilityPoints(InAbilityPoints);
 }
 
 int32 AEntombedPlayerCharacter::GetXP_Implementation() const
@@ -127,6 +129,22 @@ int32 AEntombedPlayerCharacter::GetAbilityPoints_Implementation() const
 	return EntombedPlayerState->GetAbilityPoints();
 }
 
+void AEntombedPlayerCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
+{
+	if (AEntombedPlayerController* EntombedPlayerController = Cast<AEntombedPlayerController>(GetController()))
+	{
+		EntombedPlayerController->ShowMagicCircle(DecalMaterial);
+	}
+}
+
+void AEntombedPlayerCharacter::HideMagicCircle_Implementation()
+{
+	if (AEntombedPlayerController* EntombedPlayerController = Cast<AEntombedPlayerController>(GetController()))
+	{
+		EntombedPlayerController->HideMagicCircle();
+	}
+}
+
 int32 AEntombedPlayerCharacter::GetCharacterLevel_Implementation()
 {
 	const AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
@@ -145,6 +163,7 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 	AbilitySystemComponent = EntombedPlayerState->GetAbilitySystemComponent();
 	AttributeSet = EntombedPlayerState->GetAttributeSet();
 	OnAbilitySystemReady.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEntombedPlayerCharacter::StunTagChanged);
 
 	if (AEntombedPlayerController* EntombedPlayerController = Cast<AEntombedPlayerController>(GetController()))
 	{
@@ -159,6 +178,40 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 	{
 		UEntombedAbilitySystemLibrary::GrantDefaultAbilities(this, AbilitySystemComponent, Archetype);
 		Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->OnGrantedAbilities();
+	}
+}
+
+void AEntombedPlayerCharacter::OnRep_Shocked()
+{
+	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		FGameplayTagContainer BlockedTags;
+		BlockedTags.AddTag(FEntombedGameplayTags::Get().Player_Block_InputPressed);
+		BlockedTags.AddTag(FEntombedGameplayTags::Get().Player_Block_InputReleased);
+		BlockedTags.AddTag(FEntombedGameplayTags::Get().Player_Block_InputHeld);
+
+		if (bIsShocked)
+		{
+			EntombedASC->AddLooseGameplayTags(BlockedTags);
+			ShockDebuffComponent->Activate();
+		}
+		else
+		{
+			EntombedASC->RemoveLooseGameplayTags(BlockedTags);
+			ShockDebuffComponent->Deactivate();
+		}
+	}
+}
+
+void AEntombedPlayerCharacter::OnRep_Burned()
+{
+	if (bIsBurned)
+	{
+		BurnDebuffComponent->Activate();
+	}
+	else
+	{
+		BurnDebuffComponent->Deactivate();
 	}
 }
 

@@ -120,7 +120,7 @@ void UAbilityMenuWidgetController::EquipButtonPressed()
 	const FGameplayTag SelectedStatusTag = GetEntombedAbilitySystemComponent()->GetStatusTagFromAbilityTag(SelectedAbility.AbilityTag);
 	if(SelectedStatusTag.MatchesTag(FEntombedGameplayTags::Get().Ability_Status_Equipped))
 	{
-		SelectedSlotTag = GetEntombedAbilitySystemComponent()->GetInputTagFromAbilityTag(SelectedAbility.AbilityTag);
+		SelectedSlotTag = GetEntombedAbilitySystemComponent()->GetSlotTagFromAbilityTag(SelectedAbility.AbilityTag);
 	}
 }
 

@@ -11,7 +11,9 @@
 #include "entombed/entombed.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "Niagara/DebuffNiagaraComponent.h"
+#include "Niagara/PassiveNiagaraComponent.h"
 #include "UI/Widget/EntombedUserWidget.h"
 
 
@@ -69,6 +71,28 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("BurnDebuffComponent");
 	BurnDebuffComponent->SetupAttachment(GetRootComponent());
 	BurnDebuffComponent->DebuffTag = FEntombedGameplayTags::Get().Debuff_Burn;
+
+	ShockDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("ShockDebuffComponent");
+	ShockDebuffComponent->SetupAttachment(GetRootComponent());
+	ShockDebuffComponent->DebuffTag = FEntombedGameplayTags::Get().Debuff_Shock;
+
+	EffectAttachComponent = CreateDefaultSubobject<USceneComponent>("EffectAttachPoint");
+	EffectAttachComponent->SetupAttachment(GetRootComponent());
+	EffectAttachComponent->SetUsingAbsoluteRotation(true);
+
+	PassiveDefenseComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("PassiveDefenseComponent");
+	PassiveDefenseComponent->SetupAttachment(EffectAttachComponent);
+
+	PassiveSiphonComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("PassiveSiphonComponent");
+	PassiveSiphonComponent->SetupAttachment(EffectAttachComponent);
+}
+
+void AEntombedBaseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEntombedBaseCharacter, bIsShocked);
+	DOREPLIFETIME(AEntombedBaseCharacter, bIsBurned);
 }
 
 UAbilitySystemComponent* AEntombedBaseCharacter::GetAbilitySystemComponent() const
@@ -76,12 +100,36 @@ UAbilitySystemComponent* AEntombedBaseCharacter::GetAbilitySystemComponent() con
 	return AbilitySystemComponent;
 }
 
+float AEntombedBaseCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,
+	class AController* EventInstigator, AActor* DamageCauser)
+{
+	const float DamageTaken = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	OnDamage.Broadcast(DamageTaken);
+	return DamageTaken;
+}
+
+void AEntombedBaseCharacter::OnRep_Shocked()
+{
+	
+}
+
+void AEntombedBaseCharacter::OnRep_Burned()
+{
+	
+}
+
+void AEntombedBaseCharacter::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	bIsShocked = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bIsShocked ? 0.f : BaseRunSpeed;
+}
+
 FOnAbilitySystemReady& AEntombedBaseCharacter::GetOnAbilitySystemReadyDelegate()
 {
 	return OnAbilitySystemReady;
 }
 
-FOnDeath& AEntombedBaseCharacter::GetOnDeathDelegate()
+FOnDeathSignature& AEntombedBaseCharacter::GetOnDeathDelegate()
 {
 	return OnDeath;
 }
@@ -123,6 +171,8 @@ void AEntombedBaseCharacter::MulticastHandleDeath_Implementation(const FVector& 
 	bDead = true;
 	Dissolve();
 
+	BurnDebuffComponent->Deactivate();
+	ShockDebuffComponent->Deactivate();
 	OnDeath.Broadcast(this);
 }
 
@@ -183,6 +233,16 @@ FVector AEntombedBaseCharacter::GetCombatSocketLocation_Implementation(const FGa
 bool AEntombedBaseCharacter::IsDead_Implementation() const
 {
 	return bDead;
+}
+
+void AEntombedBaseCharacter::SetCasting_Implementation(const bool bCast)
+{
+	bIsCasting = bCast;
+}
+
+bool AEntombedBaseCharacter::GetCasting_Implementation() const
+{
+	return bIsCasting;
 }
 
 AActor* AEntombedBaseCharacter::GetAvatarActor_Implementation()
@@ -267,6 +327,21 @@ void AEntombedBaseCharacter::SetMinionCount_Implementation(int32 Count)
 EEntombedArchetype AEntombedBaseCharacter::GetArchetype_Implementation() const
 {
 	return Archetype;
+}
+
+USkeletalMeshComponent* AEntombedBaseCharacter::GetMainHandEquipment_Implementation()
+{
+	return MainHandEquipment;
+}
+
+USkeletalMeshComponent* AEntombedBaseCharacter::GetOffHandEquipment_Implementation()
+{
+	return OffHandEquipment;
+}
+
+FOnDamageSignature& AEntombedBaseCharacter::GetOnDamageDelegate()
+{
+	return OnDamage;
 }
 
 void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const

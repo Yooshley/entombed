@@ -11,8 +11,8 @@
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "GameplayEffectComponents/TargetTagsGameplayEffectComponent.h"
 #include "GameFramework/Character.h"
-#include "Interaction/CombatInterface.h"
-#include "Interaction/PlayerInterface.h"
+#include "entombed/Public/Interface/CombatInterface.h"
+#include "entombed/Public/Interface/PlayerInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/EntombedPlayerController.h"
 
@@ -204,10 +204,17 @@ void UEntombedAttributeSet::HandleIncomingDebuff(const FEffectProperties& Proper
 	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
 	Effect->Period = DebuffFrequency;
 	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
-
+	
 	FInheritedTagContainer TagContainer;
 	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
-	TagContainer.Added.AddTag(GameplayTags.ElementalDamageTypesToDebuffs[DamageType]);
+	FGameplayTag DebuffTag = GameplayTags.ElementalDamageTypesToDebuffs[DamageType];
+	TagContainer.Added.AddTag(DebuffTag);
+	if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Shock))
+	{
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputPressed);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputHeld);
+		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputReleased);
+	}
 	Component.SetAndApplyTargetTagChanges(TagContainer);
 
 	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource; //TODO: deprecation incoming in 5.11  

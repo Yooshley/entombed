@@ -7,7 +7,7 @@
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
 #include "Actor/EntombedProjectile.h"
-#include "Interaction/CombatInterface.h"
+#include "entombed/Public/Interface/CombatInterface.h"
 
 void UEntombedRangedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,

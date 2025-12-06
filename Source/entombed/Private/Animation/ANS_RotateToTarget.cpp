@@ -3,7 +3,7 @@
 
 #include "Animation/ANS_RotateToTarget.h"
 
-#include "Interaction/CombatInterface.h"
+#include "entombed/Public/Interface/CombatInterface.h"
 
 void UANS_RotateToTarget::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                       float TotalDuration, const FAnimNotifyEventReference& EventReference)
@@ -32,13 +32,13 @@ void UANS_RotateToTarget::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequ
 	FinalRotation.Roll = InitialRotation.Roll;
 	
 	FRotator NewRotation = FMath::Lerp(InitialRotation, FinalRotation, Alpha);
-	OwnerActor->SetActorRotation(NewRotation);
+	if (OwnerActor.IsValid()) OwnerActor->SetActorRotation(NewRotation);
 }
 
 void UANS_RotateToTarget::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	const FAnimNotifyEventReference& EventReference)
 {
-	OwnerActor->SetActorRotation(TargetRotation);
+	if (OwnerActor.IsValid()) OwnerActor->SetActorRotation(TargetRotation);
 }
 
 

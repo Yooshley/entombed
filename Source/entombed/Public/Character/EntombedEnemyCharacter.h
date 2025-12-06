@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/EntombedBaseCharacter.h"
-#include "Interaction/TargetInterface.h"
+#include "entombed/Public/Interface/TargetInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "EntombedEnemyCharacter.generated.h"
 
@@ -32,7 +32,7 @@ public:
 	virtual int32 GetCharacterLevel_Implementation() override;
 	virtual void Death(const FVector& DeathImpulse) override;
 	/** CombatInterface end */
-
+	
 	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
@@ -45,6 +45,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void InitializeAbilityActorInfo() override;
 	virtual  void InitializeDefaultAttributes() const override;
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
 	int32 Level = 1;

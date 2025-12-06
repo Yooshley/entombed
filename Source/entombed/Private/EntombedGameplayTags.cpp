@@ -112,6 +112,13 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Cooldown_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.FireBolt"));
 	
 	GameplayTags.Ability_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Electrocute"));
+	GameplayTags.Cooldown_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Electrocute"));
+	
+	GameplayTags.Ability_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.ArcaneShards"));
+	GameplayTags.Cooldown_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.ArcaneShards"));
+
+	GameplayTags.Ability_Passive_Defense = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.Defense"));
+	GameplayTags.Ability_Passive_Siphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.Siphon"));
 
 	/**
 	*EFFECT TAGS
@@ -119,9 +126,12 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Effect_Knockback = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effect.Knockback"));
 
 	/**
-	*EFFECT TAGS
+	*CUE TAGS
 	**/
 	GameplayTags.GameplayCue_Impact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Impact"));
+	GameplayTags.GameplayCue_ShockBurst = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockBurst"));
+	GameplayTags.GameplayCue_ShockLoop = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockLoop"));
+	GameplayTags.GameplayCue_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ArcaneShards"));
 
 	/**
 	*SOCKET TAGS
@@ -149,4 +159,9 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	*META TAGS
 	**/
 	GameplayTags.Attribute_Meta_IncomingXP = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Meta.IncomingXP"));
+
+	GameplayTags.Player_Block_InputPressed = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.InputPressed"));
+	GameplayTags.Player_Block_InputHeld = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.InputHeld"));
+	GameplayTags.Player_Block_InputReleased = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.InputReleased"));
+	GameplayTags.Player_Block_CursorTrace = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.CursorTrace"));
 }

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/EntombedBaseCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Interaction/PlayerInterface.h"
+#include "entombed/Public/Interface/PlayerInterface.h"
 #include "EntombedPlayerCharacter.generated.h"
 
 class UCameraComponent;
@@ -35,6 +35,8 @@ public:
 	virtual void LevelUp_Implementation() override;
 	virtual int32 GetAttributePoints_Implementation() const override;
 	virtual int32 GetAbilityPoints_Implementation() const override;
+	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial = nullptr) override;
+	virtual void HideMagicCircle_Implementation() override;
 	/** PlayerInterface end */
 
 	/** CombatInterface start */
@@ -54,6 +56,8 @@ private:
 	TObjectPtr<USpringArmComponent> CameraBoom;
 	
 	virtual void InitializeAbilityActorInfo() override;
+	virtual void OnRep_Shocked() override;
+	virtual void OnRep_Burned() override;
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastLevelUpVFX() const;

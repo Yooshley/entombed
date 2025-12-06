@@ -10,7 +10,8 @@
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "AbilitySystem/Data/ArchetypeInfo.h"
-#include "Interaction/CombatInterface.h"
+#include "entombed/Public/Interface/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct EntombedDamageStatics
 {
@@ -88,6 +89,29 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
 	}
 }
 
+void UExecCalc_Damage::DetermineRadialDamage(AActor* SourceActor, AActor* TargetActor, FGameplayEffectContextHandle EffectContextHandle, float& DamageTypeValue) const
+{
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetActor))
+	{
+		CombatInterface->GetOnDamageDelegate().AddLambda([&](float DamageAmount)
+		{
+			DamageTypeValue = DamageAmount;
+		});
+	}
+	UGameplayStatics::ApplyRadialDamageWithFalloff(
+		TargetActor,
+		DamageTypeValue,
+		0.f,
+		UEntombedAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+		UEntombedAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+		UEntombedAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+		1.f,
+		UDamageType::StaticClass(),
+		TArray<AActor*>(),
+		SourceActor,
+		nullptr);
+}
+
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
@@ -154,6 +178,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	for (const FGameplayTag& PhysicalDamageType : GameplayTags.PhysicalDamageTypes)
 	{
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(PhysicalDamageType, false); //DefaultIfNotFound=0
+		
+		if (UEntombedAbilitySystemLibrary::GetIsRadialDamage(EffectContextHandle))
+		{
+			DetermineRadialDamage(SourceActor, TargetActor, EffectContextHandle, DamageTypeValue);
+		}
 		Damage += DamageTypeValue;
 	}
 
@@ -188,6 +217,11 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(ElementalDamagePair.Key, false); //DefaultIfNotFound=0
 		DamageTypeValue *= (100.f - Resistance)/100;
+
+		if (UEntombedAbilitySystemLibrary::GetIsRadialDamage(EffectContextHandle))
+		{
+			DetermineRadialDamage(SourceActor, TargetActor, EffectContextHandle, DamageTypeValue);
+		}
 		Damage += DamageTypeValue;
 	}
 

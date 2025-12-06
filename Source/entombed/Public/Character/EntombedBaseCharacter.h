@@ -6,10 +6,11 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "GameFramework/Character.h"
-#include "Interaction/CombatInterface.h"
+#include "entombed/Public/Interface/CombatInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "EntombedBaseCharacter.generated.h"
 
+class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 class UWidgetComponent;
 enum class EEntombedArchetype : uint8;
@@ -26,21 +27,40 @@ class ENTOMBED_API AEntombedBaseCharacter : public ACharacter, public IAbilitySy
 
 public:
 	AEntombedBaseCharacter();
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	
+
+	bool bIsCasting = false;
 	FVector StrafeTarget = FVector::ZeroVector;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Shocked, BlueprintReadOnly)
+	bool bIsShocked = false;
+
+	UPROPERTY(ReplicatedUsing=OnRep_Burned, BlueprintReadOnly)
+	bool bIsBurned = false;
+
+	UFUNCTION()
+	virtual void OnRep_Shocked();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
+
+	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	/* CombatInterface begin */
 	virtual FOnAbilitySystemReady& GetOnAbilitySystemReadyDelegate() override;
-	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+	virtual FOnDeathSignature& GetOnDeathDelegate() override;
 	virtual void Death(const FVector& DeathImpulse) override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag ) override;
 	virtual bool IsDead_Implementation() const override;
+	virtual void SetCasting_Implementation(const bool bCast) override;
+	virtual bool GetCasting_Implementation() const override; 
 	virtual AActor* GetAvatarActor_Implementation() override;
 	virtual UNiagaraSystem* GetImpactEffect_Implementation() override;
 	virtual TArray<FTaggedMontage> GetTaggedMontages_Implementation() override;
@@ -53,11 +73,14 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void SetMinionCount_Implementation(int32 Count) override;
 	virtual EEntombedArchetype GetArchetype_Implementation() const override;
+	virtual USkeletalMeshComponent* GetMainHandEquipment_Implementation() override;
+	virtual USkeletalMeshComponent* GetOffHandEquipment_Implementation() override;
+	virtual FOnDamageSignature& GetOnDamageDelegate() override;
 	/* CombatInterface end */
 
 	FOnAbilitySystemReady OnAbilitySystemReady;
-
-	FOnDeath OnDeath;
+	FOnDeathSignature OnDeath;
+	FOnDamageSignature OnDamage;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnLifeChanged;
@@ -160,6 +183,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<UDebuffNiagaraComponent> ShockDebuffComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<UPassiveNiagaraComponent> PassiveDefenseComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	TObjectPtr<UPassiveNiagaraComponent> PassiveSiphonComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USceneComponent> EffectAttachComponent;
 	
 private:
 	UFUNCTION()

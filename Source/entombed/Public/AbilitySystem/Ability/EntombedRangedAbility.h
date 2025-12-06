@@ -32,7 +32,4 @@ protected:
 	
 	UPROPERTY(BlueprintReadOnly, Category="Projectile");
 	FVector ProjectileTargetLocation = FVector();
-	
-	UPROPERTY(EditDefaultsOnly, Category="Projectile");
-	int32 NumberOfProjectiles = 1;
 };

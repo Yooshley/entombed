@@ -4,6 +4,7 @@
 #include "AbilitySystem/AbilityTask/TargetDataUnderCursor.h"
 
 #include "AbilitySystemComponent.h"
+#include "entombed/entombed.h"
 
 UTargetDataUnderCursor* UTargetDataUnderCursor::CreateTargetDataUnderCursor(UGameplayAbility* OwningAbility)
 {
@@ -39,7 +40,7 @@ void UTargetDataUnderCursor::SendCursorData()
 	
 	APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
 	FHitResult CursorHit;
-	PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	PC->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
 
 	FGameplayAbilityTargetData_SingleTargetHit* Data = new FGameplayAbilityTargetData_SingleTargetHit();
 	Data->HitResult = CursorHit;

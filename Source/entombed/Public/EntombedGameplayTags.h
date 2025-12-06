@@ -116,6 +116,13 @@ public:
 	FGameplayTag Cooldown_FireBolt;
 
 	FGameplayTag Ability_Electrocute;
+	FGameplayTag Cooldown_Electrocute;
+
+	FGameplayTag Ability_ArcaneShards;
+	FGameplayTag Cooldown_ArcaneShards;
+
+	FGameplayTag Ability_Passive_Defense;
+	FGameplayTag Ability_Passive_Siphon;
 
 	/**
 	*EFFECT TAGS
@@ -126,6 +133,9 @@ public:
 	*CUE TAGS
 	**/
 	FGameplayTag GameplayCue_Impact;
+	FGameplayTag GameplayCue_ShockBurst;
+	FGameplayTag GameplayCue_ShockLoop;
+	FGameplayTag GameplayCue_ArcaneShards;
 	
 	/**
 	*SOCKET TAGS
@@ -153,6 +163,11 @@ public:
 	*META TAGS
 	**/
 	FGameplayTag Attribute_Meta_IncomingXP;
+	
+	FGameplayTag Player_Block_InputPressed;
+	FGameplayTag Player_Block_InputHeld;
+	FGameplayTag Player_Block_InputReleased;
+	FGameplayTag Player_Block_CursorTrace;
 	
 private:
 	static FEntombedGameplayTags GameplayTags;

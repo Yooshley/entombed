@@ -8,12 +8,17 @@
 #include "EntombedGameplayTags.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
+#include "Actor/MagicCircle.h"
 #include "Character/EntombedPlayerCharacter.h"
+#include "Components/DecalComponent.h"
 #include "Components/SplineComponent.h"
+#include "entombed/entombed.h"
 #include "GameFramework/Character.h"
 #include "Input/EntombedInputComponent.h"
-#include "Interaction/TargetInterface.h"
+#include "entombed/Public/Interface/TargetInterface.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AEntombedPlayerController::AEntombedPlayerController()
@@ -32,6 +37,30 @@ void AEntombedPlayerController::PlayerTick(float DeltaTime)
 	{
 		AutoRun();
 	}
+
+	UpdateMagicCircleLocation();
+}
+
+void AEntombedPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
+{
+	if (!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+		if (DecalMaterial)
+		{
+			MagicCircle->DecalComponent->SetMaterial(0, DecalMaterial);
+		}
+		bShowMouseCursor = false;
+	}
+}
+
+void AEntombedPlayerController::HideMagicCircle()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->Destroy();
+	}
+	bShowMouseCursor = true;
 }
 
 void AEntombedPlayerController::ShowDamageNumber_Implementation(float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit)
@@ -121,9 +150,28 @@ void AEntombedPlayerController::AutoRun()
 	}
 }
 
+void AEntombedPlayerController::UpdateMagicCircleLocation()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+	}
+}
+
 void AEntombedPlayerController::CursorTrace()
 {
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	//check for blocking tag
+	if (GetEntombedASC() && GetEntombedASC()->HasMatchingGameplayTag(FEntombedGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		if (LastActor) LastActor->UnHighlightActor();
+		if (ThisActor) ThisActor->UnHighlightActor();
+		LastActor = nullptr;
+		ThisActor = nullptr;
+		return;
+	}
+
+	const ECollisionChannel TraceChannel = IsValid(MagicCircle) ? ECC_ExcludeActors : ECC_Visibility;
+	GetHitResultUnderCursor(TraceChannel, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
@@ -138,15 +186,28 @@ void AEntombedPlayerController::CursorTrace()
 
 void AEntombedPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
+	//check for blocking tag
+	if (GetEntombedASC() && GetEntombedASC()->HasMatchingGameplayTag(FEntombedGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
+	
 	if (InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
 		bTargeting = ThisActor ? true : false;
 		bAutoRunning = false;
 	}
+	if (GetEntombedASC()) GetEntombedASC()->AbilityInputPressed(InputTag);
 }
 
 void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	//check for blocking tag
+	if (GetEntombedASC() && GetEntombedASC()->HasMatchingGameplayTag(FEntombedGameplayTags::Get().Player_Block_InputReleased))
+	{
+		return;
+	}
+	
 	if (!InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
 		if (GetEntombedASC()) GetEntombedASC()->AbilityInputReleased(InputTag);
@@ -185,6 +246,12 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+	//check for blocking tag
+	if (GetEntombedASC() && GetEntombedASC()->HasMatchingGameplayTag(FEntombedGameplayTags::Get().Player_Block_InputHeld))
+	{
+		return;
+	}
+	
 	if (!InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
 		if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);

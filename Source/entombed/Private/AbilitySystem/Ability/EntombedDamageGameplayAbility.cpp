@@ -37,14 +37,31 @@ FDamageEffectParameters UEntombedDamageGameplayAbility::MakeDamageParametersFrom
 	DamageEffectParameters.DeathImpulseMagnitude = DeathImpulseMagnitude;
 	DamageEffectParameters.KnockbackMagnitude = KnockbackMagnitude;
 
+	if (bIsRadialDamage)
+	{
+		DamageEffectParameters.bIsRadialDamage = bIsRadialDamage;
+		DamageEffectParameters.RadialDamageOrigin = RadialDamageOrigin;
+		DamageEffectParameters.RadialDamageInnerRadius = RadialDamageInnerRadius;
+		DamageEffectParameters.RadialDamageOuterRadius = RadialDamageOuterRadius;
+	}
+
 	if (IsValid(TargetActor))
 	{
-		const FRotator Rotation = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).Rotation();
-		const FVector ToTarget = Rotation.Vector();
-		DamageEffectParameters.DeathImpulse = ToTarget * DeathImpulseMagnitude;
-		DamageEffectParameters.KnockbackVector = ToTarget * KnockbackMagnitude;
+		FVector Origin = bIsRadialDamage
+		? RadialDamageOrigin
+		: GetAvatarActorFromActorInfo()->GetActorLocation();
+
+		const FVector ToTarget = (TargetActor->GetActorLocation() - Origin).GetSafeNormal();
+
+		DamageEffectParameters.DeathImpulse     = ToTarget * DeathImpulseMagnitude;
+		DamageEffectParameters.KnockbackVector  = ToTarget * KnockbackMagnitude;
 	}
 	return DamageEffectParameters;
+}
+
+float UEntombedDamageGameplayAbility::GetDamageAtLevel() const
+{
+	return DamageValue.GetValueAtLevel(GetAbilityLevel());
 }
 
 // float UEntombedDamageGameplayAbility::GetDamageByTypeTag(float InLevel, const FGameplayTag& DamageType)

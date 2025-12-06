@@ -21,6 +21,9 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	FDamageEffectParameters MakeDamageParametersFromClassDefaults(AActor* TargetActor = nullptr) const;
+	
+	UFUNCTION(BlueprintPure)
+	float GetDamageAtLevel() const;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -52,6 +55,18 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Damage")
 	float KnockbackMagnitude = 500.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+	bool bIsRadialDamage = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
+	float RadialDamageInnerRadius = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
+	float RadialDamageOuterRadius = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage")
+	FVector RadialDamageOrigin = FVector::ZeroVector;
 
 	//float GetDamageByTypeTag(float InLevel, const FGameplayTag& DamageType);
 };

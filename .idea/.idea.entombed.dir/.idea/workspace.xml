@@ -8,33 +8,139 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0864366-bfdf-4bbe-8118-ea32b368d284" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed.dir/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Assets/Effects/Fire/NS_Fire.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Effects/Fire/NS_Fire.uasset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Source/entombed/Private/Interface/CombatInterface.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.entombed.dir/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEditor.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEditor.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGame.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGame.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Mannequin_Medium/Animations/Rig_Medium_CombatRanged/AM_MainHand_Cast.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Mannequin_Medium/Animations/Rig_Medium_CombatRanged/AM_MainHand_Cast.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Mannequin_Medium/Animations/Rig_Medium_CombatRanged/Ranged_Magic_Spellcasting.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Mannequin_Medium/Animations/Rig_Medium_CombatRanged/Ranged_Magic_Spellcasting.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Materials/MI_Masked.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Materials/MI_Masked.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Effects/ArcaneShards/NS_ArcaneShards.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Effects/Cursor/FX_Cursor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Effects/Cursor/FX_Cursor.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Effects/Cursor/M_Cursor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Effects/Cursor/M_Cursor.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Button_Red/Button.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Button_Red/Button_Border.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Button_Red/Button_Grayed_Out.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Button_Red/Button_Highlighted.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Button_Red/Button_Pressed.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/CooldownBar/cooldown_bar.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_ArcaneSkillBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_EmptyGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_FireSkillBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_FlowingUIBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_Flowing_Red.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_Flowing_Scroll.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_GhostHealthGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_GhostManaGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_HaloSkillBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_HealthGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_LevelBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_LifeSiphonSkillBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_LoadSlot_BG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_LockedBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_ManaGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_ManaSiphonSkillBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/MI_ShockSkillBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/M_EmptyGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/M_FlowingGlobe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/M_FlowingUIBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/M_GlobeReversed.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/M_LoadSlot_BG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Globes/TilingNoise05.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/HealthBar/Player/HealthBar.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/HealthBar/Player/HealthBarAtt.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/HealthBar/Player/HealthBarBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/HealthBar/Player/HealthBarFill.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/HealthMana/AuraRender.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/HealthMana/HealthMana.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/LoadScreen/PlusIcon_clearBG.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/ManaBar/ManaBar.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/ManaBar/ManaBarAtt.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Pickups/T_HealthCrystal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Pickups/T_ManaCrystal.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Pickups/T_Potion_Blue.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Pickups/T_Potion_Red.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/GlobeRing/GlobeRing.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/GlobeRing/GlobeRing2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/GlobeRing/RingBlueGlow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRing/SkillRing_1.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRing/SkillRing_1a.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRing/SkillRing_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRing/SkillRing_2a.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRingGlow/SkillRing_1_Glow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRingGlow/SkillRing_1a_Glow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRingGlow/SkillRing_2_Glow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Rings/SkillRingGlow/SkillRing_2a_Glow.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Wide_Button_Red/WideButton.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Wide_Button_Red/WideButton_GrayedOut.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Wide_Button_Red/WideButton_Highlighted.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Wide_Button_Red/WideButton_Pressed.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/Wide_Button_Red/WideButton_Pressed_2.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/XPBar/XP_Back.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/XPBar/XP_Front.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/XPBar/XP_Middle.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/XPBar/xp_bar.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/UI/XPBar/xp_frame.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BB_EnemyBlackboard.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BB_EnemyBlackboard.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_EnemyBehaviourTree.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_EnemyBehaviourTree.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_EnemyBehaviourTree_Necro.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_EnemyBehaviourTree_Necro.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/Fire/FireBolt/BP_FireBolt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/Fire/FireBolt/BP_FireBolt.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/Fire/FireBolt/GA_FireBolt.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/Fire/FireBolt/GA_FireBolt.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Enemy_Melee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Enemy_Melee.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Enemy_Ranged.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Enemy_Ranged.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Knockback.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Knockback.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/Lightning/GA_Electrocute.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/Lightning/GA_Electrocute.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Data/DA_AbilityInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Data/DA_AbilityInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Data/DA_ArchetypeInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Data/DA_ArchetypeInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/ABP_EnemyTemplate.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/ABP_EnemyTemplate.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_EnemyBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Player/ABP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Player/ABP_PlayerCharacter.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Player/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Player/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/ABP_SkeletonElite.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/ABP_SkeletonElite.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/Minion/ABP_SkeletonMinion.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/Minion/ABP_SkeletonMinion.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Player/BP_PlayerController.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Player/BP_PlayerController.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/AbilityContainer/WBP_Ability_Button.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/AbilityContainer/WBP_Ability_Button.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/AbilityMenu/WBP_ActiveTree.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/AbilityMenu/WBP_ActiveTree.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Maps/EntryMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/EntryMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedDamageGameplayAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedDamageGameplayAbility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedFireBolt.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedFireBolt.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedRangedAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedRangedAbility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/AbilityTask/TargetDataUnderCursor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/AbilityTask/TargetDataUnderCursor.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/CustomCalculation/ExecutionCalculation/ExecCalc_Damage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/CustomCalculation/ExecutionCalculation/ExecCalc_Damage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAbilitySystemComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAbilitySystemComponent.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAbilitySystemLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAbilitySystemLibrary.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAttributeSet.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedProjectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedProjectile.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Animation/ANS_RotateToTarget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Animation/ANS_RotateToTarget.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedBaseCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedBaseCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedEnemyCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedEnemyCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedPlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedPlayerCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Private/EntombedAbilityTypes.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/EntombedAbilityTypes.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/EntombedGameplayTags.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/EntombedGameplayTags.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Interaction/CombatInterface.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Interaction/PlayerInterface.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Interface/PlayerInterface.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Interaction/TargetInterface.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Interface/TargetInterface.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Niagara/DebuffNiagaraComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Niagara/DebuffNiagaraComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Player/EntombedPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Player/EntombedPlayerController.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/UI/WidgetController/AbilityMenuWidgetController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/UI/WidgetController/AbilityMenuWidgetController.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedDamageGameplayAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedDamageGameplayAbility.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedFireBolt.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedFireBolt.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedRangedAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedRangedAbility.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/CustomCalculation/ExecutionCalculation/ExecCalc_Damage.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/CustomCalculation/ExecutionCalculation/ExecCalc_Damage.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/EntombedAbilitySystemComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/EntombedAbilitySystemComponent.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/EntombedAbilitySystemLibrary.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/EntombedAbilitySystemLibrary.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/EntombedAttributeSet.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/EntombedAttributeSet.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Actor/EntombedProjectile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Actor/EntombedProjectile.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Character/EntombedBaseCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Character/EntombedBaseCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Character/EntombedEnemyCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Character/EntombedEnemyCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Character/EntombedPlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Character/EntombedPlayerCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/entombed/Public/EntombedAbilityTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/EntombedAbilityTypes.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Interaction/CombatInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Interaction/CombatInterface.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/entombed.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/entombed.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/EntombedGameplayTags.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/EntombedGameplayTags.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Interaction/CombatInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Interface/CombatInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Interaction/PlayerInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Interface/PlayerInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Interaction/TargetInterface.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Interface/TargetInterface.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Player/EntombedPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Player/EntombedPlayerController.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/entombed.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/entombed.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,16 +157,22 @@
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
-    <setting file="cidr-memory-view://3" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/GameplayTags/Private/GameplayTagContainer.cpp" root0="FORCE_HIGHLIGHTING" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 1
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="35wqrWS0k4oPhyEdAGBrqvRGuvF" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -71,7 +183,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "Uproject.entombed.executor": "Debug",
+    "Uproject.entombed.executor": "Run",
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
@@ -164,7 +276,17 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1764031681577</updated>
-      <workItem from="1764031683908" duration="9177000" />
+      <workItem from="1764031683908" duration="11053000" />
+      <workItem from="1764107686359" duration="1490000" />
+      <workItem from="1764117041806" duration="9917000" />
+      <workItem from="1764217364012" duration="3467000" />
+      <workItem from="1764345914309" duration="6329000" />
+      <workItem from="1764353340599" duration="23010000" />
+      <workItem from="1764431744419" duration="17581000" />
+      <workItem from="1764537423158" duration="3425000" />
+      <workItem from="1764777179691" duration="7386000" />
+      <workItem from="1764862773112" duration="11051000" />
+      <workItem from="1764960503170" duration="11526000" />
     </task>
     <servers />
   </component>

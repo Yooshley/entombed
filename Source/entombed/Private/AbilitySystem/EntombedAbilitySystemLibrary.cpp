@@ -12,7 +12,7 @@
 #include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "Engine/OverlapResult.h"
 #include "Game/EntombedGameModeBase.h"
-#include "Interaction/CombatInterface.h"
+#include "entombed/Public/Interface/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerState.h"
 #include "UI/HUD/EntombedHUD.h"
@@ -232,6 +232,42 @@ FVector UEntombedAbilitySystemLibrary::GetKnockbackVector(const FGameplayEffectC
 	return FVector::ZeroVector;
 }
 
+bool UEntombedAbilitySystemLibrary::GetIsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EntombedContext->GetIsRadialDamage();
+	}
+	return false;
+}
+
+float UEntombedAbilitySystemLibrary::GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EntombedContext->GetRadialDamageInnerRadius();
+	}
+	return 0.f;
+}
+
+float UEntombedAbilitySystemLibrary::GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EntombedContext->GetRadialDamageOuterRadius();
+	}
+	return 0.f;
+}
+
+FVector UEntombedAbilitySystemLibrary::GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EntombedContext->GetRadialDamageOrigin();
+	}
+	return FVector::ZeroVector;
+}
+
 void UEntombedAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle,
                                                     bool bInIsBlockedHit)
 {
@@ -312,7 +348,44 @@ void UEntombedAbilitySystemLibrary::SetKnockbackVector(FGameplayEffectContextHan
 	}
 }
 
-void UEntombedAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+
+void UEntombedAbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHandle& EffectContextHandle,
+	bool bInIsRadialDamage)
+{
+	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EntombedContext->SetIsRadialDamage(bInIsRadialDamage);
+	}
+}
+
+void UEntombedAbilitySystemLibrary::SetRadialDamageInnerRadius(FGameplayEffectContextHandle& EffectContextHandle,
+	float InRadius)
+{
+	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EntombedContext->SetRadialDamageInnerRadius(InRadius);
+	}
+}
+
+void UEntombedAbilitySystemLibrary::SetRadialDamageOuterRadius(FGameplayEffectContextHandle& EffectContextHandle,
+	float InRadius)
+{
+	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EntombedContext->SetRadialDamageOuterRadius(InRadius);
+	}
+}
+
+void UEntombedAbilitySystemLibrary::SetRadialDamageOrigin(FGameplayEffectContextHandle& EffectContextHandle,
+	const FVector& InOrigin)
+{
+	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EntombedContext->SetRadialDamageOrigin(InOrigin);
+	}
+}
+
+void UEntombedAbilitySystemLibrary::GetLiveActorsWithinRadius(const UObject* WorldContextObject,
                                                                TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
                                                                const FVector& Origin)
 {
@@ -338,6 +411,26 @@ void UEntombedAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* Wo
 	}
 }
 
+void UEntombedAbilitySystemLibrary::GetClosestActors(int32 MaxTargets, const TArray<AActor*>& Actors,
+	TArray<AActor*>& OutClosestActors, const FVector& Origin)
+{
+	if (MaxTargets < 1) return;
+ 
+	OutClosestActors = Actors;
+	Algo::Sort(OutClosestActors, [&Origin](AActor* A, AActor* B)
+	{
+		// NOTE: Calculating the squared distance
+		const float DistanceA = FVector::DistSquared(A->GetActorLocation(), Origin);
+		const float DistanceB = FVector::DistSquared(B->GetActorLocation(), Origin);
+		return DistanceA < DistanceB;
+	});
+	if (OutClosestActors.Num() > MaxTargets)
+	{
+		// Remove unwanted actors from the end of the array
+		OutClosestActors.RemoveAt(MaxTargets, OutClosestActors.Num() - MaxTargets);
+	}
+}
+
 bool UEntombedAbilitySystemLibrary::IsAlly(AActor* FirstActor, AActor* SecondActor)
 {
 	const bool bBothArePlayers = FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
@@ -355,6 +448,11 @@ FGameplayEffectContextHandle UEntombedAbilitySystemLibrary::ApplyDamageEffect(
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
 	SetDeathImpulse(EffectContextHandle, DamageEffectParameters.DeathImpulse);
 	SetKnockbackVector(EffectContextHandle, DamageEffectParameters.KnockbackVector);
+	
+	SetIsRadialDamage(EffectContextHandle, DamageEffectParameters.bIsRadialDamage);
+	SetRadialDamageInnerRadius(EffectContextHandle, DamageEffectParameters.RadialDamageInnerRadius);
+	SetRadialDamageOuterRadius(EffectContextHandle, DamageEffectParameters.RadialDamageOuterRadius);
+	SetRadialDamageOrigin(EffectContextHandle, DamageEffectParameters.RadialDamageOrigin);
 
 	const FGameplayEffectSpecHandle EffectSpecHandle = DamageEffectParameters.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParameters.DamageEffectClass, DamageEffectParameters.AbilityLevel, EffectContextHandle);
 
@@ -366,6 +464,52 @@ FGameplayEffectContextHandle UEntombedAbilitySystemLibrary::ApplyDamageEffect(
 	
 	DamageEffectParameters.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
 	return EffectContextHandle;
+}
+
+TArray<FRotator> UEntombedAbilitySystemLibrary::GetEvenlySpreadRotators(const FVector Forward, const FVector Axis,
+	float Spread, int32 NumRotators)
+{
+	TArray<FRotator> Rotators;
+		
+	const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread/2, Axis);
+	if (NumRotators > 1)
+	{
+		const float DeltaSpread = Spread / (NumRotators - 1);
+		for (int32 i = 0; i < NumRotators; i++)
+		{
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+			Rotators.Add(Direction.Rotation());
+		}
+	}
+	else
+	{
+		Rotators.Add(Forward.Rotation());
+	}
+
+	return Rotators;
+}
+
+TArray<FVector> UEntombedAbilitySystemLibrary::GetEvenlySpreadVectors(const FVector Forward, const FVector Axis,
+	float Spread, int32 NumVectors)
+{
+	TArray<FVector> Vectors;
+		
+	const FVector LeftOfSpread = Forward.RotateAngleAxis(-Spread/2, Axis);
+	if (NumVectors > 1)
+	{
+		const float DeltaSpread = Spread / (NumVectors - 1);
+		for (int32 i = 0; i < NumVectors; i++)
+		{
+			const FVector Direction = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, Axis);
+			Vectors.Add(Direction);
+		}
+	}
+	else
+	{
+		Vectors.Add(Forward);
+	}
+
+	return Vectors;
 }
 
 int32 UEntombedAbilitySystemLibrary::GetXPAwardForArchetype(const UObject* WorldContextObject,

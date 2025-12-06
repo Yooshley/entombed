@@ -36,7 +36,7 @@ AEntombedProjectile::AEntombedProjectile()
 void AEntombedProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SetReplicateMovement(true);
 	SetLifeSpan(LifeSpan);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AEntombedProjectile::OnSphereOverlap);
 	FlightAudioComponent = UGameplayStatics::SpawnSoundAttached(FlightSound, GetRootComponent());
@@ -46,12 +46,21 @@ void AEntombedProjectile::OnHit()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
-	if (FlightAudioComponent) FlightAudioComponent->Stop();
+	if (FlightAudioComponent)
+	{
+		FlightAudioComponent->Stop();
+		FlightAudioComponent->DestroyComponent();
+	}
 	bHit = true;
 }
 
 void AEntombedProjectile::Destroyed()
 {
+	if (FlightAudioComponent)
+	{
+		FlightAudioComponent->Stop();
+		FlightAudioComponent->DestroyComponent();
+	}
 	if (!bHit && !HasAuthority())
 	{
 		OnHit();
@@ -62,6 +71,10 @@ void AEntombedProjectile::Destroyed()
 void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!DamageEffectParameters.SourceAbilitySystemComponent)
+	{
+		return;
+	}
 	AActor* SourceAvatarActor = DamageEffectParameters.SourceAbilitySystemComponent->GetAvatarActor();
 	if (SourceAvatarActor == OtherActor) return;
 	if (UEntombedAbilitySystemLibrary::IsAlly(SourceAvatarActor, OtherActor)) return;

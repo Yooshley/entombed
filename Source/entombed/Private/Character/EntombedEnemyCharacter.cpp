@@ -89,7 +89,7 @@ void AEntombedEnemyCharacter::Death(const FVector& DeathImpulse)
 void AEntombedEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseRunSpeed;
 	if (EntombedAIController && EntombedAIController->GetBlackboardComponent())
 	{
 		EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_HITREACTING_BOOL, bHitReacting);
@@ -99,7 +99,7 @@ void AEntombedEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag,
 void AEntombedEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = BaseRunSpeed;
 	
 	InitializeAbilityActorInfo();
 
@@ -122,6 +122,7 @@ void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 	
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+	AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEntombedEnemyCharacter::StunTagChanged);
 
 	if (HasAuthority())
 	{
@@ -134,4 +135,13 @@ void AEntombedEnemyCharacter::InitializeAbilityActorInfo()
 void AEntombedEnemyCharacter::InitializeDefaultAttributes() const
 {
 	UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(this, Archetype, Level, AbilitySystemComponent);
+}
+
+void AEntombedEnemyCharacter::StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	Super::StunTagChanged(CallbackTag, NewCount);
+	if (EntombedAIController && EntombedAIController->GetBlackboardComponent())
+	{
+		EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_STUNNED_BOOL, bIsShocked);
+	}
 }
