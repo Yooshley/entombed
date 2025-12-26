@@ -523,3 +523,8 @@ int32 UEntombedAbilitySystemLibrary::GetXPAwardForArchetype(const UObject* World
 
 	return static_cast<int32>(XPAward);
 }
+
+void UEntombedAbilitySystemLibrary::SetRadialDamageEffectParams(FDamageEffectParameters& DamageEffectParameters)
+{
+	DamageEffectParameters.bIsRadialDamage = true;
+}

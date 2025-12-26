@@ -68,16 +68,22 @@ void AEntombedProjectile::Destroyed()
 	Super::Destroyed();
 }
 
-void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                          UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+bool AEntombedProjectile::IsValidOverlap(AActor* OtherActor)
 {
 	if (!DamageEffectParameters.SourceAbilitySystemComponent)
 	{
-		return;
+		return false;
 	}
 	AActor* SourceAvatarActor = DamageEffectParameters.SourceAbilitySystemComponent->GetAvatarActor();
-	if (SourceAvatarActor == OtherActor) return;
-	if (UEntombedAbilitySystemLibrary::IsAlly(SourceAvatarActor, OtherActor)) return;
+	if (SourceAvatarActor == OtherActor) return false;
+	if (UEntombedAbilitySystemLibrary::IsAlly(SourceAvatarActor, OtherActor)) return false;
+	return true;
+}
+
+void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                          UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!IsValidOverlap(OtherActor)) return;
 	
 	if(!bHit)
 	{

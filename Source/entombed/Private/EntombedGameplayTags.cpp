@@ -117,6 +117,9 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Ability_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.ArcaneShards"));
 	GameplayTags.Cooldown_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.ArcaneShards"));
 
+	GameplayTags.Ability_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.FireBlast"));
+	GameplayTags.Cooldown_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.FireBlast"));
+
 	GameplayTags.Ability_Passive_Defense = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.Defense"));
 	GameplayTags.Ability_Passive_Siphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.Siphon"));
 
@@ -132,6 +135,7 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.GameplayCue_ShockBurst = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockBurst"));
 	GameplayTags.GameplayCue_ShockLoop = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockLoop"));
 	GameplayTags.GameplayCue_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ArcaneShards"));
+	GameplayTags.GameplayCue_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.FireBlast"));
 
 	/**
 	*SOCKET TAGS

@@ -121,6 +121,9 @@ public:
 	FGameplayTag Ability_ArcaneShards;
 	FGameplayTag Cooldown_ArcaneShards;
 
+	FGameplayTag Ability_FireBlast;
+	FGameplayTag Cooldown_FireBlast;
+
 	FGameplayTag Ability_Passive_Defense;
 	FGameplayTag Ability_Passive_Siphon;
 
@@ -136,6 +139,7 @@ public:
 	FGameplayTag GameplayCue_ShockBurst;
 	FGameplayTag GameplayCue_ShockLoop;
 	FGameplayTag GameplayCue_ArcaneShards;
+	FGameplayTag GameplayCue_FireBlast;
 	
 	/**
 	*SOCKET TAGS

@@ -163,4 +163,11 @@ public:
 	static TArray<FVector> GetEvenlySpreadVectors(const FVector Forward, const FVector Axis, float Spread, int32 NumVectors);
 
 	static int32 GetXPAwardForArchetype(const UObject* WorldContextObject, EEntombedArchetype Archetype, int32 Level);
+
+	/*
+	 * DAMAGE PARAMETERS
+	 */
+
+	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|DamageEffect")
+	static void SetRadialDamageEffectParams(UPARAM(ref) FDamageEffectParameters& DamageEffectParameters);
 };

@@ -30,13 +30,21 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	void OnHit();
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit();
+
+	bool bHit = false;
+	
 	virtual void Destroyed() override;
+	bool IsValidOverlap(AActor* OtherActor);
+	
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> FlightAudioComponent;
 
 	UFUNCTION()
-	void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 private:
-	bool bHit = false;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float LifeSpan = 15.f;
@@ -52,7 +60,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> FlightSound;
-	
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> FlightAudioComponent;
 };
