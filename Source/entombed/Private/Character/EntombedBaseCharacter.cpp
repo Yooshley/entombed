@@ -208,6 +208,16 @@ void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 	}
 }
 
+int32 AEntombedBaseCharacter::GetCharacterLevel_Implementation()
+{
+	return Level;
+}
+
+void AEntombedBaseCharacter::SetCharacterLevel_Implementation(int32 InLevel)
+{
+	Level = InLevel;
+}
+
 FVector AEntombedBaseCharacter::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
 	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
@@ -329,6 +339,11 @@ EEntombedArchetype AEntombedBaseCharacter::GetArchetype_Implementation() const
 	return Archetype;
 }
 
+void AEntombedBaseCharacter::SetArchetype_Implementation(EEntombedArchetype InArchetype)
+{
+	Archetype = InArchetype;
+}
+
 USkeletalMeshComponent* AEntombedBaseCharacter::GetMainHandEquipment_Implementation()
 {
 	return MainHandEquipment;
@@ -344,13 +359,13 @@ FOnDamageSignature& AEntombedBaseCharacter::GetOnDamageDelegate()
 	return OnDamage;
 }
 
-void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level=1.f) const
+void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float InLevel=1.f) const
 {
 	check(IsValid(GetAbilitySystemComponent()));
 	check(GameplayEffectClass);
 	FGameplayEffectContextHandle ContextHandle = GetAbilitySystemComponent()->MakeEffectContext();
 	ContextHandle.AddSourceObject(this);
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, Level, ContextHandle);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameplayEffectClass, InLevel, ContextHandle);
 	GetAbilitySystemComponent()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }
 

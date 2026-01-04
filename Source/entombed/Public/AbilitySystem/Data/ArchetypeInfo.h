@@ -65,8 +65,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
 	TMap<EEntombedArchetype, FEntombedArchetypeDefaultInfo> ArchetypeInformation;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
+	TSubclassOf<UGameplayEffect> CoreAttributes_SetByCaller;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
 	TSubclassOf<UGameplayEffect> DerivedAttributesEffect;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
+	TSubclassOf<UGameplayEffect> DerivedAttributesEffect_Infinite;
 
 	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
 	TSubclassOf<UGameplayEffect> ResourceAttributesEffect;

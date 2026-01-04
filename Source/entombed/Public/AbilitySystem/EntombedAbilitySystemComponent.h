@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "EntombedAbilitySystemComponent.generated.h"
 
+class UEntombedSaveGame;
 class UEntombedAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/)
@@ -34,7 +35,9 @@ public:
 	FDeactivatePassiveAbility DeactivatePassiveAbilityDelegate;
 	FActivatePassiveEffect ActivatePassiveEffectDelegate;
 	
-	bool bGrantedDefaultAbilities = false;;
+	bool bGrantedDefaultAbilities = false;
+	
+	void GrantAbilitiesFromSaveData(UEntombedSaveGame* SaveData);
 
 	void AbilityInputPressed(const FGameplayTag& InputTag);
 	void AbilityInputHeld(const FGameplayTag& InputTag);

@@ -30,7 +30,7 @@ void AEntombedPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProp
 
 void AEntombedPlayerState::OnRep_Level(int32 OldLevel)
 {
-	OnLevelChangedDelegate.Broadcast(Level);
+	OnLevelChangedDelegate.Broadcast(Level, true);
 }
 
 void AEntombedPlayerState::OnRep_XP(int32 OldXP)
@@ -62,7 +62,7 @@ void AEntombedPlayerState::AddXP(const int32 InXP)
 void AEntombedPlayerState::AddLevel(const int32 InLevel)
 {
 	Level += InLevel;
-	OnLevelChangedDelegate.Broadcast(Level);
+	OnLevelChangedDelegate.Broadcast(Level, true);
 }
 
 void AEntombedPlayerState::AddAttributePoints(int32 InPoints)
@@ -86,5 +86,17 @@ void AEntombedPlayerState::SetXP(const int32 InXP)
 void AEntombedPlayerState::SetLevel(const int32 InLevel)
 {
 	Level = InLevel;
-	OnLevelChangedDelegate.Broadcast(Level);
+	OnLevelChangedDelegate.Broadcast(Level, false);
+}
+
+void AEntombedPlayerState::SetAttributePoints(int32 InPoints)
+{
+	AttributePoints = InPoints;
+	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
+}
+
+void AEntombedPlayerState::SetAbilityPoints(int32 InPoints)
+{
+	AbilityPoints = InPoints;
+	OnAbilityPointsChangedDelegate.Broadcast(AbilityPoints);
 }

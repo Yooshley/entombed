@@ -19,6 +19,13 @@ class UInputMappingContext;
 class UInputAction;
 class ITargetInterface;
 
+enum class ETargetingStatus : uint8
+{
+	Hostile,
+	Object,
+	Nothing
+};
+
 /**
  * 
  */
@@ -65,9 +72,16 @@ private:
 	bool bModifierRunning = false;
 
 	void CursorTrace();
-	TScriptInterface<ITargetInterface> LastActor;
-	TScriptInterface<ITargetInterface> ThisActor;
 	FHitResult CursorHit;
+	static void HighlightActor(AActor* InActor);
+	static void UnhighlightActor(AActor* InActor);
+	
+	UPROPERTY()
+	TObjectPtr<AActor> LastActor;
+	
+	UPROPERTY()
+	TObjectPtr<AActor> ThisActor;
+	
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UEntombedInputDataAsset> InputDataAsset;
@@ -85,7 +99,7 @@ private:
 	float FollowTime = 0.f;
 	float ShortPressThreshold = 0.5f;
 	bool bAutoRunning = false;
-	bool bTargeting = false;
+	ETargetingStatus TargetingStatus = ETargetingStatus::Nothing;
 
 	UPROPERTY(EditDefaultsOnly)
 	bool bClickToMove = false;

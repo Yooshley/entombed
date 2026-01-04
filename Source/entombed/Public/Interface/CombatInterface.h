@@ -48,6 +48,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	int32 GetCharacterLevel();
 	
+	UFUNCTION(BlueprintNativeEvent)
+	void SetCharacterLevel(int32 InLevel);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	FVector GetCombatSocketLocation(const FGameplayTag& SocketTag);
 
@@ -105,6 +108,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	EEntombedArchetype GetArchetype() const;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetArchetype(EEntombedArchetype InArchetype);
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	USkeletalMeshComponent* GetMainHandEquipment();
 

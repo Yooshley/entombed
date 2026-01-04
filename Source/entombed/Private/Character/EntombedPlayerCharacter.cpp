@@ -12,8 +12,14 @@
 #include "Player/EntombedPlayerState.h"
 #include "UI/HUD/EntombedHUD.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/EntombedAttributeSet.h"
+#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Camera/CameraComponent.h"
+#include "Game/EntombedGameInstance.h"
+#include "Game/EntombedGameModeBase.h"
+#include "Game/EntombedSaveGame.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Niagara/DebuffNiagaraComponent.h"
 
 AEntombedPlayerCharacter::AEntombedPlayerCharacter()
@@ -38,6 +44,12 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 
 	// init ability actor info for the server
 	InitializeAbilityActorInfo();
+	LoadPlayerProgress();
+	
+	if (AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	{
+		EntombedGameMode->LoadWorldState(GetWorld());
+	}
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()
@@ -65,7 +77,6 @@ void AEntombedPlayerCharacter::AddLevel_Implementation(int32 InLevel)
 	{
 		EntombedASC->UpdateAbilityStatus(EntombedPlayerState->GetPlayerLevel());
 	}
-	
 }
 
 void AEntombedPlayerCharacter::AddAttributePoints_Implementation(int32 InAttributePoints)
@@ -89,18 +100,18 @@ int32 AEntombedPlayerCharacter::GetXP_Implementation() const
 	return EntombedPlayerState->GetXP();
 }
 
-int32 AEntombedPlayerCharacter::GetAttributePointsAward_Implementation(int32 Level) const
+int32 AEntombedPlayerCharacter::GetAttributePointsAward_Implementation(int32 InLevel) const
 {
 	AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
 	check(EntombedPlayerState);
-	return EntombedPlayerState->LevelInfo->LevelInformation[Level].AttributeAward;
+	return EntombedPlayerState->LevelInfo->LevelInformation[InLevel].AttributeAward;
 }
 
-int32 AEntombedPlayerCharacter::GetAbilityPointsAward_Implementation(int32 Level) const
+int32 AEntombedPlayerCharacter::GetAbilityPointsAward_Implementation(int32 InLevel) const
 {
 	AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
 	check(EntombedPlayerState);
-	return EntombedPlayerState->LevelInfo->LevelInformation[Level].AbilityAward;
+	return EntombedPlayerState->LevelInfo->LevelInformation[InLevel].AbilityAward;
 }
 
 int32 AEntombedPlayerCharacter::FindLevelForXP_Implementation(int32 InXP) const
@@ -145,12 +156,114 @@ void AEntombedPlayerCharacter::HideMagicCircle_Implementation()
 	}
 }
 
+void AEntombedPlayerCharacter::SavePlayerProgress_Implementation(const FName& CheckpointTag)
+{
+	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (EntombedGameMode)
+	{
+		UEntombedSaveGame* SaveData = EntombedGameMode->GetGameSaveData();
+		if (SaveData == nullptr) return;
+		
+		SaveData->CheckpointTag = CheckpointTag;
+		
+		if (AEntombedPlayerState* EntombedPlayerState = Cast<AEntombedPlayerState>(GetPlayerState()))
+		{
+			SaveData->PlayerLevel = EntombedPlayerState->GetPlayerLevel();
+			SaveData->XP = EntombedPlayerState->GetXP();
+			SaveData->AttributePoints = EntombedPlayerState->GetAttributePoints();
+			SaveData->AbilityPoints = EntombedPlayerState->GetAbilityPoints();
+		}
+		SaveData->Vigor = UEntombedAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Instinct = UEntombedAttributeSet::GetInstinctAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Technique = UEntombedAttributeSet::GetTechniqueAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Acumen = UEntombedAttributeSet::GetAcumenAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Logic = UEntombedAttributeSet::GetLogicAttribute().GetNumericValue(GetAttributeSet());
+		SaveData->Spirit = UEntombedAttributeSet::GetSpiritAttribute().GetNumericValue(GetAttributeSet());
+		
+		SaveData->bFreshSave = false;
+		
+		if(!HasAuthority()) return;
+		
+		UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent);
+		
+		FForEachAbility SaveAbilityDelegate;
+		SaveData->SavedAbilities.Empty();
+		SaveAbilityDelegate.BindLambda([this, EntombedASC, SaveData](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			const FGameplayTag AbilityTag = EntombedASC->GetAbilityTagFromSpec(AbilitySpec);
+			UAbilityInfo* AbilityInfo = UEntombedAbilitySystemLibrary::GetAbilityInfo(this);
+			FEntombedAbilityInfo EntombedAbilityInfo = AbilityInfo->FindAbilityInfoByTag(AbilityTag);
+			
+			FSavedAbility SavedAbility;
+			SavedAbility.GameplayAbility = EntombedAbilityInfo.AbilityClass;
+			SavedAbility.AbilityLevel = AbilitySpec.Level;
+			SavedAbility.AbilitySlot = EntombedASC->GetSlotTagFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityStatus = EntombedASC->GetStatusTagFromAbilityTag(AbilityTag);
+			SavedAbility.AbilityType = EntombedAbilityInfo.TypeTag;
+			SavedAbility.AbilityTag = AbilityTag;
+			
+			SaveData->SavedAbilities.AddUnique(SavedAbility);
+		});
+		EntombedASC->ForEachAbility(SaveAbilityDelegate);
+		
+		EntombedGameMode->SaveGameData(SaveData);
+	}
+}
+
 int32 AEntombedPlayerCharacter::GetCharacterLevel_Implementation()
 {
 	const AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
 	check(EntombedPlayerState);
 	
 	return EntombedPlayerState->GetPlayerLevel();
+}
+
+void AEntombedPlayerCharacter::Death(const FVector& DeathImpulse)
+{
+	Super::Death(DeathImpulse);
+	
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindLambda([this]()
+	{
+		AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
+		if (EntombedGameMode)
+		{
+			EntombedGameMode->HandlePlayerDeath(this);
+		}
+	});
+	GetWorldTimerManager().SetTimer(DeathTimer, TimerDelegate, DeathTime, false);
+	CameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+}
+
+void AEntombedPlayerCharacter::LoadPlayerProgress()
+{
+	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (EntombedGameMode)
+	{
+		UEntombedSaveGame* SaveData = EntombedGameMode->GetGameSaveData();
+		if (SaveData == nullptr) return;
+		
+		if (SaveData->bFreshSave)
+		{
+			InitializeDefaultAttributes();
+		}
+		else
+		{
+			if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent))
+			{
+				EntombedASC->GrantAbilitiesFromSaveData(SaveData);
+			}
+			
+			if (AEntombedPlayerState* EntombedPlayerState = Cast<AEntombedPlayerState>(GetPlayerState()))
+			{
+				EntombedPlayerState->SetLevel(SaveData->PlayerLevel);
+				EntombedPlayerState->SetXP(SaveData->XP);
+				EntombedPlayerState->SetAttributePoints(SaveData->AttributePoints);
+				EntombedPlayerState->SetAbilityPoints(SaveData->AbilityPoints);
+			}
+			UEntombedAbilitySystemLibrary::InitializeAttributesFromSaveData(this, GetAbilitySystemComponent(), SaveData); 
+		}
+	}
 }
 
 void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
@@ -172,7 +285,7 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 			EntombedHUD->InitializeOverlay(EntombedPlayerController, EntombedPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	InitializeDefaultAttributes();
+	//InitializeDefaultAttributes();
 
 	if (HasAuthority())
 	{

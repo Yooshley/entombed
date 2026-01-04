@@ -53,6 +53,8 @@ public:
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	/* CombatInterface begin */
+	virtual int32 GetCharacterLevel_Implementation() override;
+	virtual void SetCharacterLevel_Implementation(int32 InLevel) override;
 	virtual FOnAbilitySystemReady& GetOnAbilitySystemReadyDelegate() override;
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual FOnDeathSignature& GetOnDeathDelegate() override;
@@ -73,10 +75,14 @@ public:
 	virtual int32 GetMinionCount_Implementation() override;
 	virtual void SetMinionCount_Implementation(int32 Count) override;
 	virtual EEntombedArchetype GetArchetype_Implementation() const override;
+	virtual void SetArchetype_Implementation(EEntombedArchetype InArchetype) override;
 	virtual USkeletalMeshComponent* GetMainHandEquipment_Implementation() override;
 	virtual USkeletalMeshComponent* GetOffHandEquipment_Implementation() override;
 	virtual FOnDamageSignature& GetOnDamageDelegate() override;
 	/* CombatInterface end */
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
+	int32 Level = 1;
 
 	FOnAbilitySystemReady OnAbilitySystemReady;
 	FOnDeathSignature OnDeath;
@@ -161,7 +167,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
 	EEntombedArchetype Archetype = EEntombedArchetype::Templar;
 
-	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level) const;
+	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass, float InLevel) const;
 	virtual void InitializeDefaultAttributes() const;
 
 	bool bDead = false;

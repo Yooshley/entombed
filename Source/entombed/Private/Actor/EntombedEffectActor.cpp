@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "entombed/entombed.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 AEntombedEffectActor::AEntombedEffectActor()
@@ -15,9 +16,38 @@ AEntombedEffectActor::AEntombedEffectActor()
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>("SceneRoot"));
 }
 
+void AEntombedEffectActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	RunningTime += DeltaTime;
+	
+	if(RunningTime > SinePeriod)
+	{
+		RunningTime = 0.f;
+	}
+	PickupMovement(DeltaTime);
+}
+
 void AEntombedEffectActor::BeginPlay()
 {
 	Super::BeginPlay();
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+	CalculatedRotation = GetActorRotation();
+}
+
+void AEntombedEffectActor::StartRotation()
+{
+	bRotates = true;
+	CalculatedRotation = GetActorRotation();
+}
+
+void AEntombedEffectActor::StartSinusoidalMovement()
+{
+	bSinusoidalMovement = true;
+	InitialLocation = GetActorLocation();
+	CalculatedLocation = InitialLocation;
+	
 }
 
 void AEntombedEffectActor::ApplyEffectToTarget(AActor* TargetActor, TSubclassOf<UGameplayEffect> EffectClass)
@@ -125,3 +155,16 @@ void AEntombedEffectActor::OnEndOverlap(AActor* TargetActor)
 	}
 }
 
+void AEntombedEffectActor::PickupMovement(float DeltaTime)
+{
+	if (bRotates)
+	{
+		const FRotator DeltaRotation(0.f, DeltaTime * RotationRate, 0.f);
+		CalculatedRotation = UKismetMathLibrary::ComposeRotators(CalculatedRotation, DeltaRotation);
+	}
+	if (bSinusoidalMovement)
+	{
+		const float Sine = SineAmplitude * FMath::Sin(RunningTime * SinePeriod);
+		CalculatedLocation = InitialLocation + FVector(0.f, 0.f, Sine);
+	}
+}

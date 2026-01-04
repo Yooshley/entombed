@@ -16,7 +16,7 @@ class ENTOMBED_API UEntombedGameInstance : public UGameInstance
 	
 public:
 	UPROPERTY()
-	FName PlayerStartTag = FName();
+	FName CheckpointTag = FName();
 	
 	UPROPERTY()
 	FString SlotName = FString();

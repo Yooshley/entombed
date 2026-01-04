@@ -43,7 +43,7 @@ void AEntombedEnemyCharacter::PossessedBy(AController* NewController)
 	EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_RANGED_BOOL, ArchetypeInfo->GetArchetypeDefaultInfo(Archetype).bIsRanged);
 }
 
-void AEntombedEnemyCharacter::HighlightActor()
+void AEntombedEnemyCharacter::HighlightActor_Implementation()
 {
 	for (USkeletalMeshComponent* Part : EquipmentSlots)
 	{
@@ -59,7 +59,7 @@ void AEntombedEnemyCharacter::HighlightActor()
 	HeadAttachment->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 }
 
-void AEntombedEnemyCharacter::UnHighlightActor()
+void AEntombedEnemyCharacter::UnHighlightActor_Implementation()
 {
 	for (USkeletalMeshComponent* Part : EquipmentSlots)
 	{
@@ -71,11 +71,6 @@ void AEntombedEnemyCharacter::UnHighlightActor()
 	HeadAttachment->SetRenderCustomDepth(false);
 }
 
-int32 AEntombedEnemyCharacter::GetCharacterLevel_Implementation()
-{
-	return Level;
-}
-
 void AEntombedEnemyCharacter::Death(const FVector& DeathImpulse)
 {
 	SetLifeSpan(LifeSpanPostDeath);
@@ -83,6 +78,7 @@ void AEntombedEnemyCharacter::Death(const FVector& DeathImpulse)
 	{
 		EntombedAIController->GetBlackboardComponent()->SetValueAsBool(BB_KEY_DEAD_BOOL, true);
 	}
+	SpawnLoot();
 	Super::Death(DeathImpulse);
 }
 

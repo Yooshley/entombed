@@ -18,3 +18,8 @@ void UMVVM_Slot::SetMapName(FString InMapName)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(MapName, InMapName);
 }
+
+void UMVVM_Slot::SetLevel(int32 InValue)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(Level, InValue);
+}

@@ -36,23 +36,32 @@ void UMVVM_MainMenu::NewSlotButtonPressed(int32 SlotIndex)
 void UMVVM_MainMenu::SaveSlotButtonPressed(int32 SlotIndex, const FString& EnteredName)
 {
 	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!IsValid(EntombedGameMode)) return;
 	
 	SlotsMap[SlotIndex]->SetSavedName(EnteredName);
 	SlotsMap[SlotIndex]->SetMapName(EntombedGameMode->DefaultMapName);
+	SlotsMap[SlotIndex]->SetLevel(1);
 	SlotsMap[SlotIndex]->SlotStatus = Taken;
-	EntombedGameMode->SaveSlot(SlotsMap[SlotIndex], SlotIndex);
+	SlotsMap[SlotIndex]->PlayerStartTag = EntombedGameMode->DefaultPlayerStartTag;
+	SlotsMap[SlotIndex]->MapAssetName = EntombedGameMode->DefaultMap.ToSoftObjectPath().GetAssetName();
 	
+	EntombedGameMode->SaveSlot(SlotsMap[SlotIndex], SlotIndex);
 	SlotsMap[SlotIndex]->InitializeSlot();
 	
 	UEntombedGameInstance* EntombedGameInstance = Cast<UEntombedGameInstance>(EntombedGameMode->GetGameInstance());
 	EntombedGameInstance->SlotName = EnteredName;
 	EntombedGameInstance->SlotIndex = SlotIndex;
-	EntombedGameInstance->PlayerStartTag = EntombedGameMode->DefaultPlayerStartTag;
+	EntombedGameInstance->CheckpointTag = EntombedGameMode->DefaultPlayerStartTag;
 }
 
 void UMVVM_MainMenu::LoadSlotButtonPressed(int32 SlotIndex)
 {
 	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
+	UEntombedGameInstance* EntombedGameInstance = Cast<UEntombedGameInstance>(EntombedGameMode->GetGameInstance());
+	EntombedGameInstance->CheckpointTag = SlotsMap[SlotIndex]->PlayerStartTag;
+	EntombedGameInstance->SlotName = SlotsMap[SlotIndex]->SlotName;
+	EntombedGameInstance->SlotIndex = SlotsMap[SlotIndex]->SlotIndex;
+	
 	EntombedGameMode->TravelToMap(SlotsMap[SlotIndex]);
 }
 
@@ -70,6 +79,7 @@ void UMVVM_MainMenu::DeleteSlotButtonPressed(int32 SlotIndex)
 void UMVVM_MainMenu::LoadSlotData()
 {
 	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
+	if (!IsValid(EntombedGameMode)) return;
 	for (const TTuple<int32, UMVVM_Slot*> Slot : SlotsMap)
 	{
 		UEntombedSaveGame* SaveObject = EntombedGameMode->GetSlotData(Slot.Value->SlotName, Slot.Key);
@@ -79,6 +89,8 @@ void UMVVM_MainMenu::LoadSlotData()
 		
 		Slot.Value->SetSavedName(SavedName);
 		Slot.Value->SetMapName(SaveObject->MapName);
+		Slot.Value->SetLevel(SaveObject->PlayerLevel);
+		Slot.Value->PlayerStartTag = SaveObject->CheckpointTag;
 		Slot.Value->SlotStatus= SaveSlotStatus;
 		Slot.Value->InitializeSlot();
 	}

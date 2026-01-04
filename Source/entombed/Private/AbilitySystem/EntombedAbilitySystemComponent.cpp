@@ -10,12 +10,43 @@
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "entombed/EntombedLogChannels.h"
 #include "entombed/Public/Interface/PlayerInterface.h"
+#include "Game/EntombedSaveGame.h"
 
+struct FSavedAbility;
 struct FEntombedAbilityInfo;
 
 void UEntombedAbilitySystemComponent::AbilityActorInfoSet()
 {
 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UEntombedAbilitySystemComponent::ClientEffectApplied);
+}
+
+void UEntombedAbilitySystemComponent::GrantAbilitiesFromSaveData(UEntombedSaveGame* SaveData)
+{
+	for (const FSavedAbility& AbilityData : SaveData->SavedAbilities)
+	{
+		const TSubclassOf<UGameplayAbility> AbilityClass = AbilityData.GameplayAbility;
+		
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, AbilityData.AbilityLevel);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityData.AbilitySlot);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(AbilityData.AbilityStatus);
+		if (AbilityData.AbilityType == FEntombedGameplayTags::Get().Ability_Type_Active)
+		{
+			GiveAbility(AbilitySpec);
+		}
+		else if (AbilityData.AbilityType == FEntombedGameplayTags::Get().Ability_Type_Passive)
+		{
+			if (AbilityData.AbilityStatus.MatchesTagExact(FEntombedGameplayTags::Get().Ability_Status_Equipped))
+			{
+				GiveAbilityAndActivateOnce(AbilitySpec);
+			}
+			else
+			{
+				GiveAbility(AbilitySpec);
+			}
+		}
+	}
+	bGrantedDefaultAbilities = true;
+	GrantedAbilitiesDelegate.Broadcast();
 }
 
 void UEntombedAbilitySystemComponent::AbilityInputPressed(const FGameplayTag& InputTag)
@@ -297,6 +328,8 @@ void UEntombedAbilitySystemComponent::ServerEquipAbility_Implementation(const FG
 					TryActivateAbility(AbilitySpec->Handle);
 					MulticastActivatePassiveEffect(AbilityTag, true);
 				}
+				AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GetStatusTagFromSpec(*AbilitySpec));
+				AbilitySpec->GetDynamicSpecSourceTags().AddTag(FEntombedGameplayTags::Get().Ability_Status_Equipped);
 			}
 			AssignSlotToAbility(*AbilitySpec, SlotTag);
 			MarkAbilitySpecDirty(*AbilitySpec);

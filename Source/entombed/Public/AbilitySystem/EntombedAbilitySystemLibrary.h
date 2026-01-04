@@ -8,6 +8,8 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EntombedAbilitySystemLibrary.generated.h"
 
+class ULootTiers;
+class UEntombedSaveGame;
 struct FDamageEffectParameters;
 class UAbilityInfo;
 struct FWidgetControllerParameters;
@@ -44,6 +46,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|ArchetypeDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, EEntombedArchetype Archetype, float Level, UAbilitySystemComponent* ASC);
+	
+	static void InitializeAttributesFromSaveData(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, UEntombedSaveGame* SaveData);
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|ArchetypeDefaults")
 	static void GrantDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC, EEntombedArchetype Archetype);
@@ -53,6 +57,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|ArchetypeDefaults")
 	static UAbilityInfo* GetAbilityInfo(const UObject* WorldContextObject);
+	
+	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|ArchetypeDefaults", meta=(DefaultToSelf = "WorldContextObject"))
+	static ULootTiers* GetLootTiers(const UObject* WorldContextObject);
 
 	/*
 	 * EFFECT CONTEXT GETTERS

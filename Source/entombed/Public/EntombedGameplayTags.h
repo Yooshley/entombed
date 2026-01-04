@@ -126,6 +126,7 @@ public:
 
 	FGameplayTag Ability_Passive_Defense;
 	FGameplayTag Ability_Passive_Siphon;
+	FGameplayTag Ability_Passive_ListenForEvent;
 
 	/**
 	*EFFECT TAGS

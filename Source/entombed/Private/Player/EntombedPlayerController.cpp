@@ -8,9 +8,7 @@
 #include "EntombedGameplayTags.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
-#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/EntombedAbilitySystemComponent.h"
-#include "AbilitySystem/Data/AbilityInfo.h"
 #include "Actor/MagicCircle.h"
 #include "Character/EntombedPlayerCharacter.h"
 #include "Components/DecalComponent.h"
@@ -19,6 +17,7 @@
 #include "GameFramework/Character.h"
 #include "Input/EntombedInputComponent.h"
 #include "entombed/Public/Interface/TargetInterface.h"
+#include "Interface/HostileInterface.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 AEntombedPlayerController::AEntombedPlayerController()
@@ -163,8 +162,8 @@ void AEntombedPlayerController::CursorTrace()
 	//check for blocking tag
 	if (GetEntombedASC() && GetEntombedASC()->HasMatchingGameplayTag(FEntombedGameplayTags::Get().Player_Block_CursorTrace))
 	{
-		if (LastActor) LastActor->UnHighlightActor();
-		if (ThisActor) ThisActor->UnHighlightActor();
+		UnhighlightActor(LastActor);
+		UnhighlightActor(ThisActor);
 		LastActor = nullptr;
 		ThisActor = nullptr;
 		return;
@@ -175,12 +174,35 @@ void AEntombedPlayerController::CursorTrace()
 	if (!CursorHit.bBlockingHit) return;
 
 	LastActor = ThisActor;
-	ThisActor = CursorHit.GetActor();
+	if (IsValid(CursorHit.GetActor()) && CursorHit.GetActor()->Implements<UTargetInterface>())
+	{
+		ThisActor = CursorHit.GetActor();
+	}
+	else
+	{
+		ThisActor = nullptr;
+	}
 
 	if (ThisActor != LastActor)
 	{
-		if (LastActor) LastActor->UnHighlightActor();
-		if (ThisActor) ThisActor->HighlightActor();
+		UnhighlightActor(LastActor);
+		HighlightActor(ThisActor);
+	}
+}
+
+void AEntombedPlayerController::HighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UTargetInterface>())
+	{
+		ITargetInterface::Execute_HighlightActor(InActor);
+	}
+}
+
+void AEntombedPlayerController::UnhighlightActor(AActor* InActor)
+{
+	if (IsValid(InActor) && InActor->Implements<UTargetInterface>())
+	{
+		ITargetInterface::Execute_UnHighlightActor(InActor);
 	}
 }
 
@@ -194,8 +216,15 @@ void AEntombedPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 	
 	if (InputTag.MatchesTagExact(FEntombedGameplayTags::Get().Input_Ability_MainHand_1))
 	{
-		bTargeting = ThisActor ? true : false;
-		bAutoRunning = false;
+		if (IsValid(ThisActor))
+		{
+			TargetingStatus = ThisActor->Implements<UHostileInterface>() ? ETargetingStatus::Hostile : ETargetingStatus::Object;
+			bAutoRunning = false;
+		}
+		else
+		{
+			TargetingStatus = ETargetingStatus::Nothing;	
+		}
 	}
 	if (GetEntombedASC()) GetEntombedASC()->AbilityInputPressed(InputTag);
 }
@@ -218,7 +247,7 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 	return;
 	
-	if (!bTargeting && !bModifierRunning && bClickToMove)
+	if (TargetingStatus != ETargetingStatus::Hostile && !bModifierRunning && bClickToMove)
 	{
 		const APawn* ControlledPawn = GetPawn();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
@@ -240,7 +269,7 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 			}
 		}
 		FollowTime = 0.f;
-		bTargeting = false;
+		TargetingStatus = ETargetingStatus::Nothing;
 	}
 }
 
@@ -262,7 +291,7 @@ void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 
 	return;
 
-	if (bTargeting || bModifierRunning)
+	if (TargetingStatus == ETargetingStatus::Hostile || bModifierRunning)
 	{
 		if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
 	}

@@ -122,6 +122,7 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Ability_Passive_Defense = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.Defense"));
 	GameplayTags.Ability_Passive_Siphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.Siphon"));
+	GameplayTags.Ability_Passive_ListenForEvent = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Ability.Passive.ListenForEvent"));
 
 	/**
 	*EFFECT TAGS

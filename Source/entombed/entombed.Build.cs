@@ -7,17 +7,36 @@ public class entombed : ModuleRules
 	public entombed(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "GameplayAbilities" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "GameplayTags", "GameplayTasks", "NavigationSystem", "Niagara", "AIModule" });
+		PublicDependencyModuleNames.AddRange(new string[]
+		{
+			"Core",
+			"CoreUObject",
+			"Engine",
 
-		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-		
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
+			// Input
+			"InputCore",
+			"EnhancedInput",
 
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+			// UI
+			"UMG",
+			"Slate",
+			"SlateCore",
+
+			// MVVM
+			"ModelViewViewModel",
+
+			// GAS
+			"GameplayAbilities",
+			"GameplayTags",
+			"GameplayTasks"
+		});
+
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"NavigationSystem",
+			"Niagara",
+			"AIModule"
+		});
 	}
 }

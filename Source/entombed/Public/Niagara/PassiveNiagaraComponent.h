@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/EntombedAbilitySystemComponent.h"
 #include "PassiveNiagaraComponent.generated.h"
 
 /**
@@ -17,6 +18,7 @@ class ENTOMBED_API UPassiveNiagaraComponent : public UNiagaraComponent
 	
 public:
 	UPassiveNiagaraComponent();
+	void ActivateIfEquipped(UEntombedAbilitySystemComponent* EntombedASC);
 
 	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag PassiveAbilityTag;

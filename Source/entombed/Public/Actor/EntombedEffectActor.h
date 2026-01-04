@@ -32,9 +32,40 @@ class ENTOMBED_API AEntombedEffectActor : public AActor
 	
 public:	
 	AEntombedEffectActor();
-	
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(BlueprintReadWrite)
+	FVector CalculatedLocation;
+	
+	UPROPERTY(BlueprintReadWrite)
+	FRotator CalculatedRotation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	bool bRotates = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	float RotationRate = 45.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	bool bSinusoidalMovement = false;
+	
+	UFUNCTION(BlueprintCallable)
+    void StartRotation();
+	
+	UFUNCTION(BlueprintCallable)
+	void StartSinusoidalMovement();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	float SineAmplitude = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	float SinePeriod = PI * 2;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	FVector InitialLocation;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
 	bool bDestroyOnEffectApplication = false;
@@ -42,7 +73,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
 	bool bApplyEffectToEnemy = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Effects")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
 	float ActorLevel = 1.f;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Effects")
@@ -78,4 +109,8 @@ protected:
 private:
 	UPROPERTY()
 	TMap<FActiveGameplayEffectHandle, UAbilitySystemComponent*> ActiveEffectHandles;
+	
+	float RunningTime = 0.f;
+	
+	void PickupMovement(float DeltaTime);
 };

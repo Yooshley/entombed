@@ -29,9 +29,9 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AEntombedPlayerState* EntombedPlayerState = GetEntombedPlayerState();
 	
 	EntombedPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
-	EntombedPlayerState->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel)
+	EntombedPlayerState->OnLevelChangedDelegate.AddLambda([this](int32 NewLevel, bool bLevelUp)
 	{
-		OnLevelChangedDelegate.Broadcast(NewLevel);
+		OnLevelChangedDelegate.Broadcast(NewLevel, bLevelUp);
 	});
 	
 	const UEntombedAttributeSet* EntombedAttributeSet = GetEntombedAttributeSet();

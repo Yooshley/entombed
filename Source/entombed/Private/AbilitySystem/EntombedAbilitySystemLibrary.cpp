@@ -13,6 +13,7 @@
 #include "Engine/OverlapResult.h"
 #include "Game/EntombedGameModeBase.h"
 #include "entombed/Public/Interface/CombatInterface.h"
+#include "Game/EntombedSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerState.h"
 #include "UI/HUD/EntombedHUD.h"
@@ -77,27 +78,61 @@ void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* W
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();
 	
-	UArchetypeInfo* ProfInfo = GetArchetypeInfo(WorldContextObject);
-	FEntombedArchetypeDefaultInfo ProfDefaultInfo = ProfInfo->GetArchetypeDefaultInfo(Archetype);
+	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
+	FEntombedArchetypeDefaultInfo ArchetypeDefaultInfo = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
 	
 	FGameplayEffectContextHandle CoreAttributesContextHandle = ASC->MakeEffectContext();
 	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
-	FGameplayEffectSpecHandle CoreAttributesSpecHandle = ASC->MakeOutgoingSpec(ProfDefaultInfo.CoreAttributesEffect, Level, CoreAttributesContextHandle);
+	FGameplayEffectSpecHandle CoreAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeDefaultInfo.CoreAttributesEffect, Level, CoreAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*CoreAttributesSpecHandle.Data.Get());
 
 	FGameplayEffectContextHandle DerivedAttributesContextHandle = ASC->MakeEffectContext();
-	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
-	FGameplayEffectSpecHandle DerivedAttributesSpecHandle = ASC->MakeOutgoingSpec(ProfInfo->DerivedAttributesEffect, Level, DerivedAttributesContextHandle);
+	DerivedAttributesContextHandle.AddSourceObject(AvatarActor);
+	FGameplayEffectSpecHandle DerivedAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->DerivedAttributesEffect, Level, DerivedAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*DerivedAttributesSpecHandle.Data.Get());
 
 	FGameplayEffectContextHandle ResourceAttributesContextHandle = ASC->MakeEffectContext();
-	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
-	FGameplayEffectSpecHandle ResourceAttributesSpecHandle = ASC->MakeOutgoingSpec(ProfInfo->ResourceAttributesEffect, Level, ResourceAttributesContextHandle);
+	ResourceAttributesContextHandle.AddSourceObject(AvatarActor);
+	FGameplayEffectSpecHandle ResourceAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->ResourceAttributesEffect, Level, ResourceAttributesContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());
 }
 
+void UEntombedAbilitySystemLibrary::InitializeAttributesFromSaveData(const UObject* WorldContextObject,
+	UAbilitySystemComponent* ASC, UEntombedSaveGame* SaveData)
+{
+	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
+	if (ArchetypeInfo == nullptr) return;
+	
+	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	const AActor* SourceAvatarActor = ASC->GetAvatarActor();
+	
+	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(SourceAvatarActor);
+
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->CoreAttributes_SetByCaller, 1.f, EffectContextHandle);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Vigor, SaveData->Vigor);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Instinct, SaveData->Instinct);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Technique, SaveData->Technique);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Acumen, SaveData->Acumen);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Logic, SaveData->Logic);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Spirit, SaveData->Spirit);
+	
+	ASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+	
+	FGameplayEffectContextHandle DerivedAttributesContextHandle = ASC->MakeEffectContext();
+	DerivedAttributesContextHandle.AddSourceObject(SourceAvatarActor);
+	FGameplayEffectSpecHandle DerivedAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->DerivedAttributesEffect_Infinite, 1.f, DerivedAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*DerivedAttributesSpecHandle.Data.Get());
+
+	FGameplayEffectContextHandle ResourceAttributesContextHandle = ASC->MakeEffectContext();
+	ResourceAttributesContextHandle.AddSourceObject(SourceAvatarActor);
+	FGameplayEffectSpecHandle ResourceAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->ResourceAttributesEffect, 1.f, ResourceAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());	
+}
+
 void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldContextObject,
-	UAbilitySystemComponent* ASC, EEntombedArchetype Archetype)
+                                                          UAbilitySystemComponent* ASC, EEntombedArchetype Archetype)
 {
 	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
 	if (ArchetypeInfo == nullptr) return;
@@ -130,6 +165,7 @@ void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldCo
 	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultPassiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, Level);
+		AbilitySpec.GetDynamicSpecSourceTags().AddTag(FEntombedGameplayTags::Get().Ability_Status_Equipped);
 		ASC->GiveAbilityAndActivateOnce(AbilitySpec);
 	}
 }
@@ -146,6 +182,13 @@ UAbilityInfo* UEntombedAbilitySystemLibrary::GetAbilityInfo(const UObject* World
 	const AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (EntombedGameMode == nullptr) return nullptr;
 	return EntombedGameMode->AbilityInformation;
+}
+
+ULootTiers* UEntombedAbilitySystemLibrary::GetLootTiers(const UObject* WorldContextObject)
+{
+		const AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+    	if (EntombedGameMode == nullptr) return nullptr;
+    	return EntombedGameMode->LootTiers;
 }
 
 bool UEntombedAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)

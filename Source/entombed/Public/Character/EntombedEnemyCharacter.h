@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/EntombedBaseCharacter.h"
 #include "entombed/Public/Interface/TargetInterface.h"
+#include "Interface/HostileInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "EntombedEnemyCharacter.generated.h"
 
@@ -15,7 +16,7 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class ENTOMBED_API AEntombedEnemyCharacter : public AEntombedBaseCharacter, public ITargetInterface
+class ENTOMBED_API AEntombedEnemyCharacter : public AEntombedBaseCharacter, public ITargetInterface, public IHostileInterface
 {
 	GENERATED_BODY()
 
@@ -24,12 +25,11 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 
 	/** TargetInterface start */
-	virtual void HighlightActor() override;
-	virtual void UnHighlightActor() override;
+	virtual void HighlightActor_Implementation() override;
+	virtual void UnHighlightActor_Implementation() override;
 	/** TargetInterface end */
 
 	/** CombatInterface start */
-	virtual int32 GetCharacterLevel_Implementation() override;
 	virtual void Death(const FVector& DeathImpulse) override;
 	/** CombatInterface end */
 	
@@ -46,13 +46,13 @@ protected:
 	virtual void InitializeAbilityActorInfo() override;
 	virtual  void InitializeDefaultAttributes() const override;
 	virtual void StunTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="ArchetypeDefaults")
-	int32 Level = 1;
 
 	UPROPERTY(EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviorTree;
 
 	UPROPERTY()
 	TObjectPtr<AEntombedAIController> EntombedAIController;
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnLoot();
 };
