@@ -34,12 +34,18 @@ public:
 
 	bool bIsCasting = false;
 	FVector StrafeTarget = FVector::ZeroVector;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_Frozen, BlueprintReadOnly)
+	bool bIsFrozen = false;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Shocked, BlueprintReadOnly)
 	bool bIsShocked = false;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Burned, BlueprintReadOnly)
 	bool bIsBurned = false;
+	
+	UFUNCTION()
+    virtual void OnRep_Frozen();
 
 	UFUNCTION()
 	virtual void OnRep_Shocked();
@@ -93,6 +99,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnTotalLifeChanged;
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnFormChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnTotalFormChanged;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat")
 	TObjectPtr<AActor> TargetActor;
@@ -112,6 +124,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UWidgetComponent> LifeBar;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWidgetComponent> FormBar;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -150,13 +165,7 @@ protected:
 	TObjectPtr<USkeletalMeshComponent> OffHandEquipment;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
-	TSubclassOf<UGameplayEffect> DefaultCoreAttributes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
-	TSubclassOf<UGameplayEffect> DefaultDerivedAttributes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
-	TSubclassOf<UGameplayEffect> DefaultResourceAttributes;
+	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Attributes")
 	float BaseWalkSpeed = 250.f;
@@ -192,12 +201,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
 	TObjectPtr<UDebuffNiagaraComponent> ShockDebuffComponent;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
-	TObjectPtr<UPassiveNiagaraComponent> PassiveDefenseComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
-	TObjectPtr<UPassiveNiagaraComponent> PassiveSiphonComponent;
+	TObjectPtr<UDebuffNiagaraComponent> FreezeDebuffComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> EffectAttachComponent;

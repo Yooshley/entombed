@@ -8,9 +8,10 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EntombedAbilitySystemLibrary.generated.h"
 
+struct FAppliedDebuffData;
 class ULootTiers;
 class UEntombedSaveGame;
-struct FDamageEffectParameters;
+struct FAbilityDamageParameters;
 class UAbilityInfo;
 struct FWidgetControllerParameters;
 class UAbilityMenuWidgetController;
@@ -64,88 +65,29 @@ public:
 	/*
 	 * EFFECT CONTEXT GETTERS
 	 */
-	
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
 	static bool IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle);
-
+	
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static bool IsDebuffed(const FGameplayEffectContextHandle& EffectContextHandle);
-
+	static bool HasDebuffs(const FGameplayEffectContextHandle& EffectContextHandle);
+	
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static float GetDebuffDamage(const FGameplayEffectContextHandle& EffectContextHandle);
-
+	static TArray<FAppliedDebuffData> GetAppliedDebuffs(const FGameplayEffectContextHandle& EffectContextHandle);
+	
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static float GetDebuffDuration(const FGameplayEffectContextHandle& EffectContextHandle);
-
+	static void AddDebuff(const FGameplayEffectContextHandle& EffectContextHandle, const FAppliedDebuffData& InDebuff);
+	
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static float GetDebuffFrequency(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static FVector GetKnockbackVector(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static bool GetIsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle);
-
-	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle);
+	static void ClearDebuffs(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	/*
 	* EFFECT CONTEXT SETTERS
 	*/
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetIsBlockedHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetIsDebuffed(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsDebuffed);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetDebuffDamage(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InDamage);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetDebuffDuration(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InDuration);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetDebuffFrequency(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InFrequency);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetDamageType(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InType);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetDeathImpulse(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InImpulse);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetKnockbackVector(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InVector);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetIsRadialDamage(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsRadialDamage);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetRadialDamageInnerRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InRadius);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetRadialDamageOuterRadius(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InRadius);
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayEffects")
-	static void SetRadialDamageOrigin(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InOrigin);
+	
 
 	/*
 	 * GAMEPLAY MECHANICS
@@ -161,7 +103,7 @@ public:
 	static bool IsAlly(AActor* FirstActor, AActor* SecondActor);
 
 	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|GameplayMechanics")
-	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParameters& DamageEffectParameters);
+	static FGameplayEffectContextHandle ApplyDamageEffect(const FAbilityDamageParameters& DamageEffectParameters);
 
 	UFUNCTION(BlueprintPure, Category = "EntombedAbilitySystemLibrary|GameplayMechanics")
 	static TArray<FRotator> GetEvenlySpreadRotators(const FVector Forward, const FVector Axis, float Spread, int32 NumRotators);
@@ -170,11 +112,4 @@ public:
 	static TArray<FVector> GetEvenlySpreadVectors(const FVector Forward, const FVector Axis, float Spread, int32 NumVectors);
 
 	static int32 GetXPAwardForArchetype(const UObject* WorldContextObject, EEntombedArchetype Archetype, int32 Level);
-
-	/*
-	 * DAMAGE PARAMETERS
-	 */
-
-	UFUNCTION(BlueprintCallable, Category = "EntombedAbilitySystemLibrary|DamageEffect")
-	static void SetRadialDamageEffectParams(UPARAM(ref) FDamageEffectParameters& DamageEffectParameters);
 };

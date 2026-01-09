@@ -5,13 +5,13 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
-#include "Actor/EntombedProjectile.h"
+#include "Actor/EntombedAbilityActor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "entombed/Public/Interface/CombatInterface.h"
 
 FString UEntombedFireBolt::GetLevelDescription(int32 Level)
 {
-	const int32 ScaledDamage = DamageValue.GetValueAtLevel(Level);
+	const int32 ScaledDamage = 0;
 	const float Cost = FMath::Abs(GetCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	
@@ -28,7 +28,7 @@ FString UEntombedFireBolt::GetLevelDescription(int32 Level)
 
 FString UEntombedFireBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 ScaledDamage = DamageValue.GetValueAtLevel(Level);
+	const int32 ScaledDamage = 0;
 	const float Cost = FMath::Abs(GetCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	
@@ -67,14 +67,14 @@ void UEntombedFireBolt::SpawnProjectiles(const FGameplayTag& SocketTag, AActor* 
 		SpawnTransform.SetLocation(SocketLocation);
 		SpawnTransform.SetRotation(Rotator.Quaternion());
 
-		AEntombedProjectile* Projectile = GetWorld()->SpawnActorDeferred<AEntombedProjectile>(
+		AEntombedAbilityActor* Projectile = GetWorld()->SpawnActorDeferred<AEntombedAbilityActor>(
 		ProjectileClass,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-		Projectile->DamageEffectParameters = MakeDamageParametersFromClassDefaults();
+		Projectile->DamageEffectParameters = GetDefaultDamageParameters();
 
 		Projectile->ProjectileMovement->bIsHomingProjectile = bHomingProjectile;
 		if (bHomingProjectile)

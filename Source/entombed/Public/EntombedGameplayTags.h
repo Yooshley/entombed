@@ -17,33 +17,19 @@ public:
 	static void InitializeNativeGameplayTags();
 	
 	/**
-	*CORE ATTRIBUTE TAGS
+	* ATTRIBUTE TAGS
 	**/
-
-	FGameplayTag Attribute_Core_Vigor;
-	FGameplayTag Attribute_Core_Instinct;
-	FGameplayTag Attribute_Core_Technique;
-	FGameplayTag Attribute_Core_Acumen;
-	FGameplayTag Attribute_Core_Logic;
-	FGameplayTag Attribute_Core_Spirit;
+	FGameplayTag Attribute_TotalLife;
+	FGameplayTag Attribute_LifeRegenerationRate;
+	FGameplayTag Attribute_LifeRegenerationDelay;
 	
-	/**
-	*DERIVED ATTRIBUTE TAGS
-	**/
-	FGameplayTag Attribute_Resource_TotalLife;
-	FGameplayTag Attribute_Resource_TotalForm;
-	FGameplayTag Attribute_Resource_TotalMind;
-
-	FGameplayTag Attribute_Resource_LifeRegeneration;
-	FGameplayTag Attribute_Resource_FormRegeneration;
-	FGameplayTag Attribute_Resource_MindRegeneration;
+	FGameplayTag Attribute_TotalForm;
+	FGameplayTag Attribute_FormRegenerationRate;
+	FGameplayTag Attribute_FormRegenerationDelay;
 	
-	FGameplayTag Attribute_Derived_CriticalChance;
-	FGameplayTag Attribute_Derived_CriticalMultiplier;
-	FGameplayTag Attribute_Derived_EvadeChance;
-	FGameplayTag Attribute_Derived_BlockChance;
-	FGameplayTag Attribute_Derived_ArmorRating;
-
+	FGameplayTag Attribute_CriticalChance;
+	FGameplayTag Attribute_CriticalMultiplier;
+	
 	/**
 	*INPUT TAGS
 	**/
@@ -66,29 +52,44 @@ public:
 	FGameplayTag Damage_Sharp;
 	FGameplayTag Damage_Point;
 	FGameplayTag Damage_Blunt;
-
-	TArray<FGameplayTag> PhysicalDamageTypes;
 	
 	FGameplayTag Damage_Burn;
 	FGameplayTag Damage_Shock;
 	FGameplayTag Damage_Freeze;
 	
+	TArray<FGameplayTag> DamageTypes;
+	
 	FGameplayTag Debuff;
-	FGameplayTag Debuff_Chance;
-	FGameplayTag Debuff_Damage;
-	FGameplayTag Debuff_Duration;
-	FGameplayTag Debuff_Frequency;
 	
 	FGameplayTag Debuff_Burn;
+	FGameplayTag Debuff_Burn_Chance;
+	FGameplayTag Debuff_Burn_Damage;
+	FGameplayTag Debuff_Burn_Duration;
+	FGameplayTag Debuff_Burn_Period;
+	
 	FGameplayTag Debuff_Shock;
+	FGameplayTag Debuff_Shock_Chance;
+	FGameplayTag Debuff_Shock_Damage;
+	FGameplayTag Debuff_Shock_Duration;
+	FGameplayTag Debuff_Shock_Period;
+	
 	FGameplayTag Debuff_Freeze;
+	FGameplayTag Debuff_Freeze_Chance;
+	FGameplayTag Debuff_Freeze_Damage;
+	FGameplayTag Debuff_Freeze_Duration;
+	FGameplayTag Debuff_Freeze_Period;
 
 	FGameplayTag Resistance_Burn;
 	FGameplayTag Resistance_Shock;
 	FGameplayTag Resistance_Freeze;
+	FGameplayTag Resistance_Elemental;
 
-	TMap<FGameplayTag, FGameplayTag> ElementalDamageTypesToResistances;
-	TMap<FGameplayTag, FGameplayTag> ElementalDamageTypesToDebuffs;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffChances;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffDamages;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffDurations;
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffPeriods;
 
 	/**
 	*ABILITY TAGS

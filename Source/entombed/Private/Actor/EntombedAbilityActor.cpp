@@ -1,7 +1,7 @@
 // Copyright Yooshley
 
 
-#include "Actor/EntombedProjectile.h"
+#include "Actor/EntombedAbilityActor.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -13,7 +13,7 @@
 #include "Components/AudioComponent.h"
 #include "entombed/entombed.h"
 
-AEntombedProjectile::AEntombedProjectile()
+AEntombedAbilityActor::AEntombedAbilityActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
@@ -33,16 +33,16 @@ AEntombedProjectile::AEntombedProjectile()
 	ProjectileMovement->ProjectileGravityScale = 0.f;
 }
 
-void AEntombedProjectile::BeginPlay()
+void AEntombedAbilityActor::BeginPlay()
 {
 	Super::BeginPlay();
 	SetReplicateMovement(true);
 	SetLifeSpan(LifeSpan);
-	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AEntombedProjectile::OnSphereOverlap);
+	Sphere->OnComponentBeginOverlap.AddDynamic(this, &AEntombedAbilityActor::OnSphereOverlap);
 	FlightAudioComponent = UGameplayStatics::SpawnSoundAttached(FlightSound, GetRootComponent());
 }
 
-void AEntombedProjectile::OnHit()
+void AEntombedAbilityActor::OnHit()
 {
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ImpactEffect, GetActorLocation(), FRotator::ZeroRotator);
@@ -54,7 +54,7 @@ void AEntombedProjectile::OnHit()
 	bHit = true;
 }
 
-void AEntombedProjectile::Destroyed()
+void AEntombedAbilityActor::Destroyed()
 {
 	if (FlightAudioComponent)
 	{
@@ -68,7 +68,7 @@ void AEntombedProjectile::Destroyed()
 	Super::Destroyed();
 }
 
-bool AEntombedProjectile::IsValidOverlap(AActor* OtherActor)
+bool AEntombedAbilityActor::IsValidOverlap(AActor* OtherActor)
 {
 	if (!DamageEffectParameters.SourceAbilitySystemComponent)
 	{
@@ -80,7 +80,7 @@ bool AEntombedProjectile::IsValidOverlap(AActor* OtherActor)
 	return true;
 }
 
-void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+void AEntombedAbilityActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                           UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (!IsValidOverlap(OtherActor)) return;
@@ -94,12 +94,6 @@ void AEntombedProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedCompone
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParameters.DeathImpulseMagnitude;
-			DamageEffectParameters.DeathImpulse = DeathImpulse;
-			
-			const FVector KnockbackVector = GetActorForwardVector() * DamageEffectParameters.KnockbackMagnitude;
-			DamageEffectParameters.KnockbackVector = KnockbackVector;
-			
 			DamageEffectParameters.TargetAbilitySystemComponent = TargetASC;
 			UEntombedAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParameters);
 		}

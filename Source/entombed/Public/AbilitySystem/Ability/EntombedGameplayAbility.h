@@ -15,8 +15,8 @@ class ENTOMBED_API UEntombedGameplayAbility : public UGameplayAbility
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	FGameplayTag AbilityInputTag;
+	UPROPERTY(EditDefaultsOnly, Category="Activation")
+	FGameplayTag AbilityActivationTag;
 
 	virtual FString GetLevelDescription(int32 Level);
 	virtual FString GetNextLevelDescription(int32 Level);

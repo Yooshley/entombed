@@ -5,25 +5,25 @@
 #include "CoreMinimal.h"
 #include "EntombedAbilityTypes.h"
 #include "GameFramework/Actor.h"
-#include "EntombedProjectile.generated.h"
+#include "EntombedAbilityActor.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
 class UNiagaraSystem;
 
 UCLASS()
-class ENTOMBED_API AEntombedProjectile : public AActor
+class ENTOMBED_API AEntombedAbilityActor : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	AEntombedProjectile();
+	AEntombedAbilityActor();
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovement;
 
 	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn=true))
-	FDamageEffectParameters DamageEffectParameters;
+	FAbilityDamageParameters DamageEffectParameters;
 
 	UPROPERTY()
 	TObjectPtr<USceneComponent> HomingTargetSceneComponent;

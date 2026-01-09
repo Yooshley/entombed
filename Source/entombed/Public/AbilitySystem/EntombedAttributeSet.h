@@ -68,108 +68,64 @@ public:
 	void HandleIncomingDebuff(const FEffectProperties& Properties);
 
 	/*
-	 * RESOURCE ATTRIBUTES
+	 * ATTRIBUTES
 	*/
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Life, Category="Attributes|Resource")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Life, Category="Attributes")
 	FGameplayAttributeData Life;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Life);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalLife, Category="Attributes|Resource")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalLife, Category="Attributes")
 	FGameplayAttributeData TotalLife;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, TotalLife);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LifeRegenerationRate, Category="Attributes")
+	FGameplayAttributeData LifeRegenerationRate;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, LifeRegenerationRate);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LifeRegenerationDelay, Category="Attributes")
+	FGameplayAttributeData LifeRegenerationDelay;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, LifeRegenerationDelay);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Form, Category="Attributes|Resource")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Form, Category="Attributes")
 	FGameplayAttributeData Form;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Form);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalForm, Category="Attributes|Resource")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalForm, Category="Attributes")
 	FGameplayAttributeData TotalForm;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, TotalForm);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mind, Category="Attributes|Resource")
-	FGameplayAttributeData Mind;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Mind);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FormRegenerationRate, Category="Attributes")
+	FGameplayAttributeData FormRegenerationRate;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, FormRegenerationRate);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FormRegenerationDelay, Category="Attributes")
+	FGameplayAttributeData FormRegenerationDelay;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, FormRegenerationDelay);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_TotalMind, Category="Attributes|Resource")
-	FGameplayAttributeData TotalMind;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, TotalMind);
-
-	/*
-	 * CORE ATTRIBUTES
-	*/
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category="Attributes|Core")
-	FGameplayAttributeData Vigor;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Vigor); // Templar(I), Barbarian(II); TotalLife
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Instinct, Category="Attributes|Core")
-	FGameplayAttributeData Instinct;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Instinct); // Barbarian(I), Outlaw(II); FormRegen, BlockChance
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Technique, Category="Attributes|Core")
-	FGameplayAttributeData Technique;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Technique); // Outlaw(I), Engineer(II); TotalForm, CritChance
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Acumen, Category="Attributes|Core")
-	FGameplayAttributeData Acumen;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Acumen); // Alchemist(I), Ritualist(II); MindRegen
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Logic, Category="Attributes|Core")
-	FGameplayAttributeData Logic;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Logic); // Engineer(I), Alchemist(II); TotalMind
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Spirit, Category="Attributes|Core")
-	FGameplayAttributeData Spirit;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, Spirit); //Ritualist(I), Templar(II); LifeRegen
-
-	/*
-	 * DERIVED ATTRIBUTES
-	*/
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_LifeRegeneration, Category="Attributes|Derived")
-	FGameplayAttributeData LifeRegeneration;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, LifeRegeneration);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FormRegeneration, Category="Attributes|Derived")
-	FGameplayAttributeData FormRegeneration;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, FormRegeneration);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MindRegeneration, Category="Attributes|Derived")
-	FGameplayAttributeData MindRegeneration;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, MindRegeneration);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes|Derived")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes")
 	FGameplayAttributeData CriticalChance;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, CriticalChance);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes|Derived")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalChance, Category="Attributes")
 	FGameplayAttributeData CriticalMultiplier;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, CriticalMultiplier);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_EvadeChance, Category="Attributes|Derived")
-	FGameplayAttributeData EvadeChance;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, EvadeChance);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category="Attributes|Derived")
-	FGameplayAttributeData BlockChance;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, BlockChance);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorRating, Category="Attributes|Derived")
-	FGameplayAttributeData ArmorRating;
-	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, ArmorRating);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorRating, Category="Attributes|Derived")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BurnResistance, Category="Attributes")
 	FGameplayAttributeData BurnResistance;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, BurnResistance);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorRating, Category="Attributes|Derived")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ShockResistance, Category="Attributes")
 	FGameplayAttributeData ShockResistance;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, ShockResistance);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorRating, Category="Attributes|Derived")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_FreezeResistance, Category="Attributes")
 	FGameplayAttributeData FreezeResistance;
 	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, FreezeResistance);
+	
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ElementalResistance, Category="Attributes")
+	FGameplayAttributeData ElementalResistance;
+	ATTRIBUTE_ACCESSORS(UEntombedAttributeSet, ElementalResistance);
 
 	/*
 	 * META ATTRIBUTES
@@ -187,6 +143,12 @@ public:
 
 	UFUNCTION()
 	void OnRep_TotalLife(const FGameplayAttributeData& OldTotalLife) const;
+	
+	UFUNCTION()
+	void OnRep_LifeRegenerationRate(const FGameplayAttributeData& OldLifeRegenerationRate) const;
+	
+	UFUNCTION()
+	void OnRep_LifeRegenerationDelay(const FGameplayAttributeData& OldLifeRegenerationDelay) const;
 
 	UFUNCTION()
 	void OnRep_Form(const FGameplayAttributeData& OldForm) const;
@@ -195,52 +157,16 @@ public:
 	void OnRep_TotalForm(const FGameplayAttributeData& OldTotalForm) const;
 
 	UFUNCTION()
-	void OnRep_Mind(const FGameplayAttributeData& OldMind) const;
-
-	UFUNCTION()
-	void OnRep_TotalMind(const FGameplayAttributeData& OldTotalMind) const;
-
-	UFUNCTION()
-	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
-
-	UFUNCTION()
-	void OnRep_Instinct(const FGameplayAttributeData& OldInstinct) const;
-
-	UFUNCTION()
-	void OnRep_Technique(const FGameplayAttributeData& OldTechnique) const;
+	void OnRep_FormRegenerationRate(const FGameplayAttributeData& OldFormRegenerationRate) const;
 	
 	UFUNCTION()
-	void OnRep_Acumen(const FGameplayAttributeData& OldAcumen) const;
-
-	UFUNCTION()
-	void OnRep_Logic(const FGameplayAttributeData& OldLogic) const;
-
-	UFUNCTION()
-	void OnRep_Spirit(const FGameplayAttributeData& OldSpirit) const;
-
-	UFUNCTION()
-	void OnRep_LifeRegeneration(const FGameplayAttributeData& OldLifeRegeneration) const;
-
-	UFUNCTION()
-	void OnRep_FormRegeneration(const FGameplayAttributeData& OldFormRegeneration) const;
-
-	UFUNCTION()
-	void OnRep_MindRegeneration(const FGameplayAttributeData& OldMindRegeneration) const;
+	void OnRep_FormRegenerationDelay(const FGameplayAttributeData& OldFormRegenerationDelay) const;
 
 	UFUNCTION()
 	void OnRep_CriticalChance(const FGameplayAttributeData& OldCriticalChance) const;
 
 	UFUNCTION()
 	void OnRep_CriticalMultiplier(const FGameplayAttributeData& OldCriticalMultiplier) const;
-
-	UFUNCTION()
-	void OnRep_EvadeChance(const FGameplayAttributeData& OldEvadeChance) const;
-
-	UFUNCTION()
-	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
-
-	UFUNCTION()
-	void OnRep_ArmorRating(const FGameplayAttributeData& OldArmorRating) const;
 
 	UFUNCTION()
 	void OnRep_BurnResistance(const FGameplayAttributeData& OldBurnResistance) const;
@@ -250,6 +176,9 @@ public:
 	
 	UFUNCTION()
 	void OnRep_FreezeResistance(const FGameplayAttributeData& OldFreezeResistance) const;
+	
+	UFUNCTION()
+	void OnRep_ElementalResistance(const FGameplayAttributeData& OldElementalResistance) const;
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const;

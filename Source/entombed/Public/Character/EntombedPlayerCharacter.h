@@ -56,6 +56,7 @@ public:
 	FORCEINLINE FRotator GetCameraBoomRotation() const { return CameraBoom->GetComponentRotation(); }
 	
 protected:
+	virtual void BeginPlay() override;
 	void LoadPlayerProgress();
 
 private:

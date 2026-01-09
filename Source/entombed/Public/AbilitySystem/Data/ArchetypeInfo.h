@@ -41,10 +41,10 @@ struct FEntombedArchetypeDefaultInfo
 	bool bIsRanged = false;
 
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
-	TSubclassOf<UGameplayEffect> CoreAttributesEffect;
+	TSubclassOf<UGameplayEffect> DefaultAttributes;
 
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
-	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> DefaultActiveAbilities;
 
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultPassiveAbilities;
@@ -66,16 +66,7 @@ public:
 	TMap<EEntombedArchetype, FEntombedArchetypeDefaultInfo> ArchetypeInformation;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Archetype Defaults")
-	TSubclassOf<UGameplayEffect> CoreAttributes_SetByCaller;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
-	TSubclassOf<UGameplayEffect> DerivedAttributesEffect;
-	
-	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
-	TSubclassOf<UGameplayEffect> DerivedAttributesEffect_Infinite;
-
-	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
-	TSubclassOf<UGameplayEffect> ResourceAttributesEffect;
+	TSubclassOf<UGameplayEffect> Attributes_SetByCaller;
 
 	UPROPERTY(EditDefaultsOnly, Category="Shared Archetype Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> SharedAbilities;

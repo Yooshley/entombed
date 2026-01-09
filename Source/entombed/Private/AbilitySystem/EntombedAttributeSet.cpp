@@ -26,33 +26,21 @@ void UEntombedAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Life, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, TotalLife, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, LifeRegenerationRate, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, LifeRegenerationDelay, COND_None, REPNOTIFY_Always);
+	
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Form, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, TotalForm, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Mind, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, TotalMind, COND_None, REPNOTIFY_Always);
-	
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Vigor, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Instinct, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Technique, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Acumen, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Logic, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, Spirit, COND_None, REPNOTIFY_Always);
-
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, LifeRegeneration, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FormRegeneration, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, MindRegeneration, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FormRegenerationRate, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FormRegenerationDelay, COND_None, REPNOTIFY_Always);
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, CriticalChance, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, CriticalMultiplier, COND_None, REPNOTIFY_Always);
-	
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, EvadeChance, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, BlockChance, COND_None, REPNOTIFY_Always);
-	
-	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, ArmorRating, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, CriticalMultiplier, COND_None, REPNOTIFY_Always)
 	
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, BurnResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, ShockResistance, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, FreezeResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UEntombedAttributeSet, ElementalResistance, COND_None, REPNOTIFY_Always);
 }
 
 void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
@@ -72,11 +60,6 @@ void UEntombedAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffe
 	if (Data.EvaluatedData.Attribute == GetFormAttribute())
 	{
 		SetForm(FMath::Clamp(GetForm(), 0.f, GetTotalForm()));
-	}
-	
-	if (Data.EvaluatedData.Attribute == GetMindAttribute())
-	{
-		SetMind(FMath::Clamp(GetMind(), 0.f, GetTotalMind()));
 	}
 
 	if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
@@ -104,11 +87,6 @@ void UEntombedAttributeSet::PostAttributeChange(const FGameplayAttribute& Attrib
 		SetForm(GetTotalForm());
 		bMaxOutForm = false;
 	}
-	if (Attribute == GetTotalMindAttribute() && bMaxOutMind)
-	{
-		SetMind(GetTotalMind());
-		bMaxOutMind = false;
-	}
 }
 
 void UEntombedAttributeSet::HandleIncomingDamage(const FEffectProperties& Properties)
@@ -126,7 +104,7 @@ void UEntombedAttributeSet::HandleIncomingDamage(const FEffectProperties& Proper
 			ICombatInterface* CombatInterface = Cast<ICombatInterface>(Properties.TargetAvatarActor);
 			if (CombatInterface)
 			{
-				CombatInterface->Death(UEntombedAbilitySystemLibrary::GetDeathImpulse(Properties.EffectContextHandle));
+				CombatInterface->Death();
 			}
 			SendXPEvent(Properties);
 		}
@@ -136,16 +114,16 @@ void UEntombedAttributeSet::HandleIncomingDamage(const FEffectProperties& Proper
 			TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
 			Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
 
-			const FVector& KnockbackVector = UEntombedAbilitySystemLibrary::GetKnockbackVector(Properties.EffectContextHandle);
+			const FVector& KnockbackVector = FVector::ZeroVector; //TODO: Implement knockback based on BLUNT damage
 			if (!KnockbackVector.IsNearlyZero(1.f))
 			{
 				Properties.TargetCharacter->LaunchCharacter(KnockbackVector, true, false);
 			}
 		}
-		const bool bBlocked = UEntombedAbilitySystemLibrary::IsBlockedHit(Properties.EffectContextHandle);
+		const bool bBlocked = false; //TODO: Implement block based on active ability
 		const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
 		ShowFloatingText(Properties, LocalIncomingDamage, bBlocked, bCritical);
-		if (UEntombedAbilitySystemLibrary::IsDebuffed(Properties.EffectContextHandle))
+		if (UEntombedAbilitySystemLibrary::HasDebuffs(Properties.EffectContextHandle))
 		{
 			HandleIncomingDebuff(Properties);
 		}
@@ -190,50 +168,65 @@ void UEntombedAttributeSet::HandleIncomingDebuff(const FEffectProperties& Proper
 {
 	//TODO: switch to ChanceToApplyGameplayEffect/CustomApplyGameplayEffectComponent to handle debuff/DoT effects
 	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
+	
+	const TArray<FAppliedDebuffData> AppliedDebuffs = UEntombedAbilitySystemLibrary::GetAppliedDebuffs(Properties.EffectContextHandle);
+	if (AppliedDebuffs.Num() == 0)
+	{
+		return;
+	}
+	
 	FGameplayEffectContextHandle EffectContext = Properties.SourceASC->MakeEffectContext();
 	EffectContext.AddSourceObject(Properties.SourceAvatarActor);
-
-	const FGameplayTag DamageType = UEntombedAbilitySystemLibrary::GetDamageType(Properties.EffectContextHandle);
-	const float DebuffDamage = UEntombedAbilitySystemLibrary::GetDebuffDamage(Properties.EffectContextHandle);
-	const float DebuffDuration = UEntombedAbilitySystemLibrary::GetDebuffDuration(Properties.EffectContextHandle);
-	const float DebuffFrequency = UEntombedAbilitySystemLibrary::GetDebuffFrequency(Properties.EffectContextHandle);
 	
-	FString DebuffName = FString::Printf(TEXT("DynamicDebuff_%s"), *DamageType.ToString()); 
-	UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
-	
-	Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
-	Effect->Period = DebuffFrequency;
-	Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
-	
-	FInheritedTagContainer TagContainer;
-	UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
-	FGameplayTag DebuffTag = GameplayTags.ElementalDamageTypesToDebuffs[DamageType];
-	TagContainer.Added.AddTag(DebuffTag);
-	if (DebuffTag.MatchesTagExact(GameplayTags.Debuff_Shock))
+	for (const FAppliedDebuffData& DebuffData : AppliedDebuffs)
 	{
-		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputPressed);
-		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputHeld);
-		TagContainer.Added.AddTag(GameplayTags.Player_Block_InputReleased);
-	}
-	Component.SetAndApplyTargetTagChanges(TagContainer);
-
-	Effect->StackingType = EGameplayEffectStackingType::AggregateBySource; //TODO: deprecation incoming in 5.11  
-	Effect->StackLimitCount = 1; //TODO: extend stack limits for certain debuffs
-
-	const int32 Index = Effect->Modifiers.Add(FGameplayModifierInfo());
-	FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
-
-	ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
-	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-	ModifierInfo.Attribute = GetIncomingDamageAttribute();
-
-	if (FGameplayEffectSpec* MutableSpec = new FGameplayEffectSpec(Effect, EffectContext, 1.f))
-	{
-		FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(MutableSpec->GetContext().Get());
-		TSharedPtr<FGameplayTag> DebuffDamageType = MakeShareable(new FGameplayTag(DamageType));
-		EntombedContext->SetDamageType(DebuffDamageType);
+		const FGameplayTag& DebuffType = DebuffData.DebuffType;
+		const float DebuffDamage = DebuffData.Damage;
+		const float DebuffDuration = DebuffData.Duration;
+		const float DebuffPeriod = DebuffData.Period;
 		
-		Properties.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*MutableSpec);
+		const FString DebuffName = FString::Printf(TEXT("DynamicDebuff_%s"), *DebuffType.ToString());
+		UGameplayEffect* Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(DebuffName));
+		
+		Effect->DurationPolicy = EGameplayEffectDurationType::HasDuration;
+		Effect->Period = FScalableFloat(DebuffPeriod);
+		Effect->DurationMagnitude = FScalableFloat(DebuffDuration);
+		Effect->bExecutePeriodicEffectOnApplication = false;
+
+		UTargetTagsGameplayEffectComponent& Component = Effect->FindOrAddComponent<UTargetTagsGameplayEffectComponent>();
+		
+		if (const FGameplayTag* DebuffTag = GameplayTags.DamageTypesToDebuffs.Find(DebuffType))
+		{
+			FInheritedTagContainer TagContainer;
+			TagContainer.Added.AddTag(*DebuffTag);
+			
+			if (DebuffTag->MatchesTagExact(GameplayTags.Debuff_Shock))
+			{
+				TagContainer.Added.AddTag(GameplayTags.Player_Block_InputPressed);
+				TagContainer.Added.AddTag(GameplayTags.Player_Block_InputHeld);
+				TagContainer.Added.AddTag(GameplayTags.Player_Block_InputReleased);
+			}
+			Component.SetAndApplyTargetTagChanges(TagContainer);
+			
+			//Effect->StackingType = EGameplayEffectStackingType::AggregateBySource;
+			if (DebuffData.bCanStack)
+			{
+				Effect->StackLimitCount = DebuffData.MaxStacks;
+			}
+			
+			if (DebuffDamage > 0.f)
+			{
+				const int32 Index = Effect->Modifiers.Add(FGameplayModifierInfo());
+				FGameplayModifierInfo& ModifierInfo = Effect->Modifiers[Index];
+
+				ModifierInfo.ModifierMagnitude = FScalableFloat(DebuffDamage);
+				ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+				ModifierInfo.Attribute = GetIncomingDamageAttribute();
+			}
+			
+			FGameplayEffectSpec SpecToApply(Effect, EffectContext, 1.f);
+			Properties.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(SpecToApply);
+		}
 	}
 }
 
@@ -247,6 +240,16 @@ void UEntombedAttributeSet::OnRep_TotalLife(const FGameplayAttributeData& OldTot
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, TotalLife, OldTotalLife);
 }
 
+void UEntombedAttributeSet::OnRep_LifeRegenerationRate(const FGameplayAttributeData& OldLifeRegenerationRate) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, LifeRegenerationRate, OldLifeRegenerationRate);
+}
+
+void UEntombedAttributeSet::OnRep_LifeRegenerationDelay(const FGameplayAttributeData& OldLifeRegenerationDelay) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, LifeRegenerationDelay, OldLifeRegenerationDelay);
+}
+
 void UEntombedAttributeSet::OnRep_Form(const FGameplayAttributeData& OldForm) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Form, OldForm);
@@ -257,59 +260,14 @@ void UEntombedAttributeSet::OnRep_TotalForm(const FGameplayAttributeData& OldTot
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, TotalForm, OldTotalForm);
 }
 
-void UEntombedAttributeSet::OnRep_Mind(const FGameplayAttributeData& OldMind) const
+void UEntombedAttributeSet::OnRep_FormRegenerationRate(const FGameplayAttributeData& OldFormRegenerationRate) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Mind, OldMind);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, FormRegenerationRate, OldFormRegenerationRate);
 }
 
-void UEntombedAttributeSet::OnRep_TotalMind(const FGameplayAttributeData& OldTotalMind) const
+void UEntombedAttributeSet::OnRep_FormRegenerationDelay(const FGameplayAttributeData& OldFormRegenerationDelay) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, TotalMind, OldTotalMind);
-}
-
-void UEntombedAttributeSet::OnRep_Vigor(const FGameplayAttributeData& OldVigor) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Vigor, OldVigor);
-}
-
-void UEntombedAttributeSet::OnRep_Instinct(const FGameplayAttributeData& OldInstinct) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Instinct, OldInstinct);
-}
-
-void UEntombedAttributeSet::OnRep_Technique(const FGameplayAttributeData& OldTechnique) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Logic, OldTechnique);
-}
-
-void UEntombedAttributeSet::OnRep_Acumen(const FGameplayAttributeData& OldAcumen) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Acumen, OldAcumen);
-}
-
-void UEntombedAttributeSet::OnRep_Logic(const FGameplayAttributeData& OldLogic) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Technique, OldLogic);
-}
-
-void UEntombedAttributeSet::OnRep_Spirit(const FGameplayAttributeData& OldSpirit) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, Spirit, OldSpirit);
-}
-
-void UEntombedAttributeSet::OnRep_LifeRegeneration(const FGameplayAttributeData& OldLifeRegeneration) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, LifeRegeneration, OldLifeRegeneration);
-}
-
-void UEntombedAttributeSet::OnRep_FormRegeneration(const FGameplayAttributeData& OldFormRegeneration) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, FormRegeneration, OldFormRegeneration);
-}
-
-void UEntombedAttributeSet::OnRep_MindRegeneration(const FGameplayAttributeData& OldMindRegeneration) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, MindRegeneration, OldMindRegeneration);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, FormRegenerationDelay, OldFormRegenerationDelay);
 }
 
 void UEntombedAttributeSet::OnRep_CriticalChance(const FGameplayAttributeData& OldCriticalChance) const
@@ -320,21 +278,6 @@ void UEntombedAttributeSet::OnRep_CriticalChance(const FGameplayAttributeData& O
 void UEntombedAttributeSet::OnRep_CriticalMultiplier(const FGameplayAttributeData& OldCriticalMultiplier) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, CriticalMultiplier, OldCriticalMultiplier);
-}
-
-void UEntombedAttributeSet::OnRep_EvadeChance(const FGameplayAttributeData& OldEvadeChance) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, EvadeChance, OldEvadeChance);
-}
-
-void UEntombedAttributeSet::OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, BlockChance, OldBlockChance);
-}
-
-void UEntombedAttributeSet::OnRep_ArmorRating(const FGameplayAttributeData& OldArmorRating) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, ArmorRating, OldArmorRating);
 }
 
 void UEntombedAttributeSet::OnRep_BurnResistance(const FGameplayAttributeData& OldBurnResistance) const
@@ -350,6 +293,11 @@ void UEntombedAttributeSet::OnRep_ShockResistance(const FGameplayAttributeData& 
 void UEntombedAttributeSet::OnRep_FreezeResistance(const FGameplayAttributeData& OldFreezeResistance) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, FreezeResistance, OldFreezeResistance);
+}
+
+void UEntombedAttributeSet::OnRep_ElementalResistance(const FGameplayAttributeData& OldElementalResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UEntombedAttributeSet, ElementalResistance, OldElementalResistance);
 }
 
 void UEntombedAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Properties) const

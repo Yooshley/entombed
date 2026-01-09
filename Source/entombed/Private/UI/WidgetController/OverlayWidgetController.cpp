@@ -17,9 +17,9 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	const UEntombedAttributeSet* EntombedAttributeSet = GetEntombedAttributeSet();
 	
 	OnLifeChanged.Broadcast(EntombedAttributeSet->GetLife());
-	OnMaxLifeChanged.Broadcast(EntombedAttributeSet->GetTotalLife());
-	OnManaChanged.Broadcast(EntombedAttributeSet->GetMind());
-	OnMaxManaChanged.Broadcast(EntombedAttributeSet->GetTotalMind());
+	OnTotalLifeChanged.Broadcast(EntombedAttributeSet->GetTotalLife());
+	OnFormChanged.Broadcast(EntombedAttributeSet->GetForm());
+	OnTotalFormChanged.Broadcast(EntombedAttributeSet->GetTotalForm());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
@@ -45,19 +45,19 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetTotalLifeAttribute()).AddLambda(
 	[this](const FOnAttributeChangeData& Data)
 	{
-		OnMaxLifeChanged.Broadcast(Data.NewValue);
+		OnTotalLifeChanged.Broadcast(Data.NewValue);
 	});
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetMindAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetFormAttribute()).AddLambda(
 	[this](const FOnAttributeChangeData& Data)
 	{
-		OnManaChanged.Broadcast(Data.NewValue);
+		OnFormChanged.Broadcast(Data.NewValue);
 	});
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetTotalMindAttribute()).AddLambda(
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAttributeSet->GetTotalFormAttribute()).AddLambda(
 [this](const FOnAttributeChangeData& Data)
 	{
-		OnMaxManaChanged.Broadcast(Data.NewValue);
+		OnTotalFormChanged.Broadcast(Data.NewValue);
 	});
 
 	if (GetEntombedAbilitySystemComponent())

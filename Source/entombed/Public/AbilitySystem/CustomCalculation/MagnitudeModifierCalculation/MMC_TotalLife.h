@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameplayModMagnitudeCalculation.h"
-#include "MMC_MaxLife.generated.h"
+#include "MMC_TotalLife.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ENTOMBED_API UMMC_MaxLife : public UGameplayModMagnitudeCalculation
+class ENTOMBED_API UMMC_TotalLife : public UGameplayModMagnitudeCalculation
 {
 	GENERATED_BODY()
 public:
-	UMMC_MaxLife();
+	UMMC_TotalLife();
 
 	virtual float CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const override;
 
 private:
-	FGameplayEffectAttributeCaptureDefinition VigorDefinition;
+	FGameplayEffectAttributeCaptureDefinition TotalLifeDefinition;
 };

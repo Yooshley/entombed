@@ -10,31 +10,18 @@ FEntombedGameplayTags FEntombedGameplayTags::GameplayTags;
 void FEntombedGameplayTags::InitializeNativeGameplayTags()
 {
 	/**
-	*CORE ATTRIBUTE TAGS
+	*ATTRIBUTE TAGS
 	**/
-	GameplayTags.Attribute_Core_Vigor = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Core.Vigor"));
-	GameplayTags.Attribute_Core_Instinct = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Core.Instinct"));
-	GameplayTags.Attribute_Core_Technique = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Core.Technique"));
-	GameplayTags.Attribute_Core_Acumen = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Core.Acumen"));
-	GameplayTags.Attribute_Core_Logic = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Core.Logic"));
-	GameplayTags.Attribute_Core_Spirit = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Core.Spirit"));
+	GameplayTags.Attribute_TotalLife = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.TotalLife"));
+	GameplayTags.Attribute_LifeRegenerationRate = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.LifeRegenerationRate"));
+	GameplayTags.Attribute_LifeRegenerationDelay = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.LifeRegenerationDelay"));
 	
-	/**
-	*DERIVED ATTRIBUTE TAGS
-	**/
-	GameplayTags.Attribute_Resource_TotalLife = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.TotalLife"), FString("Total Life."));
-	GameplayTags.Attribute_Resource_TotalForm = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.TotalForm"), FString("Total Form."));
-	GameplayTags.Attribute_Resource_TotalForm = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.TotalMind"), FString("Total Mind."));
+	GameplayTags.Attribute_TotalForm = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.TotalForm"));
+	GameplayTags.Attribute_FormRegenerationRate = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.FormRegenerationRate"));
+	GameplayTags.Attribute_FormRegenerationDelay = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.FormRegenerationDelay"));
 
-	GameplayTags.Attribute_Resource_LifeRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.LifeRegeneration"));
-	GameplayTags.Attribute_Resource_FormRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.FormRegeneration"));
-	GameplayTags.Attribute_Resource_MindRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.MindRegeneration"));
-
-	GameplayTags.Attribute_Derived_CriticalChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.CriticalChance"));
-	GameplayTags.Attribute_Derived_CriticalMultiplier = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.CriticalMultiplier"));
-	GameplayTags.Attribute_Derived_EvadeChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.EvadeChance"));
-	GameplayTags.Attribute_Derived_BlockChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.BlockChance"));
-	GameplayTags.Attribute_Derived_ArmorRating = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.Derived.ArmorRating"));
+	GameplayTags.Attribute_CriticalChance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.CriticalChance"));
+	GameplayTags.Attribute_CriticalMultiplier = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attribute.CriticalMultiplier"));
 
 	/**
 	*INPUT TAGS
@@ -57,36 +44,67 @@ void FEntombedGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Damage_Sharp = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Sharp"));
 	GameplayTags.Damage_Point = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Point"));
 	GameplayTags.Damage_Blunt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Blunt"));
-
-	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Sharp);
-	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Point);
-	GameplayTags.PhysicalDamageTypes.Add(GameplayTags.Damage_Blunt);
 	
 	GameplayTags.Damage_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Burn"));
 	GameplayTags.Damage_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Shock"));
 	GameplayTags.Damage_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage.Freeze"));
 	
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Sharp);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Point);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Blunt);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Burn);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Shock);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Freeze);
+	
 	GameplayTags.Debuff = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff"));
-	GameplayTags.Debuff_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Chance"));
-	GameplayTags.Debuff_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Damage"));
-	GameplayTags.Debuff_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Duration"));
-	GameplayTags.Debuff_Frequency = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Frequency"));
 	
 	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn"));
+	GameplayTags.Debuff_Burn_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn.Chance"));
+	GameplayTags.Debuff_Burn_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn.Damage"));
+	GameplayTags.Debuff_Burn_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn.Duration"));
+	GameplayTags.Debuff_Burn_Period = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn.Period"));
+	
 	GameplayTags.Debuff_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock"));
+	GameplayTags.Debuff_Shock_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock.Chance"));
+	GameplayTags.Debuff_Shock_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock.Damage"));
+	GameplayTags.Debuff_Shock_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock.Duration"));
+	GameplayTags.Debuff_Shock_Period = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Shock.Period"));
+	
 	GameplayTags.Debuff_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Freeze"));
+	GameplayTags.Debuff_Freeze_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Freeze.Chance"));
+	GameplayTags.Debuff_Freeze_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Freeze.Damage"));
+	GameplayTags.Debuff_Freeze_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Freeze.Duration"));
+	GameplayTags.Debuff_Freeze_Period = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Freeze.Period"));
 	
 	GameplayTags.Resistance_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Burn"));
 	GameplayTags.Resistance_Shock = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Shock"));
 	GameplayTags.Resistance_Freeze = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Freeze"));
+	GameplayTags.Resistance_Elemental = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Resistance.Elemental"));
 	
-	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Burn, GameplayTags.Resistance_Burn);
-	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Shock, GameplayTags.Resistance_Shock);
-	GameplayTags.ElementalDamageTypesToResistances.Add(GameplayTags.Damage_Freeze, GameplayTags.Resistance_Freeze);
-
-	GameplayTags.ElementalDamageTypesToDebuffs.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn);
-	GameplayTags.ElementalDamageTypesToDebuffs.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock);
-	GameplayTags.ElementalDamageTypesToDebuffs.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze);
+	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Sharp, FGameplayTag());
+	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Point, FGameplayTag());
+	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Blunt, FGameplayTag());
+	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Burn, GameplayTags.Resistance_Burn);
+	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Shock, GameplayTags.Resistance_Shock);
+	GameplayTags.DamageTypesToResistances.Add(GameplayTags.Damage_Freeze, GameplayTags.Resistance_Freeze);
+	
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn);
+	GameplayTags.DamageTypesToDebuffChances.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn_Chance);
+	GameplayTags.DamageTypesToDebuffDamages.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn_Damage);
+	GameplayTags.DamageTypesToDebuffDurations.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn_Duration);
+	GameplayTags.DamageTypesToDebuffPeriods.Add(GameplayTags.Damage_Burn, GameplayTags.Debuff_Burn_Period);
+	
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock);
+	GameplayTags.DamageTypesToDebuffChances.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock_Chance);
+	GameplayTags.DamageTypesToDebuffDamages.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock_Damage);
+	GameplayTags.DamageTypesToDebuffDurations.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock_Duration);
+	GameplayTags.DamageTypesToDebuffPeriods.Add(GameplayTags.Damage_Shock, GameplayTags.Debuff_Shock_Period);
+	
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze);
+	GameplayTags.DamageTypesToDebuffChances.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze_Chance);
+	GameplayTags.DamageTypesToDebuffDamages.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze_Damage);
+	GameplayTags.DamageTypesToDebuffDurations.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze_Duration);
+	GameplayTags.DamageTypesToDebuffPeriods.Add(GameplayTags.Damage_Freeze, GameplayTags.Debuff_Freeze_Period);
 
 	/**
 	*ABILITY TAGS

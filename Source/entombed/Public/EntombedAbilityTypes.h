@@ -1,72 +1,161 @@
 #pragma once
 
 #include "GameplayEffectTypes.h"
+#include "ScalableFloat.h"
 #include "EntombedAbilityTypes.generated.h"
 
+class AEntombedAbilityActor;
 class UGameplayEffect;
 
 USTRUCT(BlueprintType)
-struct FDamageEffectParameters
+struct FEntombedAbilityActorData
+{
+	GENERATED_BODY();
+	
+	UPROPERTY(EditDefaultsOnly, Category="ActorData")
+	float Speed = 1000.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="ActorData")
+	float Range = 100.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="ActorData")
+	int32 Count = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category="ActorData")
+	float Spread = 90.f;
+};
+
+USTRUCT(BlueprintType)
+struct FEntombedAbilityActorParameters
 {
 	GENERATED_BODY()
-	FDamageEffectParameters(){}
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UObject> WorldContextObject = nullptr;
-
-	UPROPERTY(BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> DamageEffectClass = nullptr;
-
-	UPROPERTY(BlueprintReadWrite)
+	FEntombedAbilityActorParameters(){}
+	
+	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceAbilitySystemComponent = nullptr;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> TargetAbilitySystemComponent = nullptr;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	float AbilityLevel = 1.f;
 	
-	UPROPERTY(BlueprintReadWrite)
-	float DamageValue = 0.f;
-
-	UPROPERTY(BlueprintReadWrite)
-	FGameplayTag DamageType = FGameplayTag();
-
-	UPROPERTY(BlueprintReadWrite)
-	float DebuffChance = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<AEntombedAbilityActor> AbilityActorClass = nullptr;
 	
-	UPROPERTY(BlueprintReadWrite)
-	float DebuffDamage = 0.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FEntombedAbilityActorData ActorData;
+};
 
-	UPROPERTY(BlueprintReadWrite)
-	float DebuffDuration = 0.f;
+USTRUCT(BlueprintType)
+struct FEntombedDebuffData
+{
+	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
-	float DebuffFrequency = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category="Debuff")
+	FScalableFloat Chance;
 
-	UPROPERTY(BlueprintReadWrite)
-	float DeathImpulseMagnitude = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category="Debuff")
+	FScalableFloat Damage;
 
-	UPROPERTY(BlueprintReadWrite)
-	FVector DeathImpulse = FVector::ZeroVector;
+	UPROPERTY(EditDefaultsOnly, Category="Debuff")
+	FScalableFloat Duration;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Debuff")
+	FScalableFloat Period;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Debuff|Stacking")
+	bool bCanStack = false;
 
-	UPROPERTY(BlueprintReadWrite)
-	float KnockbackMagnitude = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category="Debuff|Stacking", meta = (EditCondition="bCanStack", EditConditionHides))
+	int32 MaxStacks = 1;
+};
 
-	UPROPERTY(BlueprintReadWrite)
-	FVector KnockbackVector = FVector::ZeroVector;
+USTRUCT(BlueprintType)
+struct FEntombedDamageData
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, Category="Damage")
+    FGameplayTag Tag;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool bIsRadialDamage = false;
+    UPROPERTY(EditDefaultsOnly, Category="Damage")
+    FScalableFloat Value;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Debuff")
+	bool bCanApplyDebuff = false;
 
-	UPROPERTY(BlueprintReadWrite)
-	float RadialDamageInnerRadius = 0.f;
+	UPROPERTY(EditDefaultsOnly, Category="Debuff", meta=(EditCondition="bCanApplyDebuff", EditConditionHides))
+	FEntombedDebuffData Debuff;
+};
 
-	UPROPERTY(BlueprintReadWrite)
-	float RadialDamageOuterRadius = 0.f;
+USTRUCT(BlueprintType)
+struct FAppliedDebuffData
+{
+	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
-	FVector RadialDamageOrigin = FVector::ZeroVector;
+	UPROPERTY()
+	FGameplayTag DebuffType;
+
+	UPROPERTY()
+	float Damage = 0.f;
+
+	UPROPERTY()
+	float Duration = 0.f;
+	
+	UPROPERTY()
+	float Period = 0.f;
+	
+	UPROPERTY(BlueprintReadOnly)
+	bool bCanStack = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 MaxStacks = 1;
+	
+	bool NetSerialize(FArchive& Ar, UPackageMap* Map, bool& bOutSuccess)
+	{
+		DebuffType.NetSerialize(Ar, Map, bOutSuccess);
+		Ar << Damage;
+		Ar << Duration;
+		Ar << Period;
+		Ar << bCanStack;
+        Ar << MaxStacks;
+        
+		bOutSuccess = true;
+		return true;
+	}
+};
+
+template<>
+struct TStructOpsTypeTraits<FAppliedDebuffData> : public TStructOpsTypeTraitsBase2<FAppliedDebuffData>
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithCopy = true
+	};
+};
+
+USTRUCT(BlueprintType)
+struct FAbilityDamageParameters
+{
+	GENERATED_BODY()
+	FAbilityDamageParameters(){}
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> SourceAbilitySystemComponent = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> TargetAbilitySystemComponent = nullptr;
+
+	UPROPERTY()
+	float AbilityLevel = 1.f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> DamageEffectClass = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FEntombedDamageData> DamageTypes;
 };
 
 USTRUCT(BlueprintType)
@@ -75,33 +164,14 @@ struct FEntombedGameplayEffectContext : public FGameplayEffectContext
 	GENERATED_BODY()
 
 public:
-	bool IsBlockedHit() const { return bIsBlockedHit; }
 	bool IsCriticalHit() const { return bIsCriticalHit; }
-	bool IsDebuffed() const { return bIsDebuffed; }
-	float GetDebuffDamage() const { return DebuffDamage; }
-	float GetDebuffDuration() const { return DebuffDuration; }
-	float GetDebuffFrequency() const { return DebuffFrequency; }
-	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
-	FVector GetDeathImpulse() const { return DeathImpulse; }
-	FVector GetKnockbackVector() const { return KnockbackVector; }
-	bool GetIsRadialDamage() const { return bIsRadialDamage; }
-	float GetRadialDamageInnerRadius() const { return RadialDamageInnerRadius; }
-	float GetRadialDamageOuterRadius() const { return RadialDamageOuterRadius; }
-	FVector GetRadialDamageOrigin() const { return RadialDamageOrigin; }
-
-	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 	void SetIsCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
-	void SetIsDebuffed(bool bInIsDebuffed) { bIsDebuffed = bInIsDebuffed; }
-	void SetDebuffDamage(float InDamage) { DebuffDamage = InDamage; }
-	void SetDebuffDuration(float InDuration) { DebuffDuration = InDuration; }
-	void SetDebuffFrequency(float InFrequency) { DebuffFrequency = InFrequency; }
-	void SetDamageType(TSharedPtr<FGameplayTag> InType) { DamageType = InType; }
-	void SetDeathImpulse(FVector InImpulse) { DeathImpulse = InImpulse; }
-	void SetKnockbackVector(FVector InVector) { KnockbackVector = InVector; }
-	void SetIsRadialDamage(bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
-	void SetRadialDamageInnerRadius(float InRadius) { RadialDamageInnerRadius = InRadius; }
-	void SetRadialDamageOuterRadius(float InRadius) { RadialDamageOuterRadius = InRadius; }
-	void SetRadialDamageOrigin(FVector InOrigin) { RadialDamageOrigin = InOrigin; }
+	
+	bool HasDebuffs() const;
+	bool HasDebuffType(const FGameplayTag& InDebuffType) const;
+	const TArray<FAppliedDebuffData>& GetAppliedDebuffs() const;
+	void AddDebuff(const FAppliedDebuffData& InDebuff);
+	void ClearDebuffs();
 	
 	virtual	UScriptStruct*	GetScriptStruct() const
 	{
@@ -125,42 +195,10 @@ public:
 	
 protected:
 	UPROPERTY()
-	bool bIsBlockedHit = false;
-	
-	UPROPERTY()
 	bool bIsCriticalHit = false;
 
 	UPROPERTY()
-	bool bIsDebuffed = false;
-
-	UPROPERTY()
-	float DebuffDamage = 0.f;
-	
-	UPROPERTY()
-	float DebuffDuration = 0.f;
-	
-	UPROPERTY()
-	float DebuffFrequency = 0.f;
-	
-	TSharedPtr<FGameplayTag> DamageType;
-
-	UPROPERTY()
-	FVector DeathImpulse = FVector::ZeroVector;
-
-	UPROPERTY()
-	FVector KnockbackVector = FVector::ZeroVector;
-
-	UPROPERTY()
-	bool bIsRadialDamage = false;
-
-	UPROPERTY()
-	float RadialDamageInnerRadius = 0.f;
-
-	UPROPERTY()
-	float RadialDamageOuterRadius = 0.f;
-
-	UPROPERTY()
-	FVector RadialDamageOrigin = FVector::ZeroVector;
+	TArray<FAppliedDebuffData> AppliedDebuffs;
 };
 
 template<>

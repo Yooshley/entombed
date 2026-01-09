@@ -6,7 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
-#include "Actor/EntombedProjectile.h"
+#include "Actor/EntombedAbilityActor.h"
 #include "entombed/Public/Interface/CombatInterface.h"
 
 void UEntombedRangedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -54,7 +54,7 @@ bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 	SpawnTransform.SetLocation(SocketLocation);
 	SpawnTransform.SetRotation(Rotation.Quaternion());
 	
-	AEntombedProjectile* Projectile = GetWorld()->SpawnActorDeferred<AEntombedProjectile>(
+	AEntombedAbilityActor* Projectile = GetWorld()->SpawnActorDeferred<AEntombedAbilityActor>(
 		ProjectileClass,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
@@ -62,7 +62,7 @@ bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 	
-	Projectile->DamageEffectParameters = MakeDamageParametersFromClassDefaults();
+	Projectile->DamageEffectParameters = GetDefaultDamageParameters();
 	Projectile->FinishSpawning(SpawnTransform);
 	return false;
 }

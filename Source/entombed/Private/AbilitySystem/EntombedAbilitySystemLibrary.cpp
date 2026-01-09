@@ -13,7 +13,6 @@
 #include "Engine/OverlapResult.h"
 #include "Game/EntombedGameModeBase.h"
 #include "entombed/Public/Interface/CombatInterface.h"
-#include "Game/EntombedSaveGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/EntombedPlayerState.h"
 #include "UI/HUD/EntombedHUD.h"
@@ -81,20 +80,10 @@ void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* W
 	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
 	FEntombedArchetypeDefaultInfo ArchetypeDefaultInfo = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
 	
-	FGameplayEffectContextHandle CoreAttributesContextHandle = ASC->MakeEffectContext();
-	CoreAttributesContextHandle.AddSourceObject(AvatarActor);
-	FGameplayEffectSpecHandle CoreAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeDefaultInfo.CoreAttributesEffect, Level, CoreAttributesContextHandle);
-	ASC->ApplyGameplayEffectSpecToSelf(*CoreAttributesSpecHandle.Data.Get());
-
-	FGameplayEffectContextHandle DerivedAttributesContextHandle = ASC->MakeEffectContext();
-	DerivedAttributesContextHandle.AddSourceObject(AvatarActor);
-	FGameplayEffectSpecHandle DerivedAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->DerivedAttributesEffect, Level, DerivedAttributesContextHandle);
-	ASC->ApplyGameplayEffectSpecToSelf(*DerivedAttributesSpecHandle.Data.Get());
-
-	FGameplayEffectContextHandle ResourceAttributesContextHandle = ASC->MakeEffectContext();
-	ResourceAttributesContextHandle.AddSourceObject(AvatarActor);
-	FGameplayEffectSpecHandle ResourceAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->ResourceAttributesEffect, Level, ResourceAttributesContextHandle);
-	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());
+	FGameplayEffectContextHandle AttributesContextHandle = ASC->MakeEffectContext();
+	AttributesContextHandle.AddSourceObject(AvatarActor);
+	FGameplayEffectSpecHandle AttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeDefaultInfo.DefaultAttributes, Level, AttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*AttributesSpecHandle.Data.Get());
 }
 
 void UEntombedAbilitySystemLibrary::InitializeAttributesFromSaveData(const UObject* WorldContextObject,
@@ -109,26 +98,8 @@ void UEntombedAbilitySystemLibrary::InitializeAttributesFromSaveData(const UObje
 	FGameplayEffectContextHandle EffectContextHandle = ASC->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
 
-	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->CoreAttributes_SetByCaller, 1.f, EffectContextHandle);
-
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Vigor, SaveData->Vigor);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Instinct, SaveData->Instinct);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Technique, SaveData->Technique);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Acumen, SaveData->Acumen);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Logic, SaveData->Logic);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Attribute_Core_Spirit, SaveData->Spirit);
-	
+	const FGameplayEffectSpecHandle EffectSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->Attributes_SetByCaller, 1.f, EffectContextHandle);
 	ASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
-	
-	FGameplayEffectContextHandle DerivedAttributesContextHandle = ASC->MakeEffectContext();
-	DerivedAttributesContextHandle.AddSourceObject(SourceAvatarActor);
-	FGameplayEffectSpecHandle DerivedAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->DerivedAttributesEffect_Infinite, 1.f, DerivedAttributesContextHandle);
-	ASC->ApplyGameplayEffectSpecToSelf(*DerivedAttributesSpecHandle.Data.Get());
-
-	FGameplayEffectContextHandle ResourceAttributesContextHandle = ASC->MakeEffectContext();
-	ResourceAttributesContextHandle.AddSourceObject(SourceAvatarActor);
-	FGameplayEffectSpecHandle ResourceAttributesSpecHandle = ASC->MakeOutgoingSpec(ArchetypeInfo->ResourceAttributesEffect, 1.f, ResourceAttributesContextHandle);
-	ASC->ApplyGameplayEffectSpecToSelf(*ResourceAttributesSpecHandle.Data.Get());	
 }
 
 void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldContextObject,
@@ -141,7 +112,7 @@ void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldCo
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
 		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityInputTag);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityActivationTag);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FEntombedGameplayTags::Get().Ability_Status_Eligible);
 		}
 		ASC->GiveAbility(AbilitySpec);
@@ -152,12 +123,12 @@ void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldCo
 	{
 		Level = ICombatInterface::Execute_GetCharacterLevel(ASC->GetAvatarActor());
 	}
-	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultAbilities)
+	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultActiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, Level);
 		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
 		{
-			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityInputTag);
+			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityActivationTag);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FEntombedGameplayTags::Get().Ability_Status_Equipped);
 		}
 		ASC->GiveAbility(AbilitySpec);
@@ -191,15 +162,6 @@ ULootTiers* UEntombedAbilitySystemLibrary::GetLootTiers(const UObject* WorldCont
     	return EntombedGameMode->LootTiers;
 }
 
-bool UEntombedAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->IsBlockedHit();
-	}
-	return false;
-}
-
 bool UEntombedAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
 {
 	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
@@ -209,114 +171,43 @@ bool UEntombedAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHa
 	return false;
 }
 
-bool UEntombedAbilitySystemLibrary::IsDebuffed(const FGameplayEffectContextHandle& EffectContextHandle)
+bool UEntombedAbilitySystemLibrary::HasDebuffs(const FGameplayEffectContextHandle& EffectContextHandle)
 {
 	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		return EntombedContext->IsDebuffed();
+		return EntombedContext->HasDebuffs();
 	}
 	return false;
 }
 
-float UEntombedAbilitySystemLibrary::GetDebuffDamage(const FGameplayEffectContextHandle& EffectContextHandle)
+TArray<FAppliedDebuffData> UEntombedAbilitySystemLibrary::GetAppliedDebuffs(const FGameplayEffectContextHandle& EffectContextHandle)
 {
 	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
-		return EntombedContext->GetDebuffDamage();
+		return EntombedContext->GetAppliedDebuffs();
 	}
-	return 0.f;
+	return {};
 }
 
-float UEntombedAbilitySystemLibrary::GetDebuffDuration(const FGameplayEffectContextHandle& EffectContextHandle)
+void UEntombedAbilitySystemLibrary::AddDebuff(const FGameplayEffectContextHandle& EffectContextHandle, const FAppliedDebuffData& InDebuff)
 {
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	if (const FGameplayEffectContext* BaseContext = EffectContextHandle.Get())
 	{
-		return EntombedContext->GetDebuffDuration();
-	}
-	return 0.f;
-}
-
-float UEntombedAbilitySystemLibrary::GetDebuffFrequency(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->GetDebuffFrequency();
-	}
-	return 0.f;
-}
-
-FGameplayTag UEntombedAbilitySystemLibrary::GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		if (EntombedContext->GetDamageType().IsValid())
+		if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(const_cast<FGameplayEffectContext*>(BaseContext)))
 		{
-			return *EntombedContext->GetDamageType();
+			EntombedContext->AddDebuff(InDebuff);
 		}
 	}
-	return FGameplayTag();
 }
 
-FVector UEntombedAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
+void UEntombedAbilitySystemLibrary::ClearDebuffs(const FGameplayEffectContextHandle& EffectContextHandle)
 {
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
+	if (const FGameplayEffectContext* BaseContext = EffectContextHandle.Get())
 	{
-		return EntombedContext->GetDeathImpulse();
-	}
-	return FVector::ZeroVector;
-}
-
-FVector UEntombedAbilitySystemLibrary::GetKnockbackVector(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->GetKnockbackVector();
-	}
-	return FVector::ZeroVector;
-}
-
-bool UEntombedAbilitySystemLibrary::GetIsRadialDamage(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->GetIsRadialDamage();
-	}
-	return false;
-}
-
-float UEntombedAbilitySystemLibrary::GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->GetRadialDamageInnerRadius();
-	}
-	return 0.f;
-}
-
-float UEntombedAbilitySystemLibrary::GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->GetRadialDamageOuterRadius();
-	}
-	return 0.f;
-}
-
-FVector UEntombedAbilitySystemLibrary::GetRadialDamageOrigin(const FGameplayEffectContextHandle& EffectContextHandle)
-{
-	if (const FEntombedGameplayEffectContext* EntombedContext = static_cast<const FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		return EntombedContext->GetRadialDamageOrigin();
-	}
-	return FVector::ZeroVector;
-}
-
-void UEntombedAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle,
-                                                    bool bInIsBlockedHit)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetIsBlockedHit(bInIsBlockedHit);
+		if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(const_cast<FGameplayEffectContext*>(BaseContext)))
+		{
+			EntombedContext->ClearDebuffs();
+		}
 	}
 }
 
@@ -326,105 +217,6 @@ void UEntombedAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandl
 	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
 		EntombedContext->SetIsCriticalHit(bInIsCriticalHit);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetIsDebuffed(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsDebuffed)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetIsDebuffed(bInIsDebuffed);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetDebuffDamage(FGameplayEffectContextHandle& EffectContextHandle, float InDamage)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetDebuffDamage(InDamage);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetDebuffDuration(FGameplayEffectContextHandle& EffectContextHandle,
-	float InDuration)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetDebuffDuration(InDuration);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetDebuffFrequency(FGameplayEffectContextHandle& EffectContextHandle,
-	float InFrequency)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-    {
-    	EntombedContext->SetDebuffFrequency(InFrequency);
-    }
-}
-
-void UEntombedAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& EffectContextHandle,
-	const FGameplayTag& InType)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-    {
-		const TSharedPtr<FGameplayTag> DamageType = MakeShared<FGameplayTag>(InType);
-    	EntombedContext->SetDamageType(DamageType);
-    }
-}
-
-void UEntombedAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle,
-	const FVector& InImpulse)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetDeathImpulse(InImpulse);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetKnockbackVector(FGameplayEffectContextHandle& EffectContextHandle,
-	const FVector& InVector)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetKnockbackVector(InVector);
-	}
-}
-
-
-void UEntombedAbilitySystemLibrary::SetIsRadialDamage(FGameplayEffectContextHandle& EffectContextHandle,
-	bool bInIsRadialDamage)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetIsRadialDamage(bInIsRadialDamage);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetRadialDamageInnerRadius(FGameplayEffectContextHandle& EffectContextHandle,
-	float InRadius)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetRadialDamageInnerRadius(InRadius);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetRadialDamageOuterRadius(FGameplayEffectContextHandle& EffectContextHandle,
-	float InRadius)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetRadialDamageOuterRadius(InRadius);
-	}
-}
-
-void UEntombedAbilitySystemLibrary::SetRadialDamageOrigin(FGameplayEffectContextHandle& EffectContextHandle,
-	const FVector& InOrigin)
-{
-	if (FEntombedGameplayEffectContext* EntombedContext = static_cast<FEntombedGameplayEffectContext*>(EffectContextHandle.Get()))
-	{
-		EntombedContext->SetRadialDamageOrigin(InOrigin);
 	}
 }
 
@@ -482,28 +274,64 @@ bool UEntombedAbilitySystemLibrary::IsAlly(AActor* FirstActor, AActor* SecondAct
 }
 
 FGameplayEffectContextHandle UEntombedAbilitySystemLibrary::ApplyDamageEffect(
-	const FDamageEffectParameters& DamageEffectParameters)
+	const FAbilityDamageParameters& DamageEffectParameters)
 {
 	const FEntombedGameplayTags& GameplayTags = FEntombedGameplayTags::Get();
 	const AActor* SourceAvatarActor = DamageEffectParameters.SourceAbilitySystemComponent->GetAvatarActor();
 	
 	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParameters.SourceAbilitySystemComponent->MakeEffectContext();
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
-	SetDeathImpulse(EffectContextHandle, DamageEffectParameters.DeathImpulse);
-	SetKnockbackVector(EffectContextHandle, DamageEffectParameters.KnockbackVector);
-	
-	SetIsRadialDamage(EffectContextHandle, DamageEffectParameters.bIsRadialDamage);
-	SetRadialDamageInnerRadius(EffectContextHandle, DamageEffectParameters.RadialDamageInnerRadius);
-	SetRadialDamageOuterRadius(EffectContextHandle, DamageEffectParameters.RadialDamageOuterRadius);
-	SetRadialDamageOrigin(EffectContextHandle, DamageEffectParameters.RadialDamageOrigin);
 
 	const FGameplayEffectSpecHandle EffectSpecHandle = DamageEffectParameters.SourceAbilitySystemComponent->MakeOutgoingSpec(DamageEffectParameters.DamageEffectClass, DamageEffectParameters.AbilityLevel, EffectContextHandle);
-
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, DamageEffectParameters.DamageType, DamageEffectParameters.DamageValue);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Debuff_Chance, DamageEffectParameters.DebuffChance);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Debuff_Damage, DamageEffectParameters.DebuffDamage);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Debuff_Duration, DamageEffectParameters.DebuffDuration);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, GameplayTags.Debuff_Frequency, DamageEffectParameters.DebuffFrequency);
+	
+	for (FEntombedDamageData DamageType : DamageEffectParameters.DamageTypes)
+	{
+        UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+            EffectSpecHandle,
+            DamageType.Tag,
+            DamageType.Value.GetValueAtLevel(DamageEffectParameters.AbilityLevel)
+        );
+    
+        //Debuff Chance
+		if (const FGameplayTag* ChanceTag = GameplayTags.DamageTypesToDebuffChances.Find(DamageType.Tag))
+        {
+            UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+                EffectSpecHandle,
+                *ChanceTag,
+                DamageType.Debuff.Chance.GetValueAtLevel(DamageEffectParameters.AbilityLevel)
+            );
+        }
+    
+        //Debuff Damage
+		if (const FGameplayTag* DamageTag = GameplayTags.DamageTypesToDebuffDamages.Find(DamageType.Tag))
+        {
+            UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+                EffectSpecHandle,
+                *DamageTag,
+                DamageType.Debuff.Damage.GetValueAtLevel(DamageEffectParameters.AbilityLevel)
+            );
+        }
+    
+        //Debuff Duration
+		if (const FGameplayTag* DurationTag = GameplayTags.DamageTypesToDebuffDurations.Find(DamageType.Tag))
+        {
+            UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+                EffectSpecHandle,
+                *DurationTag,
+                DamageType.Debuff.Duration.GetValueAtLevel(DamageEffectParameters.AbilityLevel)
+            );
+        }
+		
+		//Debuff Period
+		if (const FGameplayTag* PeriodTag = GameplayTags.DamageTypesToDebuffPeriods.Find(DamageType.Tag))
+		{
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+				EffectSpecHandle,
+				*PeriodTag,
+				DamageType.Debuff.Period.GetValueAtLevel(DamageEffectParameters.AbilityLevel)
+			);
+		}
+	}
 	
 	DamageEffectParameters.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
 	return EffectContextHandle;
@@ -565,9 +393,4 @@ int32 UEntombedAbilitySystemLibrary::GetXPAwardForArchetype(const UObject* World
 	const float XPAward = Info.XPAward.GetValueAtLevel(Level);
 
 	return static_cast<int32>(XPAward);
-}
-
-void UEntombedAbilitySystemLibrary::SetRadialDamageEffectParams(FDamageEffectParameters& DamageEffectParameters)
-{
-	DamageEffectParameters.bIsRadialDamage = true;
 }

@@ -10,7 +10,6 @@
 #include "AI/EntombedAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Components/WidgetComponent.h"
 #include "entombed/entombed.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -96,8 +95,6 @@ void AEntombedEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCharacterMovement()->MaxWalkSpeed = BaseRunSpeed;
-	
-	InitializeAbilityActorInfo();
 
 	if (HasAuthority())
 	{
@@ -106,6 +103,7 @@ void AEntombedEnemyCharacter::BeginPlay()
 
 	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))
 	{
+		InitializeAbilityActorInfo();
 		AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Effect_Knockback, EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this, &AEntombedEnemyCharacter::HitReactTagChanged
 		);

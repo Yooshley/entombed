@@ -25,9 +25,6 @@ void AEntombedFireBall::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			const FVector DeathImpulse = GetActorForwardVector() * DamageEffectParameters.DeathImpulseMagnitude;
-			DamageEffectParameters.DeathImpulse = DeathImpulse;
-			
 			DamageEffectParameters.TargetAbilitySystemComponent = TargetASC;
 			UEntombedAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParameters);
 		}

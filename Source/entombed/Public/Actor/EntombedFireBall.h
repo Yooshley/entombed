@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actor/EntombedProjectile.h"
+#include "Actor/EntombedAbilityActor.h"
 #include "EntombedFireBall.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ENTOMBED_API AEntombedFireBall : public AEntombedProjectile
+class ENTOMBED_API AEntombedFireBall : public AEntombedAbilityActor
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ public:
 	void StartOutgoingTimeline();
 	
 	UPROPERTY(BlueprintReadWrite)
-	FDamageEffectParameters ExplosionDamageParams;
+	FAbilityDamageParameters ExplosionDamageParams;
 
 protected:
 	virtual void BeginPlay() override;

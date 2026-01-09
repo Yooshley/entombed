@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Ability/EntombedDamageGameplayAbility.h"
+#include "AbilitySystem/Ability/EntombedDamageAbility.h"
 #include "EntombedBeamAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ENTOMBED_API UEntombedBeamAbility : public UEntombedDamageGameplayAbility
+class ENTOMBED_API UEntombedBeamAbility : public UEntombedDamageAbility
 {
 	GENERATED_BODY()
 	

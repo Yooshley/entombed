@@ -8,7 +8,7 @@
 
 FString UEntombedFireBlast::GetLevelDescription(int32 Level)
 {
-	const int32 ScaledDamage = DamageValue.GetValueAtLevel(Level);
+	const int32 ScaledDamage = 0;
 	const float Cost = FMath::Abs(GetCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	
@@ -25,7 +25,7 @@ FString UEntombedFireBlast::GetLevelDescription(int32 Level)
 
 FString UEntombedFireBlast::GetNextLevelDescription(int32 Level)
 {
-	const int32 ScaledDamage = DamageValue.GetValueAtLevel(Level);
+	const int32 ScaledDamage = 0;
 	const float Cost = FMath::Abs(GetCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	
@@ -59,8 +59,8 @@ TArray<AEntombedFireBall*> UEntombedFireBlast::SpawnFireBalls()
 			CurrentActorInfo->PlayerController->GetPawn(),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
-		FireBall->DamageEffectParameters = MakeDamageParametersFromClassDefaults();
-		FireBall->ExplosionDamageParams = MakeDamageParametersFromClassDefaults();
+		FireBall->DamageEffectParameters = GetDefaultDamageParameters();
+		FireBall->ExplosionDamageParams = GetDefaultDamageParameters();
 		
 		FireBall->SetOwner(GetAvatarActorFromActorInfo());
 		

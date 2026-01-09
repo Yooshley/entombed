@@ -43,13 +43,13 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	// init ability actor info for the server
-	InitializeAbilityActorInfo();
-	LoadPlayerProgress();
+	//InitializeAbilityActorInfo();
+	//LoadPlayerProgress();
 	
-	if (AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this)))
-	{
-		EntombedGameMode->LoadWorldState(GetWorld());
-	}
+	// if (AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this)))
+	// {
+	// 	EntombedGameMode->LoadWorldState(GetWorld());
+	// }
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()
@@ -57,7 +57,7 @@ void AEntombedPlayerCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	// init ability actor info for the client
-	InitializeAbilityActorInfo();
+	//InitializeAbilityActorInfo();
 }
 
 void AEntombedPlayerCharacter::AddXP_Implementation(int32 InXP)
@@ -173,12 +173,6 @@ void AEntombedPlayerCharacter::SavePlayerProgress_Implementation(const FName& Ch
 			SaveData->AttributePoints = EntombedPlayerState->GetAttributePoints();
 			SaveData->AbilityPoints = EntombedPlayerState->GetAbilityPoints();
 		}
-		SaveData->Vigor = UEntombedAttributeSet::GetVigorAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Instinct = UEntombedAttributeSet::GetInstinctAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Technique = UEntombedAttributeSet::GetTechniqueAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Acumen = UEntombedAttributeSet::GetAcumenAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Logic = UEntombedAttributeSet::GetLogicAttribute().GetNumericValue(GetAttributeSet());
-		SaveData->Spirit = UEntombedAttributeSet::GetSpiritAttribute().GetNumericValue(GetAttributeSet());
 		
 		SaveData->bFreshSave = false;
 		
@@ -235,6 +229,12 @@ void AEntombedPlayerCharacter::Death(const FVector& DeathImpulse)
 	CameraComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 }
 
+void AEntombedPlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	InitializeAbilityActorInfo();
+}
+
 void AEntombedPlayerCharacter::LoadPlayerProgress()
 {
 	AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this));
@@ -275,6 +275,7 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 	Cast<UEntombedAbilitySystemComponent>(EntombedPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = EntombedPlayerState->GetAbilitySystemComponent();
 	AttributeSet = EntombedPlayerState->GetAttributeSet();
+	
 	OnAbilitySystemReady.Broadcast(AbilitySystemComponent);
 	AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEntombedPlayerCharacter::StunTagChanged);
 
@@ -285,7 +286,8 @@ void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 			EntombedHUD->InitializeOverlay(EntombedPlayerController, EntombedPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
-	//InitializeDefaultAttributes();
+	InitializeDefaultAttributes();
+	Super::InitializeAbilityActorInfo();
 
 	if (HasAuthority())
 	{

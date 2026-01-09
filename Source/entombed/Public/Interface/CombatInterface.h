@@ -78,7 +78,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool GetCasting() const;
 
-	virtual void Death(const FVector& DeathImpulse) = 0;
+	virtual void Death(const FVector& DeathImpulse = FVector()) = 0;
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsDead() const;

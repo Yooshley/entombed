@@ -55,13 +55,13 @@ public:
 	FOnAttributeChangedSignature OnLifeChanged;
 
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Attributes")
-	FOnAttributeChangedSignature OnMaxLifeChanged;
+	FOnAttributeChangedSignature OnTotalLifeChanged;
 
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Attributes")
-	FOnAttributeChangedSignature OnManaChanged;
+	FOnAttributeChangedSignature OnFormChanged;
 
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Attributes")
-	FOnAttributeChangedSignature OnMaxManaChanged;
+	FOnAttributeChangedSignature OnTotalFormChanged;
 
 	UPROPERTY(BLueprintAssignable, Category="AbilitySystem|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;

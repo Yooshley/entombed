@@ -27,7 +27,7 @@ float UEntombedGameplayAbility::GetCost(float InLevel) const
 	{
 		for (FGameplayModifierInfo Modifier : CostEffect->Modifiers)
 		{
-			if(Modifier.Attribute == UEntombedAttributeSet::GetMindAttribute())
+			if(Modifier.Attribute == UEntombedAttributeSet::GetFormAttribute())
 			{
 				Modifier.ModifierMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cost);
 				return Cost;;

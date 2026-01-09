@@ -42,6 +42,10 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 	LifeBar = CreateDefaultSubobject<UWidgetComponent>("LifeBar");
 	LifeBar->SetupAttachment(GetRootComponent());
 	LifeBar->SetEnableGravity(false);
+	
+	FormBar = CreateDefaultSubobject<UWidgetComponent>("FormBar");
+    FormBar->SetupAttachment(GetRootComponent());
+    FormBar->SetEnableGravity(false);
 
 	// setup item slots
 	MainHandEquipment = CreateDefaultSubobject<USkeletalMeshComponent>("MainHandEquipment");
@@ -75,22 +79,21 @@ AEntombedBaseCharacter::AEntombedBaseCharacter()
 	ShockDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("ShockDebuffComponent");
 	ShockDebuffComponent->SetupAttachment(GetRootComponent());
 	ShockDebuffComponent->DebuffTag = FEntombedGameplayTags::Get().Debuff_Shock;
+	
+	FreezeDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>("FreezeDebuffComponent");
+    FreezeDebuffComponent->SetupAttachment(GetRootComponent());
+    FreezeDebuffComponent->DebuffTag = FEntombedGameplayTags::Get().Debuff_Freeze;
 
 	EffectAttachComponent = CreateDefaultSubobject<USceneComponent>("EffectAttachPoint");
 	EffectAttachComponent->SetupAttachment(GetRootComponent());
 	EffectAttachComponent->SetUsingAbsoluteRotation(true);
-
-	PassiveDefenseComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("PassiveDefenseComponent");
-	PassiveDefenseComponent->SetupAttachment(EffectAttachComponent);
-
-	PassiveSiphonComponent = CreateDefaultSubobject<UPassiveNiagaraComponent>("PassiveSiphonComponent");
-	PassiveSiphonComponent->SetupAttachment(EffectAttachComponent);
 }
 
 void AEntombedBaseCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(AEntombedBaseCharacter, bIsFrozen);
 	DOREPLIFETIME(AEntombedBaseCharacter, bIsShocked);
 	DOREPLIFETIME(AEntombedBaseCharacter, bIsBurned);
 }
@@ -106,6 +109,11 @@ float AEntombedBaseCharacter::TakeDamage(float DamageAmount, struct FDamageEvent
 	const float DamageTaken = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	OnDamage.Broadcast(DamageTaken);
 	return DamageTaken;
+}
+
+void AEntombedBaseCharacter::OnRep_Frozen()
+{
+
 }
 
 void AEntombedBaseCharacter::OnRep_Shocked()
@@ -205,6 +213,22 @@ void AEntombedBaseCharacter::InitializeAbilityActorInfo()
     	
 		OnLifeChanged.Broadcast(EntombedAS->GetLife());
 		OnTotalLifeChanged.Broadcast(EntombedAS->GetTotalLife());
+		
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetFormAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+			{
+				OnFormChanged.Broadcast(Data.NewValue);
+			}
+		);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalFormAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnTotalFormChanged.Broadcast(Data.NewValue);
+			}
+		);
+		
+		OnFormChanged.Broadcast(EntombedAS->GetForm());
+        OnTotalFormChanged.Broadcast(EntombedAS->GetTotalForm());
 	}
 }
 
@@ -371,9 +395,7 @@ void AEntombedBaseCharacter::ApplyEffectToSelf(TSubclassOf<UGameplayEffect> Game
 
 void AEntombedBaseCharacter::InitializeDefaultAttributes() const
 {
-	ApplyEffectToSelf(DefaultCoreAttributes);
-	ApplyEffectToSelf(DefaultDerivedAttributes);
-	ApplyEffectToSelf(DefaultResourceAttributes);
+	ApplyEffectToSelf(DefaultAttributes);
 }
 
 void AEntombedBaseCharacter::Dissolve()
