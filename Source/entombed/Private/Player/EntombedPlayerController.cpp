@@ -245,32 +245,32 @@ void AEntombedPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 	
 	if (GetEntombedASC()) GetEntombedASC()->AbilityInputReleased(InputTag);
 
-	return;
+	//return;
 	
-	if (TargetingStatus != ETargetingStatus::Hostile && !bModifierRunning && bClickToMove)
-	{
-		const APawn* ControlledPawn = GetPawn();
-		if (FollowTime <= ShortPressThreshold && ControlledPawn)
-		{
-			const FVector Start = ControlledPawn->GetActorLocation();
-			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, Start, CachedDestination))
-			{
-				Spline->ClearSplinePoints();
-				const int32 NumPts = NavPath->PathPoints.Num();
-				if (NumPts > 0)
-				{
-					for (const FVector& P : NavPath->PathPoints)
-					{
-						Spline->AddSplinePoint(P, ESplineCoordinateSpace::World);
-					}
-					CachedDestination = NavPath->PathPoints.Last();
-					bAutoRunning = true;
-				}
-			}
-		}
-		FollowTime = 0.f;
-		TargetingStatus = ETargetingStatus::Nothing;
-	}
+	// if (TargetingStatus != ETargetingStatus::Hostile && !bModifierRunning && bClickToMove)
+	// {
+	// 	const APawn* ControlledPawn = GetPawn();
+	// 	if (FollowTime <= ShortPressThreshold && ControlledPawn)
+	// 	{
+	// 		const FVector Start = ControlledPawn->GetActorLocation();
+	// 		if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, Start, CachedDestination))
+	// 		{
+	// 			Spline->ClearSplinePoints();
+	// 			const int32 NumPts = NavPath->PathPoints.Num();
+	// 			if (NumPts > 0)
+	// 			{
+	// 				for (const FVector& P : NavPath->PathPoints)
+	// 				{
+	// 					Spline->AddSplinePoint(P, ESplineCoordinateSpace::World);
+	// 				}
+	// 				CachedDestination = NavPath->PathPoints.Last();
+	// 				bAutoRunning = true;
+	// 			}
+	// 		}
+	// 	}
+	// 	FollowTime = 0.f;
+	// 	TargetingStatus = ETargetingStatus::Nothing;
+	// }
 }
 
 void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
@@ -289,29 +289,29 @@ void AEntombedPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 
 	if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
 
-	return;
+	//return;
 
-	if (TargetingStatus == ETargetingStatus::Hostile || bModifierRunning)
-	{
-		if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
-	}
-	else
-	{
-		if (bClickToMove)
-		{
-			FollowTime += GetWorld()->GetDeltaSeconds();
-			if (CursorHit.bBlockingHit)
-			{
-				CachedDestination = CursorHit.ImpactPoint;
-			}
-
-			if (APawn* ControlPawn = GetPawn<APawn>())
-			{
-				const FVector WorldDirection = (CachedDestination - ControlPawn->GetActorLocation()).GetSafeNormal();
-				ControlPawn->AddMovementInput(WorldDirection);
-			}
-		}
-	}
+	// if (TargetingStatus == ETargetingStatus::Hostile || bModifierRunning)
+	// {
+	// 	if(GetEntombedASC()) GetEntombedASC()->AbilityInputHeld(InputTag);
+	// }
+	// else
+	// {
+	// 	if (bClickToMove)
+	// 	{
+	// 		FollowTime += GetWorld()->GetDeltaSeconds();
+	// 		if (CursorHit.bBlockingHit)
+	// 		{
+	// 			CachedDestination = CursorHit.ImpactPoint;
+	// 		}
+	//
+	// 		if (APawn* ControlPawn = GetPawn<APawn>())
+	// 		{
+	// 			const FVector WorldDirection = (CachedDestination - ControlPawn->GetActorLocation()).GetSafeNormal();
+	// 			ControlPawn->AddMovementInput(WorldDirection);
+	// 		}
+	// 	}
+	// }
 }
 
 UEntombedAbilitySystemComponent* AEntombedPlayerController::GetEntombedASC()

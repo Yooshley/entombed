@@ -3,17 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EntombedDamageAbility.h"
+#include "EntombedProjectileAbility.h"
 #include "AbilitySystem/Ability/EntombedGameplayAbility.h"
 #include "EntombedRangedAbility.generated.h"
 
 struct FGameplayAbilityActivationInfo;
-class AEntombedAbilityActor;
+class AEntombedAbilityProjectile;
 /**
  * 
  */
 UCLASS()
-class ENTOMBED_API UEntombedRangedAbility : public UEntombedDamageAbility
+class ENTOMBED_API UEntombedRangedAbility : public UEntombedProjectileAbility
 {
 	GENERATED_BODY()
 
@@ -23,12 +23,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category="Projectile")
 	void SetProjectileTarget(FVector Location);
-	
-	UFUNCTION(BlueprintCallable, Category="Projectile")
-	bool SpawnProjectile(const FGameplayTag& SocketTag);
+
+	virtual void SpawnProjectile(const FGameplayTag& SocketTag) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Projectile");
-	TSubclassOf<AEntombedAbilityActor> ProjectileClass;
+	TSubclassOf<AEntombedAbilityProjectile> ProjectileClass;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Projectile");
 	FVector ProjectileTargetLocation = FVector();

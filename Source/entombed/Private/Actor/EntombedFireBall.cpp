@@ -16,20 +16,20 @@ void AEntombedFireBall::BeginPlay()
 	StartOutgoingTimeline();
 }
 
-void AEntombedFireBall::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                        UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (!IsValidOverlap(OtherActor)) return;
-
-	if (HasAuthority())
-	{
-		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
-		{
-			DamageEffectParameters.TargetAbilitySystemComponent = TargetASC;
-			UEntombedAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParameters);
-		}
-	}
-}
+// void AEntombedFireBall::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+//                                         UPrimitiveComponent* OtherComp, int32 BodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+// {
+// 	if (!IsValidOverlap(OtherActor)) return;
+//
+// 	if (HasAuthority())
+// 	{
+// 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+// 		{
+// 			DamageParameters.TargetAbilitySystemComponent = TargetASC;
+// 			UEntombedAbilitySystemLibrary::ApplyDamageEffect(DamageParameters);
+// 		}
+// 	}
+// }
 
 void AEntombedFireBall::OnHit()
 {
@@ -40,10 +40,10 @@ void AEntombedFireBall::OnHit()
 		UGameplayCueManager::ExecuteGameplayCue_NonReplicated(GetOwner(), FEntombedGameplayTags::Get().GameplayCue_FireBlast, CueParameters);
 	}
 	
-	if (FlightAudioComponent)
+	if (AudioComponent)
 	{
-		FlightAudioComponent->Stop();
-		FlightAudioComponent->DestroyComponent();
+		AudioComponent->Stop();
+		AudioComponent->DestroyComponent();
 	}
 	bHit = true;
 }

@@ -5,7 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
-#include "Actor/EntombedAbilityActor.h"
+#include "Actor/EntombedAbilityProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "entombed/Public/Interface/CombatInterface.h"
 
@@ -67,14 +67,14 @@ void UEntombedFireBolt::SpawnProjectiles(const FGameplayTag& SocketTag, AActor* 
 		SpawnTransform.SetLocation(SocketLocation);
 		SpawnTransform.SetRotation(Rotator.Quaternion());
 
-		AEntombedAbilityActor* Projectile = GetWorld()->SpawnActorDeferred<AEntombedAbilityActor>(
+		AEntombedAbilityProjectile* Projectile = GetWorld()->SpawnActorDeferred<AEntombedAbilityProjectile>(
 		ProjectileClass,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
-		Projectile->DamageEffectParameters = GetDefaultDamageParameters();
+		Projectile->DamageParameters = GetDamageParameters();
 
 		Projectile->ProjectileMovement->bIsHomingProjectile = bHomingProjectile;
 		if (bHomingProjectile)

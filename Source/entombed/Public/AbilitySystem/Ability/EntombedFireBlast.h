@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Ability/EntombedDamageAbility.h"
+#include "AbilitySystem/Ability/EntombedProjectileAbility.h"
 #include "EntombedFireBlast.generated.h"
 
 class AEntombedFireBall;
@@ -11,7 +11,7 @@ class AEntombedFireBall;
  * 
  */
 UCLASS()
-class ENTOMBED_API UEntombedFireBlast : public UEntombedDamageAbility
+class ENTOMBED_API UEntombedFireBlast : public UEntombedProjectileAbility
 {
 	GENERATED_BODY()
 

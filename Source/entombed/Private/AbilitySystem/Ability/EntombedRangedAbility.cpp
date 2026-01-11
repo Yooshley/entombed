@@ -6,7 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "EntombedGameplayTags.h"
-#include "Actor/EntombedAbilityActor.h"
+#include "Actor/EntombedAbilityProjectile.h"
 #include "entombed/Public/Interface/CombatInterface.h"
 
 void UEntombedRangedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -42,10 +42,10 @@ void UEntombedRangedAbility::SetProjectileTarget(FVector Location)
 	}
 }
 
-bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
+void UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 {
 	const bool bIsServer = GetAvatarActorFromActorInfo()->HasAuthority();
-	if (!bIsServer) return true;
+	if (!bIsServer) return;
 
 	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
@@ -54,7 +54,7 @@ bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 	SpawnTransform.SetLocation(SocketLocation);
 	SpawnTransform.SetRotation(Rotation.Quaternion());
 	
-	AEntombedAbilityActor* Projectile = GetWorld()->SpawnActorDeferred<AEntombedAbilityActor>(
+	AEntombedAbilityProjectile* Projectile = GetWorld()->SpawnActorDeferred<AEntombedAbilityProjectile>(
 		ProjectileClass,
 		SpawnTransform,
 		GetOwningActorFromActorInfo(),
@@ -62,7 +62,6 @@ bool UEntombedRangedAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 	
-	Projectile->DamageEffectParameters = GetDefaultDamageParameters();
+	Projectile->DamageParameters = GetDamageParameters();
 	Projectile->FinishSpawning(SpawnTransform);
-	return false;
 }

@@ -59,8 +59,8 @@ TArray<AEntombedFireBall*> UEntombedFireBlast::SpawnFireBalls()
 			CurrentActorInfo->PlayerController->GetPawn(),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 			);
-		FireBall->DamageEffectParameters = GetDefaultDamageParameters();
-		FireBall->ExplosionDamageParams = GetDefaultDamageParameters();
+		FireBall->DamageParameters = GetDamageParameters();
+		FireBall->ExplosionDamageParams = GetDamageParameters();
 		
 		FireBall->SetOwner(GetAvatarActorFromActorInfo());
 		

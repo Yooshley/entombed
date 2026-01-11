@@ -4,47 +4,59 @@
 #include "ScalableFloat.h"
 #include "EntombedAbilityTypes.generated.h"
 
-class AEntombedAbilityActor;
+class AEntombedAbilityProjectile;
 class UGameplayEffect;
 
 USTRUCT(BlueprintType)
-struct FEntombedAbilityActorData
+struct FEntombedProjectileData
 {
 	GENERATED_BODY();
 	
-	UPROPERTY(EditDefaultsOnly, Category="ActorData")
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	bool bHasGravity = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Projectile", meta = (EditCondition="bHasGravity", EditConditionHides))
+	float Gravity = 0.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float Speed = 1000.f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="ActorData")
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float Range = 100.f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="ActorData")
-	int32 Count = 1;
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	bool bHoming = false;
+
+	UPROPERTY(EditDefaultsOnly, Category="Projectile", meta = (EditCondition="bHoming", EditConditionHides))
+	float HomingAcceleration = 1500.f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="ActorData")
-	float Spread = 90.f;
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	bool bCanHitMultiple = false;
 };
 
 USTRUCT(BlueprintType)
-struct FEntombedAbilityActorParameters
+struct FAbilityProjectileParameters
 {
 	GENERATED_BODY()
-	FEntombedAbilityActorParameters(){}
+	FAbilityProjectileParameters(){}
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> SourceAbilitySystemComponent = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> TargetAbilitySystemComponent = nullptr;
-
-	UPROPERTY()
-	float AbilityLevel = 1.f;
+		
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	int32 Count = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	float Spread = 90.f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<AEntombedAbilityActor> AbilityActorClass = nullptr;
+	TSubclassOf<AEntombedAbilityProjectile> ProjectileClass = nullptr;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FEntombedAbilityActorData ActorData;
+	FEntombedProjectileData ProjectileData;
 };
 
 USTRUCT(BlueprintType)
