@@ -1,0 +1,51 @@
+// Copyright Yooshley
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "AbilitySystem/Ability/EntombedProjectileAbility.h"
+#include "DEPRECATED_UEntombedBeamAbility.generated.h"
+
+/**
+ * 
+ */
+UCLASS(Deprecated)
+class ENTOMBED_API UDEPRECATED_UEntombedBeamAbility : public UEntombedProjectileAbility
+{
+	GENERATED_BODY()
+	
+public:
+	UFUNCTION(BlueprintCallable)
+	void StoreCursorDataInfo(const FHitResult& HitResult);
+
+	UFUNCTION(BlueprintCallable)
+	void StoreOwnerVariables();
+
+	UFUNCTION(BlueprintCallable)
+	void TraceFirstTarget(const FVector& BeamTargetLocation);
+
+	UFUNCTION(BlueprintCallable)
+	void StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void PrimaryTargetDead(AActor* DeadActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void AdditionalTargetDead(AActor* DeadActor);
+	
+protected:
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	FVector CursorHitLocation;
+
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	TObjectPtr<AActor> CursorHitActor;
+
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	TObjectPtr<ACharacter> OwnerCharacter;
+
+	UPROPERTY(BlueprintReadWrite, Category="Beam")
+	TObjectPtr<APlayerController> OwnerPlayerController;
+
+	UPROPERTY(EditDefaultsOnly, Category="Beam")
+	int32 MaxChainTargets = 5;
+};

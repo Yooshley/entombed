@@ -14,13 +14,13 @@ void UEntombedPassiveAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo())))
 	{
-		EntombedASC->DeactivatePassiveAbilityDelegate.AddUObject(this, &UEntombedPassiveAbility::RecieveDeactivate);
+		EntombedASC->DeactivatePassiveAbilityDelegate.AddUObject(this, &UEntombedPassiveAbility::ReceiveDeactivate);
 	}
 }
 
-void UEntombedPassiveAbility::RecieveDeactivate(const FGameplayTag& AbilityTag)
+void UEntombedPassiveAbility::ReceiveDeactivate(const FGameplayTag& AbilityTag)
 {
-	if (AbilityTags.HasTagExact(AbilityTag))
+	if (GetAssetTags().HasTagExact(AbilityTag))
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}

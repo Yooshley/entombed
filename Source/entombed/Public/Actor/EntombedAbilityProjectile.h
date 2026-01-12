@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "EntombedAbilityProjectile.generated.h"
 
+class UNiagaraComponent;
 class USphereComponent;
 class UProjectileMovementComponent;
 class UNiagaraSystem;
@@ -56,7 +57,10 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere, Category="Collision")
-	UStaticMeshComponent* HitMesh;
+	TObjectPtr<UStaticMeshComponent> HitMesh;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraComponent> AbilityEffect;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraSystem> ImpactEffect;

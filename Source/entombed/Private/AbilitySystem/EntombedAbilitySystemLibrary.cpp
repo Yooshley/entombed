@@ -8,7 +8,7 @@
 #include "EntombedAbilityTypes.h"
 #include "EntombedGameplayTags.h"
 #include "Abilities/Tasks/AbilityTask.h"
-#include "AbilitySystem/Ability/EntombedGameplayAbility.h"
+#include "AbilitySystem/Ability/EntombedAbility.h"
 #include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "Engine/OverlapResult.h"
 #include "Game/EntombedGameModeBase.h"
@@ -18,7 +18,7 @@
 #include "UI/HUD/EntombedHUD.h"
 #include "UI/WidgetController/EntombedWidgetController.h"
 
-class UEntombedGameplayAbility;
+class UEntombedAbility;
 
 bool UEntombedAbilitySystemLibrary::GetWidgetControllerParameters(const UObject* WorldContextObject,
 	FWidgetControllerParameters& OutParameters, AEntombedHUD*& OutHUD)
@@ -110,7 +110,7 @@ void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldCo
 	for (TSubclassOf<UGameplayAbility> AbilityClass : ArchetypeInfo->SharedAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
+		if (const UEntombedAbility* EntombedAbility = Cast<UEntombedAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityActivationTag);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FEntombedGameplayTags::Get().Ability_Status_Eligible);
@@ -126,7 +126,7 @@ void UEntombedAbilitySystemLibrary::GrantDefaultAbilities(const UObject* WorldCo
 	for (TSubclassOf<UGameplayAbility> AbilityClass : DefaultInfo.DefaultActiveAbilities)
 	{
 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, Level);
-		if (const UEntombedGameplayAbility* EntombedAbility = Cast<UEntombedGameplayAbility>(AbilitySpec.Ability))
+		if (const UEntombedAbility* EntombedAbility = Cast<UEntombedAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(EntombedAbility->AbilityActivationTag);
 			AbilitySpec.GetDynamicSpecSourceTags().AddTag(FEntombedGameplayTags::Get().Ability_Status_Equipped);

@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "EntombedAbilityTypes.h"
-#include "AbilitySystem/Ability/EntombedGameplayAbility.h"
+#include "AbilitySystem/Ability/EntombedAbility.h"
 #include "EntombedProjectileAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ENTOMBED_API UEntombedProjectileAbility : public UEntombedGameplayAbility
+class ENTOMBED_API UEntombedProjectileAbility : public UEntombedAbility
 {
 	GENERATED_BODY()
 

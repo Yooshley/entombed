@@ -8,7 +8,7 @@
 #include "EntombedSpawnPoint.generated.h"
 
 enum class EEntombedArchetype : uint8;
-class AEntombedEnemyCharacter;
+class AEntombedHostileCharacter;
 /**
  * 
  */
@@ -22,7 +22,7 @@ public:
 	void Spawn();
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Spawn Class")
-	TSubclassOf<AEntombedEnemyCharacter> SpawnClass;
+	TSubclassOf<AEntombedHostileCharacter> SpawnClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Spawn Class")
 	int32 Level = 1;

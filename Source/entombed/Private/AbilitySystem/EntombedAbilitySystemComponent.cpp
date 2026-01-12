@@ -6,7 +6,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "EntombedGameplayTags.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
-#include "AbilitySystem/Ability/EntombedGameplayAbility.h"
+#include "AbilitySystem/Ability/EntombedAbility.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "entombed/EntombedLogChannels.h"
 #include "entombed/Public/Interface/PlayerInterface.h"
@@ -349,7 +349,7 @@ bool UEntombedAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplay
 {
 	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
 	{
-		if (UEntombedGameplayAbility* GameplayAbility = Cast<UEntombedGameplayAbility>(AbilitySpec->Ability))
+		if (UEntombedAbility* GameplayAbility = Cast<UEntombedAbility>(AbilitySpec->Ability))
 		{
 			OutDescription = GameplayAbility->GetLevelDescription(AbilitySpec->Level);
 			OutNextLevelDescription = GameplayAbility->GetNextLevelDescription(AbilitySpec->Level + 1);
@@ -363,7 +363,7 @@ bool UEntombedAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplay
 	}
 	else
 	{
-		OutDescription = UEntombedGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoByTag(AbilityTag).LevelRequirement);
+		OutDescription = UEntombedAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoByTag(AbilityTag).LevelRequirement);
 	}
 	OutNextLevelDescription = FString();
 	return false;

@@ -3,14 +3,14 @@
 
 #include "Actor/EntombedSpawnPoint.h"
 
-#include "Character/EntombedEnemyCharacter.h"
+#include "Character/EntombedHostileCharacter.h"
 
 void AEntombedSpawnPoint::Spawn()
 {
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
-	AEntombedEnemyCharacter* Enemy = GetWorld()->SpawnActorDeferred<AEntombedEnemyCharacter>(SpawnClass, GetActorTransform());
+	AEntombedHostileCharacter* Enemy = GetWorld()->SpawnActorDeferred<AEntombedHostileCharacter>(SpawnClass, GetActorTransform());
 	if (Enemy->Implements<UCombatInterface>())
 	{
 		ICombatInterface::Execute_SetCharacterLevel(Enemy, Level);

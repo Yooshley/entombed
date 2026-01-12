@@ -1,0 +1,48 @@
+// Copyright Yooshley
+
+
+#include "AbilitySystem/Ability/EntombedAbility.h"
+
+#include "AbilitySystem/EntombedAttributeSet.h"
+
+FString UEntombedAbility::GetLevelDescription(int32 Level)
+{
+	return FString::Printf(TEXT("<Default>%s, </><Level>%d</>"), L"Default Ability Name - Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", Level);
+}
+
+FString UEntombedAbility::GetNextLevelDescription(int32 Level)
+{
+	return FString::Printf(TEXT("<Default>Next Level: </><Level>%d</> \n<Default>More Damage.</>"), Level);
+}
+
+FString UEntombedAbility::GetLockedDescription(int32 Level)
+{
+	return FString::Printf(TEXT("<Default>Ability Locked until Level: </><Level>%d</>"), Level);
+}
+
+float UEntombedAbility::GetCost(float InLevel) const
+{
+	float Cost = 0.f;
+	if (const UGameplayEffect* CostEffect = GetCostGameplayEffect())
+	{
+		for (FGameplayModifierInfo Modifier : CostEffect->Modifiers)
+		{
+			if(Modifier.Attribute == UEntombedAttributeSet::GetFormAttribute())
+			{
+				Modifier.ModifierMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cost);
+				return Cost;;
+			}
+		}
+	}
+	return Cost;
+}
+
+float UEntombedAbility::GetCooldown(float InLevel)
+{
+	float Cooldown = 0.f;
+	if (const UGameplayEffect* CooldownEffect = GetCooldownGameplayEffect())
+	{
+		CooldownEffect->DurationMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cooldown);
+	}
+	return Cooldown;
+}

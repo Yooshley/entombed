@@ -18,11 +18,17 @@ struct FEntombedProjectileData
 	UPROPERTY(EditDefaultsOnly, Category="Projectile", meta = (EditCondition="bHasGravity", EditConditionHides))
 	float Gravity = 0.f;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Projectile", meta = (EditCondition="bHasGravity", EditConditionHides))
+	float Pitch = 0.f;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float Speed = 1000.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	float Range = 100.f;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Projectile")
+	float Scale = 1.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Projectile")
 	bool bHoming = false;

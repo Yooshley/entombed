@@ -78,6 +78,10 @@ void UEntombedProjectileAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 
 	const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), SocketTag);
 	FRotator Rotation = (TargetLocation - SocketLocation).Rotation();
+	if (AbilityProjectileParameters.ProjectileData.bHasGravity)
+	{
+		Rotation.Pitch = AbilityProjectileParameters.ProjectileData.Pitch;
+	}
 	
 	const FVector Forward = Rotation.Vector();
 	const int32 NumProjectiles = AbilityProjectileParameters.Count;
@@ -96,6 +100,7 @@ void UEntombedProjectileAbility::SpawnProjectile(const FGameplayTag& SocketTag)
 		Cast<APawn>(GetOwningActorFromActorInfo()),
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	
+		check(Projectile);
 		Projectile->DamageParameters = GetDamageParameters();
 		Projectile->InitializeProjectile(AbilityProjectileParameters);
 		Projectile->FinishSpawning(SpawnTransform);

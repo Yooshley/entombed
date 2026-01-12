@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -28,6 +29,9 @@ AEntombedAbilityProjectile::AEntombedAbilityProjectile()
 	HitMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
 	HitMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	HitMesh->SetGenerateOverlapEvents(true);
+	
+	AbilityEffect = CreateDefaultSubobject<UNiagaraComponent>("AbilityEffect");
+	AbilityEffect->SetupAttachment(HitMesh);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
 }
@@ -45,6 +49,17 @@ void AEntombedAbilityProjectile::InitializeProjectile(const FAbilityProjectilePa
 		ProjectileMovement->MaxSpeed = ProjectileData.Speed;
 		
 		SetLifeSpan(ProjectileData.Range/ProjectileData.Speed);
+		
+		if (HitMesh)
+		{
+			HitMesh->SetWorldScale3D(FVector(ProjectileData.Scale));
+		}
+		
+		if (AbilityEffect)
+		{
+			AbilityEffect->SetFloatParameter(TEXT("LifeTime"), ProjectileData.Range/ProjectileData.Speed);
+			AbilityEffect->SetWorldScale3D(FVector(ProjectileData.Scale));
+		}
 
 		if (ProjectileData.bHoming && ProjectileParameters.TargetAbilitySystemComponent)
 		{
