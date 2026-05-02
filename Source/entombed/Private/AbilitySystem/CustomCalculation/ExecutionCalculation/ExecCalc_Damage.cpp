@@ -11,6 +11,7 @@
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "AbilitySystem/Data/ArchetypeInfo.h"
 #include "entombed/Public/Interface/CombatInterface.h"
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 struct EntombedDamageStatics
@@ -147,8 +148,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	TagsToCaptureDef.Add(GameplayTags.Resistance_Freeze, DamageStatics().FreezeResistanceDef);
 	TagsToCaptureDef.Add(GameplayTags.Resistance_Elemental, DamageStatics().ElementalResistanceDef);
 	
-	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
-	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
+	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
+	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 
 	AActor* SourceActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
@@ -201,7 +202,30 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		}
 		Damage += DamageTypeValue;
 	}
+	
+	//knockback
+	float KnockbackForce = Spec.GetSetByCallerMagnitude(GameplayTags.Effect_Knockback,false,0.f);
+	if (KnockbackForce > 0.f)
+	{
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
+		TargetASC->TryActivateAbilitiesByTag(TagContainer);
+		
+		const FVector SourceLocation = SourceActor->GetActorLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
 
+		FVector KnockbackDirection = (TargetLocation - SourceLocation);
+		KnockbackDirection.Z = 0.f;
+		KnockbackDirection.Normalize();
+
+		const FVector KnockbackVector = (TargetLocation - SourceLocation).GetSafeNormal() * KnockbackForce;
+		if (!KnockbackVector.IsNearlyZero(1.f))
+		{
+			ACharacter* TargetCharacter = Cast<ACharacter>(TargetActor);
+			TargetCharacter->LaunchCharacter(KnockbackVector, true, false);
+		}
+	}
+	
 	//calculate critical hit chance
 	float SourceCriticalChance = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().CriticalChanceDef, EvaluationParameters, SourceCriticalChance);

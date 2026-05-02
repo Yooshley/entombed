@@ -94,34 +94,50 @@ void AEntombedHostileCharacter::HitReactTagChanged(const FGameplayTag CallbackTa
 void AEntombedHostileCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	GetCharacterMovement()->MaxWalkSpeed = BaseRunSpeed;
+
+	check(AbilitySystemComponent);
+	check(AttributeSet);
+	
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		EntombedASC->AbilityActorInfoSet();
+	}
+
+	AbilitySystemComponent
+		->RegisterGameplayTagEvent(
+			FEntombedGameplayTags::Get().Debuff_Shock,
+			EGameplayTagEventType::NewOrRemoved)
+		.AddUObject(this, &AEntombedHostileCharacter::StunTagChanged);
 
 	if (HasAuthority())
 	{
+		InitializeDefaultAttributes();
 		UEntombedAbilitySystemLibrary::GrantDefaultAbilities(this, AbilitySystemComponent, Archetype);
 	}
+	
+	InitializeAbilityActorInfo();
 
-	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))
-	{
-		InitializeAbilityActorInfo();
-		AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Effect_Knockback, EGameplayTagEventType::NewOrRemoved).AddUObject(
-			this, &AEntombedHostileCharacter::HitReactTagChanged
-		);
-	}
+	AbilitySystemComponent
+		->RegisterGameplayTagEvent(
+			FEntombedGameplayTags::Get().Effect_Knockback,
+			EGameplayTagEventType::NewOrRemoved)
+		.AddUObject(this, &AEntombedHostileCharacter::HitReactTagChanged);
 }
 
 void AEntombedHostileCharacter::InitializeAbilityActorInfo()
 {
 	Super::InitializeAbilityActorInfo();
 	
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
-	AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEntombedHostileCharacter::StunTagChanged);
+	const UEntombedAttributeSet* AS = CastChecked<UEntombedAttributeSet>(AttributeSet);
 
-	if (HasAuthority())
-	{
-		InitializeDefaultAttributes();
-	}
+	OnLifeChanged.Broadcast(AS->GetLife());
+	OnTotalLifeChanged.Broadcast(AS->GetTotalLife());
+	OnFormChanged.Broadcast(AS->GetForm());
+	OnTotalFormChanged.Broadcast(AS->GetTotalForm());
 
 	OnAbilitySystemReady.Broadcast(AbilitySystemComponent);
 }

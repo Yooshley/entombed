@@ -8,10 +8,11 @@
 #include "EntombedGameplayTags.h"
 #include "Actor/EntombedAbilityProjectile.h"
 #include "entombed/Public/Interface/CombatInterface.h"
+#include "Interface/PlayerInterface.h"
 
 void UDEPRECATED_UEntombedRangedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                             const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                             const FGameplayEventData* TriggerEventData)
+                                                         const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                                         const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }

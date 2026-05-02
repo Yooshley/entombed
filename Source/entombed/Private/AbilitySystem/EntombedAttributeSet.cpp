@@ -108,18 +108,18 @@ void UEntombedAttributeSet::HandleIncomingDamage(const FEffectProperties& Proper
 			}
 			SendXPEvent(Properties);
 		}
-		else
-		{
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
-			Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
-
-			const FVector& KnockbackVector = FVector::ZeroVector; //TODO: Implement knockback based on BLUNT damage
-			if (!KnockbackVector.IsNearlyZero(1.f))
-			{
-				Properties.TargetCharacter->LaunchCharacter(KnockbackVector, true, false);
-			}
-		}
+		// else
+		// {
+		// 	FGameplayTagContainer TagContainer;
+		// 	TagContainer.AddTag(FEntombedGameplayTags::Get().Effect_Knockback);
+		// 	Properties.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+		//
+		// 	const FVector& KnockbackVector = FVector::ZeroVector;
+		// 	if (!KnockbackVector.IsNearlyZero(1.f))
+		// 	{
+		// 		Properties.TargetCharacter->LaunchCharacter(KnockbackVector, true, false);
+		// 	}
+		// }
 		const bool bBlocked = false; //TODO: Implement block based on active ability
 		const bool bCritical = UEntombedAbilitySystemLibrary::IsCriticalHit(Properties.EffectContextHandle);
 		ShowFloatingText(Properties, LocalIncomingDamage, bBlocked, bCritical);

@@ -187,49 +187,53 @@ void AEntombedBaseCharacter::MulticastHandleDeath_Implementation(const FVector& 
 void AEntombedBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (UEntombedUserWidget* EntombedUserWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
-	{
-		EntombedUserWidget->SetWidgetController(this);
-	}
 }
 
 void AEntombedBaseCharacter::InitializeAbilityActorInfo()
 {
-	if (const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet))
+	const UEntombedAttributeSet* EntombedAS = CastChecked<UEntombedAttributeSet>(AttributeSet);
+	
+	if (LifeBar)
 	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetLifeAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnLifeChanged.Broadcast(Data.NewValue);
-			}
-		);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalLifeAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnTotalLifeChanged.Broadcast(Data.NewValue);
-			}
-		);
-    	
-		OnLifeChanged.Broadcast(EntombedAS->GetLife());
-		OnTotalLifeChanged.Broadcast(EntombedAS->GetTotalLife());
-		
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetFormAttribute()).AddLambda(
-		[this](const FOnAttributeChangeData& Data)
-			{
-				OnFormChanged.Broadcast(Data.NewValue);
-			}
-		);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalFormAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnTotalFormChanged.Broadcast(Data.NewValue);
-			}
-		);
-		
-		OnFormChanged.Broadcast(EntombedAS->GetForm());
-        OnTotalFormChanged.Broadcast(EntombedAS->GetTotalForm());
+		LifeBar->InitWidget();
+		if (UEntombedUserWidget* LifeWidget = Cast<UEntombedUserWidget>(LifeBar->GetUserWidgetObject()))
+		{
+			LifeWidget->SetWidgetController(this);
+		}
 	}
+
+	if (FormBar)
+	{
+		FormBar->InitWidget();
+		if (UEntombedUserWidget* FormWidget = Cast<UEntombedUserWidget>(FormBar->GetUserWidgetObject()))
+		{
+			FormWidget->SetWidgetController(this);
+		}
+	}
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetLifeAttribute())
+		.AddLambda([this](const FOnAttributeChangeData& Data)
+		{
+			OnLifeChanged.Broadcast(Data.NewValue);
+		});
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalLifeAttribute())
+		.AddLambda([this](const FOnAttributeChangeData& Data)
+		{
+			OnTotalLifeChanged.Broadcast(Data.NewValue);
+		});
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetFormAttribute())
+		.AddLambda([this](const FOnAttributeChangeData& Data)
+		{
+			OnFormChanged.Broadcast(Data.NewValue);
+		});
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(EntombedAS->GetTotalFormAttribute())
+		.AddLambda([this](const FOnAttributeChangeData& Data)
+		{
+			OnTotalFormChanged.Broadcast(Data.NewValue);
+		});
 }
 
 int32 AEntombedBaseCharacter::GetCharacterLevel_Implementation()

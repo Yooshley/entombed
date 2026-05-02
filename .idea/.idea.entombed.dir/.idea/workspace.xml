@@ -7,22 +7,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e0864366-bfdf-4bbe-8118-ea32b368d284" name="Changes" comment="">
+    <list default="true" id="05519265-ac43-463b-8ec7-856f346c2651" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.entombed.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.entombed.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedDamageAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedActiveAbility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedFireBlast.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedFireBlast.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedFireBolt.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedFireBolt.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedRangedAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedRangedAbility.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedAbilityActor.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedAbilityActor.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedFireBall.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedFireBall.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Player/EntombedPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Player/EntombedPlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedBeamAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedBeamAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedDamageAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedActiveAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedFireBlast.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedFireBlast.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedMeleeAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedMeleeAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedRangedAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedRangedAbility.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/Actor/EntombedAbilityActor.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/Actor/EntombedAbilityActor.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Mannequin_Medium/Animations/BS_Move_Skeleton.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Assets/Characters/CharacterBase/Mannequin_Medium/Animations/BS_Move_Skeleton.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/BT_EnemyBehaviourTree.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/BT_EnemyBehaviourTree.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/Service/BTS_FindNearestPlayer.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/Service/BTS_FindNearestPlayer.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AI/Task/BTT_Ability.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AI/Task/BTT_Ability.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Knockback.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Knockback.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Ability/GA_Swipe.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Data/DA_ArchetypeInfo.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Data/DA_ArchetypeInfo.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Effect/ActorEffects/CT_RestoreLife.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/AbilitySystem/Effect/ActorEffects/CT_RestoreLife.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/ABP_EnemyTemplate.uasset" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_EnemyBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_EnemyBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Player/ABP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Player/ABP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Player/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Player/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/ABP_SkeletonElite.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/ABP_SkeletonElite.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/Minion/ABP_SkeletonMinion.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/Minion/ABP_SkeletonMinion.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/Minion/BP_Skelly_Minion_Melee.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Skelley/Minion/BP_Skelly_Minion_Melee.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/UI/ProgressBar/WBP_ProgressBar.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/UI/ProgressBar/WBP_ProgressBar.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/TestMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/TestMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedProjectileAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/EntombedProjectileAbility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/UDEPRECATED_UEntombedRangedAbility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/Ability/UDEPRECATED_UEntombedRangedAbility.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/CustomCalculation/ExecutionCalculation/ExecCalc_Damage.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/CustomCalculation/ExecutionCalculation/ExecCalc_Damage.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAbilitySystemLibrary.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAbilitySystemLibrary.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAttributeSet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/AbilitySystem/EntombedAttributeSet.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedSpawnPoint.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Actor/EntombedSpawnPoint.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedBaseCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedBaseCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedHostileCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedHostileCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedPlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Private/Character/EntombedPlayerCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedProjectileAbility.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/AbilitySystem/Ability/EntombedProjectileAbility.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/entombed/Public/EntombedAbilityTypes.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/entombed/Public/EntombedAbilityTypes.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,50 +51,49 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="cidr-memory-view://33" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Editor/Kismet/Public/BlueprintEditor.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Editor/UnrealEd/Private/GroupActor.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Editor/UnrealEd/Private/Layers/LayersSubsystem.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Core/Private/Logging/StructuredLog.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Core/Private/Windows/WindowsErrorOutputDevice.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Engine/Classes/Engine/NetSerialization.h" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/GameplayTags/Private/GameplayTagContainer.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/UMG/Private/Components/WidgetSwitcher.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/UMG/Private/UserWidget.cpp" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/UMG/Public/Blueprint/UserWidget.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="cidr-memory-view://31" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Editor/AnimGraph/Private/AnimGraphNode_PoseDriver.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Editor/Sequencer/Private/SequencerCommands.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Editor/UnrealEd/Public/PackageTools.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Core/Public/Containers/Map.h.inl" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Core/Public/Containers/SparseArray.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Core/Public/Containers/SparseSet.h.inl" root0="FORCE_HIGHLIGHTING" />
   </component>
-  <component name="KubernetesApiPersistence">{}</component>
-  <component name="KubernetesApiProvider">{
-  &quot;isMigrated&quot;: true
-}</component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 1
 }</component>
-  <component name="ProjectId" id="35wqrWS0k4oPhyEdAGBrqvRGuvF" />
+  <component name="ProjectId" id="38AkaMWYsvSjXSdnt47QFsmzy5d" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Uproject.entombed.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;CodeInspectionSettingsId&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Uproject.entombed.executor": "Debug",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
+    <configuration default="true" type="Uproject" factoryName="rider.uproject">
+      <option name="DEFAULT_PROJECT_PATH" value="" />
+      <option name="PROJECT_FILE_PATH" value="" />
+      <option name="AUTO_SELECT_PRIORITY" value="0" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
     <configuration name="entombed" type="Uproject" factoryName="rider.uproject">
       <configuration_1 setup="1">
         <option name="CONFIGURATION" value="DebugGame Editor" />
@@ -156,42 +170,13 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e0864366-bfdf-4bbe-8118-ea32b368d284" name="Changes" comment="" />
-      <created>1764031681577</created>
+      <changelist id="05519265-ac43-463b-8ec7-856f346c2651" name="Changes" comment="" />
+      <created>1768249827029</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1764031681577</updated>
-      <workItem from="1764031683908" duration="11053000" />
-      <workItem from="1764107686359" duration="1490000" />
-      <workItem from="1764117041806" duration="9917000" />
-      <workItem from="1764217364012" duration="3467000" />
-      <workItem from="1764345914309" duration="6329000" />
-      <workItem from="1764353340599" duration="23010000" />
-      <workItem from="1764431744419" duration="17581000" />
-      <workItem from="1764537423158" duration="3425000" />
-      <workItem from="1764777179691" duration="7386000" />
-      <workItem from="1764862773112" duration="11051000" />
-      <workItem from="1764960503170" duration="21425000" />
-      <workItem from="1765318537055" duration="73000" />
-      <workItem from="1765318753079" duration="2465000" />
-      <workItem from="1765567637223" duration="2434000" />
-      <workItem from="1765997739278" duration="114000" />
-      <workItem from="1765999954476" duration="889000" />
-      <workItem from="1766153257898" duration="4512000" />
-      <workItem from="1766182592525" duration="2738000" />
-      <workItem from="1766237683003" duration="4195000" />
-      <workItem from="1766340694396" duration="8744000" />
-      <workItem from="1766513440902" duration="305000" />
-      <workItem from="1766513779714" duration="11090000" />
-      <workItem from="1766597636257" duration="31268000" />
-      <workItem from="1766810405232" duration="6806000" />
-      <workItem from="1767210898738" duration="47587000" />
-      <workItem from="1767536663310" duration="84686000" />
-      <workItem from="1767915358531" duration="333000" />
-      <workItem from="1767997850566" duration="1964000" />
-      <workItem from="1768007050067" duration="4395000" />
-      <workItem from="1768138286677" duration="1787000" />
-      <workItem from="1768140360203" duration="300000" />
+      <updated>1768249827029</updated>
+      <workItem from="1768249853936" duration="14736000" />
+      <workItem from="1768312155833" duration="12657000" />
     </task>
     <servers />
   </component>

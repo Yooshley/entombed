@@ -78,6 +78,7 @@ void UEntombedAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* W
 	AActor* AvatarActor = ASC->GetAvatarActor();
 	
 	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
+	if (ArchetypeInfo == nullptr) return;
 	FEntombedArchetypeDefaultInfo ArchetypeDefaultInfo = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
 	
 	FGameplayEffectContextHandle AttributesContextHandle = ASC->MakeEffectContext();
@@ -331,6 +332,16 @@ FGameplayEffectContextHandle UEntombedAbilitySystemLibrary::ApplyDamageEffect(
 				DamageType.Debuff.Period.GetValueAtLevel(DamageEffectParameters.AbilityLevel)
 			);
 		}
+		
+		//Knockback
+		if (DamageType.bCanKnockback)
+		{
+			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(
+				EffectSpecHandle,
+				GameplayTags.Effect_Knockback,
+				DamageType.Force
+			);
+		}
 	}
 	
 	DamageEffectParameters.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
@@ -387,7 +398,7 @@ int32 UEntombedAbilitySystemLibrary::GetXPAwardForArchetype(const UObject* World
                                                             EEntombedArchetype Archetype, int32 Level)
 {
 	UArchetypeInfo* ArchetypeInfo = GetArchetypeInfo(WorldContextObject);
-	if (ArchetypeInfo == nullptr) 0;
+	if (ArchetypeInfo == nullptr) return 0;
 	
 	FEntombedArchetypeDefaultInfo Info = ArchetypeInfo->GetArchetypeDefaultInfo(Archetype);
 	const float XPAward = Info.XPAward.GetValueAtLevel(Level);

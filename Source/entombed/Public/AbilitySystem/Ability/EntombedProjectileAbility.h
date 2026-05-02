@@ -34,7 +34,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="Projectile")
 	virtual void SpawnProjectile(const FGameplayTag& SocketTag);
 	
-	UPROPERTY(BlueprintReadOnly, Category="Projectile");
+	UPROPERTY(BlueprintReadOnly, Category="Projectile")
 	FVector TargetLocation = FVector();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Projectile")

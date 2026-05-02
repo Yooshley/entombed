@@ -101,10 +101,16 @@ struct FEntombedDamageData
     FScalableFloat Value;
 	
 	UPROPERTY(EditDefaultsOnly, Category="Debuff")
-	bool bCanApplyDebuff = false;
+	bool bCanDebuff = false;
 
-	UPROPERTY(EditDefaultsOnly, Category="Debuff", meta=(EditCondition="bCanApplyDebuff", EditConditionHides))
+	UPROPERTY(EditDefaultsOnly, Category="Debuff", meta=(EditCondition="bCanDebuff", EditConditionHides))
 	FEntombedDebuffData Debuff;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Knockback")
+	bool bCanKnockback = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Knockback", meta=(EditCondition="bCanKnockback", EditConditionHides))
+	float Force;
 };
 
 USTRUCT(BlueprintType)

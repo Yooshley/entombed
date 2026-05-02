@@ -15,7 +15,6 @@
 #include "AbilitySystem/EntombedAttributeSet.h"
 #include "AbilitySystem/Data/AbilityInfo.h"
 #include "Camera/CameraComponent.h"
-#include "Game/EntombedGameInstance.h"
 #include "Game/EntombedGameModeBase.h"
 #include "Game/EntombedSaveGame.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -42,22 +41,60 @@ void AEntombedPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	// init ability actor info for the server
-	//InitializeAbilityActorInfo();
-	//LoadPlayerProgress();
+	AEntombedPlayerState* PS = GetPlayerState<AEntombedPlayerState>();
+	check(PS);
+
+	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+	ASC->InitAbilityActorInfo(PS, this);
+
+	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(ASC))
+	{
+		EntombedASC->AbilityActorInfoSet();
+	}
+
+	AbilitySystemComponent = ASC;
+	AttributeSet = PS->GetAttributeSet();
 	
-	// if (AEntombedGameModeBase* EntombedGameMode = Cast<AEntombedGameModeBase>(UGameplayStatics::GetGameMode(this)))
-	// {
-	// 	EntombedGameMode->LoadWorldState(GetWorld());
-	// }
+	InitializeDefaultAttributes();
+
+	if (HasAuthority())
+	{
+		UEntombedAbilitySystemLibrary::GrantDefaultAbilities(this, AbilitySystemComponent, Archetype);
+	}
+	
+	InitializeAbilityActorInfo();
 }
 
 void AEntombedPlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	// init ability actor info for the client
-	//InitializeAbilityActorInfo();
+	AEntombedPlayerState* PS = GetPlayerState<AEntombedPlayerState>();
+	check(PS);
+
+	UAbilitySystemComponent* ASC = PS->GetAbilitySystemComponent();
+	ASC->InitAbilityActorInfo(PS, this);
+
+	if (UEntombedAbilitySystemComponent* EntombedASC = Cast<UEntombedAbilitySystemComponent>(ASC))
+	{
+		EntombedASC->AbilityActorInfoSet();
+	}
+
+	AbilitySystemComponent = ASC;
+	AttributeSet = PS->GetAttributeSet();
+	
+	if (IsLocallyControlled())
+	{
+		if (AEntombedPlayerController* PC = Cast<AEntombedPlayerController>(GetController()))
+		{
+			if (AEntombedHUD* HUD = Cast<AEntombedHUD>(PC->GetHUD()))
+			{
+				HUD->InitializeOverlay(PC, PS, AbilitySystemComponent, AttributeSet);
+			}
+		}
+	}
+	
+	InitializeAbilityActorInfo();
 }
 
 void AEntombedPlayerCharacter::AddXP_Implementation(int32 InXP)
@@ -232,7 +269,7 @@ void AEntombedPlayerCharacter::Death(const FVector& DeathImpulse)
 void AEntombedPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeAbilityActorInfo();
+	//if (HasAuthority()) InitializeAbilityActorInfo();
 }
 
 void AEntombedPlayerCharacter::LoadPlayerProgress()
@@ -268,32 +305,16 @@ void AEntombedPlayerCharacter::LoadPlayerProgress()
 
 void AEntombedPlayerCharacter::InitializeAbilityActorInfo()
 {
-	AEntombedPlayerState* EntombedPlayerState = GetPlayerState<AEntombedPlayerState>();
-	check(EntombedPlayerState);
+    Super::InitializeAbilityActorInfo();
 	
-	EntombedPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(EntombedPlayerState, this);
-	Cast<UEntombedAbilitySystemComponent>(EntombedPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
-	AbilitySystemComponent = EntombedPlayerState->GetAbilitySystemComponent();
-	AttributeSet = EntombedPlayerState->GetAttributeSet();
-	
+	const UEntombedAttributeSet* AS = CastChecked<UEntombedAttributeSet>(AttributeSet);
+
+	OnLifeChanged.Broadcast(AS->GetLife());
+	OnTotalLifeChanged.Broadcast(AS->GetTotalLife());
+	OnFormChanged.Broadcast(AS->GetForm());
+	OnTotalFormChanged.Broadcast(AS->GetTotalForm());
+
 	OnAbilitySystemReady.Broadcast(AbilitySystemComponent);
-	AbilitySystemComponent->RegisterGameplayTagEvent(FEntombedGameplayTags::Get().Debuff_Shock, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AEntombedPlayerCharacter::StunTagChanged);
-
-	if (AEntombedPlayerController* EntombedPlayerController = Cast<AEntombedPlayerController>(GetController()))
-	{
-		if (AEntombedHUD* EntombedHUD = Cast<AEntombedHUD>(EntombedPlayerController->GetHUD()))
-		{
-			EntombedHUD->InitializeOverlay(EntombedPlayerController, EntombedPlayerState, AbilitySystemComponent, AttributeSet);
-		}
-	}
-	InitializeDefaultAttributes();
-	Super::InitializeAbilityActorInfo();
-
-	if (HasAuthority())
-	{
-		UEntombedAbilitySystemLibrary::GrantDefaultAbilities(this, AbilitySystemComponent, Archetype);
-		Cast<UEntombedAbilitySystemComponent>(AbilitySystemComponent)->OnGrantedAbilities();
-	}
 }
 
 void AEntombedPlayerCharacter::OnRep_Shocked()

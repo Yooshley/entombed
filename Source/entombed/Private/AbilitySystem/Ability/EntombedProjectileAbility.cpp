@@ -6,8 +6,10 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/EntombedAbilitySystemLibrary.h"
+#include "AbilitySystem/AbilityTask/TargetDataUnderCursor.h"
 #include "Actor/EntombedAbilityProjectile.h"
 #include "Interface/CombatInterface.h"
+#include "Interface/PlayerInterface.h"
 
 UEntombedProjectileAbility::UEntombedProjectileAbility()
 {

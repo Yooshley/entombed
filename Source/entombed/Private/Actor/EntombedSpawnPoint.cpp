@@ -7,6 +7,8 @@
 
 void AEntombedSpawnPoint::Spawn()
 {
+	if (!HasAuthority()) return;
+	
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	
